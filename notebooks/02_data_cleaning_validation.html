@@ -1,0 +1,1542 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Data Cleaning & Validation — Mohammed Muayad</title><link rel="stylesheet" href="../style.98dcf5cd907f.css"><link rel="icon" href="../assets/mark.svg"></head><body><main class="notebook-body"><a class="back-link" href="../factory.html#files">← Back to the Case Study</a><p class="eyebrow">FACTORY SENSOR TELEMETRY / ENGLISH NOTEBOOK</p><h1>Data Cleaning & Validation</h1><p>Explanations, original code and saved outputs. Download the complete project for the datasets required to run this notebook.</p><div class="actions"><a class="button primary" href="../downloads/02_data_cleaning_validation.ipynb" download>Download Notebook ↓</a><a class="button outline" href="../downloads/Factory_Sensor_Telemetry_EN.zip" download>Full Project ↓</a></div><details class="data-dictionary"><summary>Jump to a section</summary><div class="notebook-toc"><a href="#cell-0">Factory Sensor Data Analysis Project</a><a href="#cell-1">Load the Raw Data and Create a Working Copy</a><a href="#cell-4">Perform Data Cleaning</a><a href="#cell-12">Validate Data Integrity Before Saving</a><a href="#cell-14">Validate Missing-Value Locations Before Saving</a><a href="#cell-16">Validate the Cleaned Data Against the Original Source</a><a href="#cell-18">Save the Cleaned Dataset</a><a href="#cell-24">Stage Two Summary and Treatment Limitations</a></div></details><section class="cell" id="cell-0"><h2>Factory Sensor Data Analysis Project</h2>
+<h3>Stage Two — Data Cleaning and Validation</h3>
+<p>This stage moves from assessing data quality to carrying out cleaning operations and validating the results.</p>
+<p>The notebook addresses the identified quality issues while preserving the original data unchanged.</p>
+<h3>Data files used</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>File</th>
+<th style="text-align: right;">Rows</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>original_data.csv</code></td>
+<td style="text-align: right;">8,000</td>
+<td>Original data source</td>
+</tr>
+<tr>
+<td><code>raw_data.csv</code></td>
+<td style="text-align: right;">8,020</td>
+<td>Raw working copy used in the project</td>
+</tr>
+<tr>
+<td><code>cleaned_data.csv</code></td>
+<td style="text-align: right;">—</td>
+<td>Destination for the cleaned data</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Workflow</h3>
+<p>The raw working copy is the starting point for cleaning and validation. Appropriate treatments are then applied to the issues identified during the quality assessment. The result of each treatment is checked before accepting the resulting data. Finally, the cleaned data is saved in a file separate from the raw files.</p>
+<h3>Methodological note</h3>
+<p>Cleaning is performed on a separate copy of the data. The original source is not modified, and the raw working copy is not overwritten. Treatments are limited to the safe, documented procedures defined in the project. Unusual values are not deleted and missing data is not imputed without a clear justification.</p></section><section class="cell" id="cell-1"><h2>Load the Raw Data and Create a Working Copy</h2>
+<p>The raw working dataset is loaded and an independent copy is created for cleaning. This preserves the raw data unchanged during subsequent processing.</p>
+<h3>Inspection steps</h3>
+<p>Import the libraries required to read the data and perform analytical operations. Load the raw data file from the project's data directory, then create a separate DataFrame for later cleaning. Finally, inspect the raw dataset dimensions and count fully identical rows.</p>
+<h3>Data file used</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>raw_data.csv</code></td>
+<td>Raw working copy used for cleaning</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Libraries used</h3>
+<ul>
+<li><code>pandas</code> — read and manipulate tabular data</li>
+<li><code>numpy</code> — perform numerical operations where needed</li>
+<li><code>Path</code> — handle file paths where needed</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>raw</code> — raw DataFrame after loading the file</li>
+<li><code>df_clean</code> — independent copy dedicated to cleaning</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>pd.read_csv()</code> — read the raw data file</li>
+<li><code>copy()</code> — create an independent DataFrame copy</li>
+<li><code>shape</code> — display the row and column counts</li>
+<li><code>duplicated()</code> — identify fully identical rows</li>
+<li><code>sum()</code> — count duplicate rows</li>
+<li><code>print()</code> — display the initial inspection results</li>
+</ul>
+<h3>Purpose of the check</h3>
+<p>This check confirms that the data was loaded and establishes its size before cleaning begins. It also verifies the duplicate count for comparison with the earlier quality assessment.</p>
+<h3>Methodological note</h3>
+<p>An independent copy is created so that cleaning does not change the raw DataFrame. Copying data and checking duplicates do not delete records or alter values. Importing libraries does not imply that all their functions are used in this step. No treatment is applied during loading and the initial inspection.</p></section><section class="cell" id="cell-2"><p class="eyebrow">CODE CELL 3</p><pre><code>import pandas as pd
+import numpy as np
+from pathlib import Path
+
+raw = pd.read_csv(&quot;../data/raw_data.csv&quot;)
+df_clean = raw.copy()
+
+print(&quot;Raw shape:&quot;, raw.shape)
+print(&quot;Raw exact duplicates:&quot;, raw.duplicated().sum())</code></pre><pre class="output">Raw shape: (8020, 8)
+Raw exact duplicates: 20
+</pre></section><section class="cell" id="cell-3"><h3>Data Cleaning Decision Log</h3>
+<p>This log documents the data quality issues and the actions taken during cleaning. It explains the implemented decisions and the reasons for each treatment while preserving the raw files unchanged.</p>
+<h3>Cleaning decisions</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Identified issue</th>
+<th>Action</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20 fully duplicated records</td>
+<td>Remove duplicate records</td>
+<td>Avoid counting the same reading more than once</td>
+</tr>
+<tr>
+<td>Recording timestamps stored as text</td>
+<td>Convert to datetime</td>
+<td>Enable temporal inspection and analysis</td>
+</tr>
+<tr>
+<td>Inconsistent spelling of sites and operating statuses</td>
+<td>Trim whitespace and standardize case</td>
+<td>Prevent duplicate categories caused by formatting differences</td>
+</tr>
+<tr>
+<td>Thousands separators in some RPM readings</td>
+<td>Remove commas and convert to numeric values</td>
+<td>Enable correct numerical calculations</td>
+</tr>
+<tr>
+<td>40 missing measurement cells</td>
+<td>Preserve missing values without imputation</td>
+<td>Avoid creating unverified measurements</td>
+</tr>
+<tr>
+<td>Outlying measurements</td>
+<td>Retain values without deletion</td>
+<td>No evidence establishes that these values are errors</td>
+</tr>
+<tr>
+<td>Gaps in recording times</td>
+<td>Do not generate replacement readings</td>
+<td>It is uncertain whether the estimated readings were actually expected</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Columns involved in cleaning</h3>
+<ul>
+<li><code>reading_at</code> — reading date and time</li>
+<li><code>device_id</code> — device identifier used to order records</li>
+<li><code>site</code> — site label whose formatting is standardized</li>
+<li><code>status</code> — operating status whose categories are standardized</li>
+<li><code>rpm</code> — device rotational speed whose formatting is standardized</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>drop_duplicates()</code> — remove fully identical records</li>
+<li><code>pd.to_datetime()</code> — convert recording times to datetime</li>
+<li><code>str.strip()</code> — remove leading and trailing whitespace</li>
+<li><code>str.upper()</code> — standardize English letters to uppercase</li>
+<li><code>str.replace()</code> — remove thousands separators from RPM values</li>
+<li><code>pd.to_numeric()</code> — convert RPM readings to numeric values</li>
+<li><code>sort_values()</code> — order records by the selected columns</li>
+</ul>
+<h3>Ordering and saving the results</h3>
+<p>After cleaning, records are sorted by recording date and time, then by device identifier. The cleaned data is saved in a file separate from the raw data files.</p>
+<h3>Data files</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>original_data.csv</code></td>
+<td>Original data source</td>
+</tr>
+<tr>
+<td><code>raw_data.csv</code></td>
+<td>Raw working copy before cleaning</td>
+</tr>
+<tr>
+<td><code>cleaned_data.csv</code></td>
+<td>Resulting cleaned data</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Methodological note</h3>
+<p>Only fully duplicated records are removed; readings are not deleted merely because their values are high. Missing values and outliers are retained without imputation or modification. No replacement readings are generated for the detected time gaps. Treatments are limited to documented procedures, and the raw files remain unchanged. Resolving formatting issues and duplicates does not establish that all measurements are operationally correct.</p></section><section class="cell" id="cell-4"><h2>Perform Data Cleaning</h2>
+<p>Cleaning is carried out on an independent copy of the raw data. This addresses the identified quality issues and prepares the dataset for subsequent analysis and validation.</p>
+<h3>Cleaning steps</h3>
+<p>First, remove fully identical records while retaining the first occurrence of each record. Convert recording times to a suitable temporal data type. Standardize site names and operating-status labels by trimming whitespace and converting English letters to uppercase. Normalize RPM readings by removing thousands separators and converting values to numbers. Finally, sort records by time and device identifier, and reset the row index.</p>
+<h3>Columns used</h3>
+<ul>
+<li><code>reading_at</code> — reading date and time</li>
+<li><code>device_id</code> — device identifier used to order records</li>
+<li><code>site</code> — site label whose formatting is standardized</li>
+<li><code>status</code> — operating status whose labels are standardized</li>
+<li><code>rpm</code> — device rotational speed converted to numeric form</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>df_clean</code> — data copy used for cleaning</li>
+<li><code>before_dedup</code> — record count before duplicate removal</li>
+<li><code>removed_duplicates</code> — number of duplicate records removed</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>len()</code> — count records before and after removal</li>
+<li><code>drop_duplicates()</code> — remove fully identical records</li>
+<li><code>keep="first"</code> — retain the first occurrence of each record</li>
+<li><code>copy()</code> — create an independent data copy</li>
+<li><code>pd.to_datetime()</code> — convert recording times to datetime</li>
+<li><code>errors="coerce"</code> — represent values that cannot be converted as missing</li>
+<li><code>astype("string")</code> — convert values to strings during normalization</li>
+<li><code>str.strip()</code> — remove leading and trailing whitespace</li>
+<li><code>str.upper()</code> — standardize English letters to uppercase</li>
+<li><code>str.replace()</code> — remove thousands separators from RPM readings</li>
+<li><code>regex=False</code> — treat the comma as literal text</li>
+<li><code>pd.to_numeric()</code> — convert RPM readings to numbers</li>
+<li><code>sort_values()</code> — order records by recording time and device identifier</li>
+<li><code>reset_index(drop=True)</code> — reset the row index without retaining the old index</li>
+<li><code>shape</code> — display the dimensions after cleaning</li>
+<li><code>print()</code> — display execution results</li>
+</ul>
+<h3>Results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Records before cleaning</td>
+<td style="text-align: right;">8,020</td>
+</tr>
+<tr>
+<td>Duplicate records removed</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>Records after cleaning</td>
+<td style="text-align: right;">8,000</td>
+</tr>
+<tr>
+<td>Columns after cleaning</td>
+<td style="text-align: right;">8</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Interpretation</h3>
+<p>The output shows that twenty fully duplicated records were removed, reducing the dataset to eight thousand rows. The number of columns is unchanged. These results confirm successful duplicate removal; the remaining treatments require the quality checks that follow.</p>
+<h3>Methodological note</h3>
+<p>Treatments are applied to a separate copy without modifying the raw files. Missing values are not imputed, outliers are not deleted, and replacement readings are not generated for the previously identified time gaps. Numerical and datetime conversion allow unconvertible values to become missing, so conversion results must be checked for additional missing values. Successful cleaning does not establish that every measurement is operationally correct.</p></section><section class="cell" id="cell-5"><p class="eyebrow">CODE CELL 6</p><pre><code># 1 Remove exact duplicate rows
+before_dedup = len(df_clean)
+df_clean = df_clean.drop_duplicates(keep=&quot;first&quot;).copy()
+removed_duplicates = before_dedup - len(df_clean)
+
+# 2 Convert timestamp
+df_clean[&quot;reading_at&quot;] = pd.to_datetime(
+    df_clean[&quot;reading_at&quot;], errors=&quot;coerce&quot;
+)
+
+# 3 Normalize categories
+df_clean[&quot;site&quot;] = df_clean[&quot;site&quot;].astype(&quot;string&quot;).str.strip().str.upper()
+df_clean[&quot;status&quot;] = df_clean[&quot;status&quot;].astype(&quot;string&quot;).str.strip().str.upper()
+
+# 4 Convert RPM to numeric
+df_clean[&quot;rpm&quot;] = pd.to_numeric(
+    df_clean[&quot;rpm&quot;].astype(&quot;string&quot;).str.replace(&quot;,&quot;, &quot;&quot;, regex=False),
+    errors=&quot;coerce&quot;
+)
+
+# 5 Sort records
+df_clean = df_clean.sort_values(
+    [&quot;reading_at&quot;, &quot;device_id&quot;]
+).reset_index(drop=True)
+
+print(&quot;Removed exact duplicates:&quot;, removed_duplicates)
+print(&quot;Cleaned shape:&quot;, df_clean.shape)</code></pre><pre class="output">Removed exact duplicates: 20
+Cleaned shape: (8000, 8)
+</pre></section><section class="cell" id="cell-6"><h3>Assess Data Quality After Cleaning</h3>
+<p>This step checks data quality after the documented cleaning operations. It verifies the treatments and compares the dataset's condition before and after cleaning.</p>
+<h3>Inspection steps</h3>
+<p>Count records before and after cleaning to assess the effect of duplicate removal. Check that no fully identical records remain. Verify datetime validity and the conversion of RPM readings to numeric values. Inspect the unique site and operating-status categories after normalization. Finally, count missing values in the four measurement columns to confirm that they were retained without imputation.</p>
+<h3>Columns used</h3>
+<ul>
+<li><code>reading_at</code> — recording date and time</li>
+<li><code>site</code> — recorded site</li>
+<li><code>status</code> — operating status</li>
+<li><code>temp_c</code> — temperature</li>
+<li><code>humidity_pct</code> — humidity percentage</li>
+<li><code>vibration_mm_s</code> — vibration measurement</li>
+<li><code>rpm</code> — device rotational speed</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>raw</code> — raw data before cleaning</li>
+<li><code>df_clean</code> — resulting cleaned data</li>
+<li><code>value_cols</code> — four measurement columns checked for missing values</li>
+<li><code>rpm_normalized_check</code> — result of converting raw RPM values after normalization</li>
+<li><code>non_numeric_rpm_after</code> — originally non-missing values that still fail conversion after normalization</li>
+<li><code>missing_rpm_after</code> — missing RPM values after cleaning</li>
+<li><code>validation</code> — summary of data quality validation metrics</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>pd.to_numeric()</code> — test RPM conversion to numbers</li>
+<li><code>astype("string")</code> — temporarily convert values to text</li>
+<li><code>str.replace()</code> — remove thousands separators from RPM readings</li>
+<li><code>errors="coerce"</code> — represent conversion failures as missing values</li>
+<li><code>notna()</code> — identify non-missing values</li>
+<li><code>isna()</code> — identify missing values</li>
+<li><code>duplicated()</code> — check for fully identical records</li>
+<li><code>sum()</code> — count cases satisfying the check conditions</li>
+<li><code>len()</code> — count records</li>
+<li><code>dropna()</code> — exclude missing values from category checks</li>
+<li><code>unique()</code> — extract unique categories</li>
+<li><code>sorted()</code> — sort categories</li>
+<li><code>pd.Series()</code> — present validation metrics in an organized form</li>
+</ul>
+<h3>Results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Records before cleaning</td>
+<td style="text-align: right;">8,020</td>
+</tr>
+<tr>
+<td>Records after cleaning</td>
+<td style="text-align: right;">8,000</td>
+</tr>
+<tr>
+<td>Duplicate records after cleaning</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Invalid dates after cleaning</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>RPM values that failed conversion after normalization</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Missing RPM values</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td>Total missing measurement cells</td>
+<td style="text-align: right;">40</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Categories after normalization</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Resulting values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sites</td>
+<td><code>NOR</code>, <code>RIV</code>, <code>SLT</code></td>
+</tr>
+<tr>
+<td>Operating statuses</td>
+<td><code>FAULT</code>, <code>OK</code>, <code>WARN</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Interpretation</h3>
+<p>The record count decreased after fully identical rows were removed. No duplicate records or invalid dates remain in the cleaned data. The RPM check found no additional conversion failures after thousands separators were removed. Site and operating-status categories are now standardized. Missing values are preserved without imputation or replacement measurements.</p>
+<h3>Main findings</h3>
+<ul>
+<li>Fully duplicated records were successfully removed</li>
+<li>No invalid dates appeared after cleaning</li>
+<li>Available RPM values were successfully converted after normalization</li>
+<li>Site and operating-status categories were standardized</li>
+<li>Missing values were retained without imputation</li>
+</ul>
+<h3>Methodological note</h3>
+<p>The numeric-conversion check uses raw values after temporary normalization; the other validation metrics use the cleaned copy. Passing these checks does not prove operational correctness of all measurements. It also does not, on its own, establish that no unintended change occurred in other values. Missing values were not imputed, and no replacement readings were generated during cleaning.</p></section><section class="cell" id="cell-7"><p class="eyebrow">CODE CELL 8</p><pre><code>
+# Validate cleaned dataset
+
+value_cols = [&quot;temp_c&quot;, &quot;humidity_pct&quot;, &quot;vibration_mm_s&quot;, &quot;rpm&quot;]
+
+# Check RPM conversion using original raw values
+rpm_normalized_check = pd.to_numeric(
+    raw[&quot;rpm&quot;].astype(&quot;string&quot;).str.replace(
+        &quot;,&quot;, &quot;&quot;, regex=False
+    ),
+    errors=&quot;coerce&quot;
+)
+
+non_numeric_rpm_after = int(
+    (
+        raw[&quot;rpm&quot;].notna()
+        &amp; rpm_normalized_check.isna()
+    ).sum()
+)
+
+missing_rpm_after = int(df_clean[&quot;rpm&quot;].isna().sum())
+
+
+# Main validation checks
+validation = {
+    &quot;rows_before&quot;: len(raw),
+    &quot;rows_after&quot;: len(df_clean),
+
+    &quot;exact_duplicates_after&quot;: int(
+        df_clean.duplicated().sum()
+    ),
+
+    &quot;invalid_datetime_after&quot;: int(
+        df_clean[&quot;reading_at&quot;].isna().sum()
+    ),
+
+    &quot;non_numeric_rpm_after&quot;: non_numeric_rpm_after,
+    &quot;missing_rpm_after&quot;: missing_rpm_after,
+
+    &quot;site_categories_after&quot;: sorted(
+        df_clean[&quot;site&quot;].dropna().unique().tolist()
+    ),
+
+    &quot;status_categories_after&quot;: sorted(
+        df_clean[&quot;status&quot;].dropna().unique().tolist()
+    ),
+
+    &quot;missing_measurement_cells_after&quot;: int(
+        df_clean[value_cols].isna().sum().sum()
+    )
+}
+
+pd.Series(validation, name=&quot;value&quot;)
+</code></pre><pre class="output">rows_before                                     8020
+rows_after                                      8000
+exact_duplicates_after                             0
+invalid_datetime_after                             0
+non_numeric_rpm_after                              0
+missing_rpm_after                                 10
+site_categories_after                [NOR, RIV, SLT]
+status_categories_after            [FAULT, OK, WARN]
+missing_measurement_cells_after                   40
+Name: value, dtype: object</pre></section><section class="cell" id="cell-8"><h3>Validate Device Consistency, Time Ordering, and Measurement Types</h3>
+<p>Additional checks examine consistency after cleaning: device-to-site associations, chronological ordering, and whether measurement-column types are suitable for numerical calculations.</p>
+<h3>Inspection steps</h3>
+<p>Group records by device identifier and count the unique sites associated with each device. Identify devices whose readings appear at more than one site. Check whether recording times are in ascending order. Finally, display the data types of the four numeric measurement columns.</p>
+<h3>Columns used</h3>
+<ul>
+<li><code>device_id</code> — device identifier</li>
+<li><code>site</code> — site where the device is recorded</li>
+<li><code>reading_at</code> — recording date and time</li>
+<li><code>temp_c</code> — temperature</li>
+<li><code>humidity_pct</code> — humidity percentage</li>
+<li><code>vibration_mm_s</code> — vibration measurement</li>
+<li><code>rpm</code> — device rotational speed</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>df_clean</code> — cleaned data copy</li>
+<li><code>device_site_counts</code> — number of unique sites associated with each device</li>
+<li><code>numeric_cols</code> — list of numeric measurement columns</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>groupby()</code> — group records by device identifier</li>
+<li><code>nunique()</code> — count unique sites per device</li>
+<li><code>sum()</code> — count devices associated with more than one site</li>
+<li><code>is_monotonic_increasing</code> — verify ascending chronological order</li>
+<li><code>dtypes</code> — display selected column data types</li>
+<li><code>print()</code> — display check results</li>
+</ul>
+<h3>Results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Devices associated with more than one site</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Records in chronological order</td>
+<td style="text-align: right;">True</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Measurement types after cleaning</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Data type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>temp_c</code></td>
+<td><code>float64</code></td>
+</tr>
+<tr>
+<td><code>humidity_pct</code></td>
+<td><code>float64</code></td>
+</tr>
+<tr>
+<td><code>vibration_mm_s</code></td>
+<td><code>float64</code></td>
+</tr>
+<tr>
+<td><code>rpm</code></td>
+<td><code>Float64</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Interpretation</h3>
+<p>No device is associated with more than one site in the cleaned dataset. Recording times are in ascending order. All four measurement columns have numeric types suitable for calculations.</p>
+<h3>Methodological note</h3>
+<p>The site check counts non-missing unique values per device. Correct chronological ordering does not necessarily mean that all expected readings are present. The RPM column uses a numeric type that supports missing values. These checks alone do not establish operational correctness of the measurements. No data is modified during these additional validation checks.</p></section><section class="cell" id="cell-9"><p class="eyebrow">CODE CELL 10</p><pre><code># Validate one site per device
+device_site_counts = df_clean.groupby(&quot;device_id&quot;)[&quot;site&quot;].nunique()
+print(&quot;Devices linked to more than one site:&quot;, int((device_site_counts &gt; 1).sum()))
+
+# Validate chronological ordering
+print(&quot;Chronologically sorted:&quot;, df_clean[&quot;reading_at&quot;].is_monotonic_increasing)
+
+# Validate numeric measurement columns
+numeric_cols = [&quot;temp_c&quot;, &quot;humidity_pct&quot;, &quot;vibration_mm_s&quot;, &quot;rpm&quot;]
+print(df_clean[numeric_cols].dtypes)</code></pre><pre class="output">Devices linked to more than one site: 0
+Chronologically sorted: True
+temp_c            float64
+humidity_pct      float64
+vibration_mm_s    float64
+rpm               Float64
+dtype: object
+</pre></section><section class="cell" id="cell-10"><h3>Compare Missing Values Before and After Cleaning</h3>
+<p>This step compares missing-value counts before and after cleaning to verify that missing values were preserved without imputation or unverified replacement measurements.</p>
+<h3>Inspection steps</h3>
+<p>Select the four numeric measurement columns. Count missing cells in each raw-data column, repeat the check on the cleaned copy, and calculate the difference to identify changes in the counts.</p>
+<h3>Columns used</h3>
+<ul>
+<li><code>temp_c</code> — temperature</li>
+<li><code>humidity_pct</code> — humidity percentage</li>
+<li><code>vibration_mm_s</code> — vibration measurement</li>
+<li><code>rpm</code> — device rotational speed</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>raw</code> — raw data before cleaning</li>
+<li><code>df_clean</code> — data after cleaning</li>
+<li><code>value_cols</code> — list of the four measurement columns</li>
+<li><code>missing_comparison</code> — missing-value comparison table</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>pd.DataFrame()</code> — create a table of comparison results</li>
+<li><code>isna()</code> — identify missing cells</li>
+<li><code>sum()</code> — count missing values per column</li>
+</ul>
+<h3>Results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Measurement</th>
+<th style="text-align: right;">Before cleaning</th>
+<th style="text-align: right;">After cleaning</th>
+<th style="text-align: right;">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Temperature</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Humidity</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Vibration</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td>Rotational speed</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>40</strong></td>
+<td style="text-align: right;"><strong>40</strong></td>
+<td style="text-align: right;"><strong>0</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Interpretation</h3>
+<p>Missing-value counts are unchanged in all four measurement columns. No increase or decrease occurred after cleaning, consistent with the project's decision to preserve missing values without imputation.</p>
+<h3>Methodological note</h3>
+<p>This check compares the number of missing cells, not their locations within records. Equal counts alone do not prove that the missing-value locations are unchanged. Removing fully duplicated records did not alter the total missing-cell count in this dataset. No missing values were imputed and no replacement measurements were created during cleaning.</p></section><section class="cell" id="cell-11"><p class="eyebrow">CODE CELL 12</p><pre><code>missing_comparison = pd.DataFrame({
+    &quot;raw&quot;: raw[value_cols].isna().sum(),
+    &quot;cleaned&quot;: df_clean[value_cols].isna().sum()
+})
+missing_comparison[&quot;change&quot;] = missing_comparison[&quot;cleaned&quot;] - missing_comparison[&quot;raw&quot;]
+missing_comparison</code></pre><div class="output"><div>
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>raw</th>
+      <th>cleaned</th>
+      <th>change</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>temp_c</th>
+      <td>10</td>
+      <td>10</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>humidity_pct</th>
+      <td>10</td>
+      <td>10</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>vibration_mm_s</th>
+      <td>10</td>
+      <td>10</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>rpm</th>
+      <td>10</td>
+      <td>10</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></section><section class="cell" id="cell-12"><h2>Validate Data Integrity Before Saving</h2>
+<p>A set of validation checks is performed after cleaning and before saving the final dataset. These checks prevent saving if any specified quality condition is not met.</p>
+<h3>Inspection steps</h3>
+<p>Verify that the cleaned record count matches the expected count after duplicate removal and that no fully identical records remain. Check recording-time validity and ascending chronological order. Confirm that RPM values converted successfully after normalization. Review missing-value counts to ensure they did not change during cleaning. Verify that each device is associated with at most one site in the available data and that all four measurement columns have numeric types. Finally, check category formatting and the expected site and operating-status values.</p>
+<h3>Physical-range conditions</h3>
+<p>Additional checks verify that selected measurements lie within possible ranges.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Measurement</th>
+<th>Validation condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Humidity</td>
+<td>Between 0 and 100</td>
+</tr>
+<tr>
+<td>Vibration</td>
+<td>Greater than or equal to 0</td>
+</tr>
+<tr>
+<td>Rotational speed</td>
+<td>Greater than or equal to 0</td>
+</tr>
+</tbody>
+</table></div>
+<p>Missing values are excluded from the physical-range checks only. Negative temperatures are not prohibited because they can be possible on the Celsius scale.</p>
+<h3>Columns used</h3>
+<ul>
+<li><code>reading_at</code> — recording date and time</li>
+<li><code>device_id</code> — device identifier</li>
+<li><code>site</code> — device's recorded site</li>
+<li><code>status</code> — operating status</li>
+<li><code>temp_c</code> — temperature</li>
+<li><code>humidity_pct</code> — humidity percentage</li>
+<li><code>vibration_mm_s</code> — vibration measurement</li>
+<li><code>rpm</code> — device rotational speed</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>raw</code> — raw data before cleaning</li>
+<li><code>df_clean</code> — resulting cleaned data</li>
+<li><code>removed_duplicates</code> — number of duplicate records removed</li>
+<li><code>non_numeric_rpm_after</code> — values that failed conversion after normalization</li>
+<li><code>missing_comparison</code> — missing-value comparison before and after cleaning</li>
+<li><code>device_site_counts</code> — unique site count for each device</li>
+<li><code>value_cols</code> — list of numeric measurement columns</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>assert</code> — stop execution if a check fails</li>
+<li><code>len()</code> — count records</li>
+<li><code>duplicated()</code> — check for fully identical records</li>
+<li><code>any()</code> — test whether a matching case exists</li>
+<li><code>notna()</code> — identify non-missing values</li>
+<li><code>all()</code> — verify a condition for every checked value</li>
+<li><code>is_monotonic_increasing</code> — verify ascending time order</li>
+<li><code>eq(0)</code> — check that missing-value counts did not change</li>
+<li><code>le(1)</code> — ensure that no device is associated with more than one site</li>
+<li><code>pd.api.types.is_numeric_dtype()</code> — check numeric data types</li>
+<li><code>dropna()</code> — exclude missing values from the specified check</li>
+<li><code>str.strip()</code> — remove excess whitespace</li>
+<li><code>str.upper()</code> — standardize English letter case</li>
+<li><code>set()</code> — verify the expected category sets</li>
+<li><code>between()</code> — test whether values fall within a range</li>
+<li><code>ge(0)</code> — check for non-negative values</li>
+<li><code>print()</code> — display the validation success message</li>
+</ul>
+<h3>Validation result</h3>
+<p>If all conditions pass, the following message is displayed:</p>
+<p><code>Pre-save validation: PASSED</code></p>
+<p>If any condition fails, execution stops and an error message explains the failure.</p>
+<h3>Methodological note</h3>
+<p>Validation prevents saving data that does not satisfy the specified conditions. Conversion and category checks depend on the cleaning results from earlier steps. Equal missing-value counts alone do not prove identical missing-value locations. Physical-range checks exclude missing values without imputing them. These are basic consistency conditions, not a comprehensive engineering validation of measurement accuracy. Passing all conditions does not establish that the devices are free of mechanical faults. No records are removed and no values are changed by the pre-save validation checks.</p></section><section class="cell" id="cell-13"><p class="eyebrow">CODE CELL 14</p><pre><code>
+# Pre-Save Data Validation
+
+# 1) Validate row count and duplicates
+assert len(df_clean) == len(raw) - removed_duplicates, (
+    &quot;Unexpected row count after cleaning&quot;
+)
+
+assert not df_clean.duplicated().any(), (
+    &quot;Exact duplicate rows still exist&quot;
+)
+
+# 2) Validate timestamps and chronological order
+assert df_clean[&quot;reading_at&quot;].notna().all(), (
+    &quot;Invalid timestamps found&quot;
+)
+
+assert df_clean[&quot;reading_at&quot;].is_monotonic_increasing, (
+    &quot;Records are not chronologically sorted&quot;
+)
+
+# 3) Validate RPM conversion
+assert non_numeric_rpm_after == 0, (
+    &quot;Some RPM values could not be converted&quot;
+)
+
+# 4) Ensure missing values were not changed
+assert missing_comparison[&quot;change&quot;].eq(0).all(), (
+    &quot;Missing measurement counts have changed&quot;
+)
+
+# 5) Ensure each device belongs to one site
+assert device_site_counts.le(1).all(), (
+    &quot;Some devices belong to multiple sites&quot;
+)
+
+# 6) Validate numeric measurement columns
+for col in value_cols:
+    assert pd.api.types.is_numeric_dtype(df_clean[col]), (
+        f&quot;{col} must be numeric&quot;
+    )
+
+# 7) Validate category formatting
+for col in [&quot;site&quot;, &quot;status&quot;]:
+    values = df_clean[col].dropna()
+
+    assert values.eq(
+        values.str.strip().str.upper()
+    ).all(), f&quot;{col} has inconsistent formatting&quot;
+
+# 8) Validate expected categories
+assert set(df_clean[&quot;site&quot;].dropna()) == {
+    &quot;NOR&quot;, &quot;RIV&quot;, &quot;SLT&quot;
+}, &quot;Unexpected site category&quot;
+
+assert set(df_clean[&quot;status&quot;].dropna()) == {
+    &quot;OK&quot;, &quot;WARN&quot;, &quot;FAULT&quot;
+}, &quot;Unexpected status category&quot;
+
+
+# 9) Validate physical measurement ranges
+
+assert df_clean[&quot;humidity_pct&quot;].dropna().between(0, 100).all(), (
+    &quot;Humidity values must be between 0 and 100&quot;
+)
+
+for col in [&quot;vibration_mm_s&quot;, &quot;rpm&quot;]:
+    assert df_clean[col].dropna().ge(0).all(), (
+        f&quot;{col} contains negative values&quot;
+    )
+
+print(&quot;Pre-save validation: PASSED&quot;)
+</code></pre><pre class="output">Pre-save validation: PASSED
+</pre></section><section class="cell" id="cell-14"><h2>Validate Missing-Value Locations Before Saving</h2>
+<p>An additional check verifies that missing-value locations did not change during cleaning. Missing values should remain in the same records and columns before and after cleaning.</p>
+<h3>Inspection steps</h3>
+<p>Create an independent raw-data copy after excluding fully identical records. Convert recording times to a type suitable for temporal comparison. Define a record key consisting of reading time and device identifier, and use it to align raw and cleaned records. Identify missing cells in the four measurement columns of both copies. Sort by the key so that results are ordered consistently, then compare missing-value locations.</p>
+<h3>Columns used</h3>
+<ul>
+<li><code>reading_at</code> — reading date and time</li>
+<li><code>device_id</code> — device identifier</li>
+<li><code>temp_c</code> — temperature</li>
+<li><code>humidity_pct</code> — humidity percentage</li>
+<li><code>vibration_mm_s</code> — vibration measurement</li>
+<li><code>rpm</code> — device rotational speed</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>raw</code> — raw data before cleaning</li>
+<li><code>df_clean</code> — resulting cleaned data</li>
+<li><code>raw_unique</code> — raw-data copy after duplicate removal</li>
+<li><code>record_key</code> — columns used to match records</li>
+<li><code>value_cols</code> — list of the four measurement columns</li>
+<li><code>raw_missing_positions</code> — missing-value locations in deduplicated raw data</li>
+<li><code>clean_missing_positions</code> — missing-value locations in cleaned data</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>drop_duplicates()</code> — exclude fully identical records</li>
+<li><code>keep="first"</code> — retain the first occurrence of each record</li>
+<li><code>copy()</code> — create an independent data copy</li>
+<li><code>pd.to_datetime()</code> — convert recording times to datetime</li>
+<li><code>errors="raise"</code> — raise an error if datetime conversion fails</li>
+<li><code>set_index()</code> — use recording time and device identifier as a comparison key</li>
+<li><code>sort_index()</code> — sort records by that key</li>
+<li><code>isna()</code> — identify missing-cell locations</li>
+<li><code>pd.testing.assert_frame_equal()</code> — verify equal check results between copies</li>
+<li><code>print()</code> — display a success message when the comparison passes</li>
+</ul>
+<h3>Validation result</h3>
+<p>When missing-value locations match between deduplicated raw data and cleaned data, the following message is displayed:</p>
+<p><code>Missing-value positions: PASSED</code></p>
+<p>A mismatch raises an error indicating that the results differ.</p>
+<h3>Why this check matters</h3>
+<p>It confirms that cleaning did not move missing cells and provides a more precise check than comparing only the total missing-value counts.</p>
+<h3>Methodological note</h3>
+<p>The comparison is performed after removing fully identical records from the raw copy. It aligns records using recording time and device identifier, assuming this key identifies records appropriately for comparison. Only missing-value locations are compared, not non-missing numeric values. Passing this check alone therefore does not establish that every measurement value remained unchanged. Missing values are not imputed and the original data is not modified during this check.</p></section><section class="cell" id="cell-15"><p class="eyebrow">CODE CELL 16</p><pre><code>
+# Verify missing-value positions before saving
+
+raw_unique = raw.drop_duplicates(keep=&quot;first&quot;).copy()
+
+raw_unique[&quot;reading_at&quot;] = pd.to_datetime(
+    raw_unique[&quot;reading_at&quot;],
+    errors=&quot;raise&quot;
+)
+
+record_key = [&quot;reading_at&quot;, &quot;device_id&quot;]
+
+raw_missing_positions = (
+    raw_unique
+    .set_index(record_key)[value_cols]
+    .sort_index()
+    .isna()
+)
+
+clean_missing_positions = (
+    df_clean
+    .set_index(record_key)[value_cols]
+    .sort_index()
+    .isna()
+)
+
+pd.testing.assert_frame_equal(
+    raw_missing_positions,
+    clean_missing_positions
+)
+
+print(&quot;Missing-value positions: PASSED&quot;)
+</code></pre><pre class="output">Missing-value positions: PASSED
+</pre></section><section class="cell" id="cell-16"><h2>Validate the Cleaned Data Against the Original Source</h2>
+<p>A final comparison between the cleaned data and the original project source checks record alignment, category consistency, and preservation of available measurement values before the cleaned data is saved.</p>
+<h3>Inspection steps</h3>
+<p>Load the original source and parse recording times as datetime. Define a record-matching key using recording time and device identifier, and verify that this key is unique in both the original and cleaned datasets. Merge both copies to check that all records match, without additional or unmatched records. Compare site and operating-status labels after standardizing their formatting in both copies. Temporarily normalize the numerical measurements and compare them, restricting this comparison to readings that are non-missing in the cleaned data. Finally, display the result for each of the four measurement columns.</p>
+<h3>Files used</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>original_data.csv</code></td>
+<td>Original source used for comparison</td>
+</tr>
+<tr>
+<td><code>cleaned_data.csv</code></td>
+<td>Name of the cleaned-data file to be saved</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Columns used</h3>
+<ul>
+<li><code>reading_at</code> — recording date and time</li>
+<li><code>device_id</code> — device identifier</li>
+<li><code>site</code> — recorded site</li>
+<li><code>status</code> — operating status</li>
+<li><code>temp_c</code> — temperature</li>
+<li><code>humidity_pct</code> — humidity percentage</li>
+<li><code>vibration_mm_s</code> — vibration measurement</li>
+<li><code>rpm</code> — device rotational speed</li>
+</ul>
+<h3>Variables</h3>
+<ul>
+<li><code>original</code> — loaded original-source data</li>
+<li><code>df_clean</code> — cleaned data copy</li>
+<li><code>key</code> — columns used to match records</li>
+<li><code>comparison</code> — comparison table joining the original and cleaned data</li>
+<li><code>original_values</code> — original-source values extracted for comparison</li>
+<li><code>cleaned_values</code> — cleaned-data values extracted for comparison</li>
+<li><code>present</code> — mask identifying non-missing cleaned measurements</li>
+<li><code>value_cols</code> — four numeric measurement columns</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>pd.read_csv()</code> — load the original source</li>
+<li><code>parse_dates</code> — convert the recording-time column during loading</li>
+<li><code>duplicated()</code> — check record-key uniqueness</li>
+<li><code>merge()</code> — match original-source records to cleaned records</li>
+<li><code>how="outer"</code> — include records from both copies in the comparison</li>
+<li><code>indicator=True</code> — identify each merged record's source</li>
+<li><code>validate="one_to_one"</code> — ensure matching keys are not duplicated during merging</li>
+<li><code>astype("string")</code> — convert values to strings for comparison</li>
+<li><code>str.strip()</code> — trim category whitespace</li>
+<li><code>str.upper()</code> — standardize English letter case</li>
+<li><code>str.replace()</code> — remove thousands separators from measurements</li>
+<li><code>pd.to_numeric()</code> — convert measurements to numeric values</li>
+<li><code>notna()</code> — identify non-missing readings</li>
+<li><code>equals()</code> — compare normalized category values</li>
+<li><code>np.allclose()</code> — compare available numeric values while allowing small numerical differences</li>
+<li><code>assert</code> — stop execution when a validation condition fails</li>
+<li><code>print()</code> — display comparison results</li>
+</ul>
+<h3>Results</h3>
+<p>Record matching and site/status category comparisons passed. Available numeric values also matched the corresponding original-source values.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Measurement column</th>
+<th>Available-value comparison</th>
+<th style="text-align: right;">Missing values after cleaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>temp_c</code></td>
+<td>Match within comparison tolerance</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td><code>humidity_pct</code></td>
+<td>Match within comparison tolerance</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td><code>vibration_mm_s</code></td>
+<td>Match within comparison tolerance</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td><code>rpm</code></td>
+<td>Match within comparison tolerance</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td></td>
+<td style="text-align: right;"><strong>40</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Final validation result</h3>
+<p>All implemented comparison conditions passed, producing:</p>
+<p><code>Original vs cleaned: PASSED</code></p>
+<h3>Interpretation</h3>
+<p>Record keys match between the original and cleaned datasets. Site and operating-status values match after formatting normalization. No differences beyond the specified numerical tolerance were found among measurements available in the cleaned data. Missing values remain excluded from the numeric-value comparison with the original source.</p>
+<h3>Methodological note</h3>
+<p>The original source is used only for validation and comparison, not to fill missing values in the working copy. Numeric comparisons use non-missing cleaned measurements, so passing the check does not establish that all cells match across the two copies. Small numerical differences are permitted by the comparison settings. The stability of missing-value locations between deduplicated raw data and cleaned data was checked earlier. These checks alone do not establish operational correctness of the measurements. No missing values are imputed and the original source is not modified during this comparison.</p></section><section class="cell" id="cell-17"><p class="eyebrow">CODE CELL 18</p><pre><code>
+# Compare cleaned data with the original source
+original = pd.read_csv(
+    &quot;../data/original_data.csv&quot;,
+    parse_dates=[&quot;reading_at&quot;]
+)
+
+key = [&quot;reading_at&quot;, &quot;device_id&quot;]
+
+# Check unique record identifiers
+assert not original.duplicated(key).any()
+assert not df_clean.duplicated(key).any()
+
+# Match records by device and timestamp
+comparison = original.merge(
+    df_clean,
+    on=key,
+    suffixes=(&quot;_original&quot;, &quot;_cleaned&quot;),
+    how=&quot;outer&quot;,
+    indicator=True,
+    validate=&quot;one_to_one&quot;
+)
+
+assert comparison[&quot;_merge&quot;].eq(&quot;both&quot;).all()
+
+# Compare categorical columns
+for col in [&quot;site&quot;, &quot;status&quot;]:
+    original_values = (
+        comparison[f&quot;{col}_original&quot;]
+        .astype(&quot;string&quot;).str.strip().str.upper()
+    )
+
+    cleaned_values = (
+        comparison[f&quot;{col}_cleaned&quot;]
+        .astype(&quot;string&quot;).str.strip().str.upper()
+    )
+
+    assert original_values.equals(cleaned_values)
+
+# Compare existing measurement values
+for col in value_cols:
+    original_values = pd.to_numeric(
+        comparison[f&quot;{col}_original&quot;]
+        .astype(&quot;string&quot;)
+        .str.replace(&quot;,&quot;, &quot;&quot;, regex=False),
+        errors=&quot;coerce&quot;
+    )
+
+    cleaned_values = pd.to_numeric(
+        comparison[f&quot;{col}_cleaned&quot;]
+        .astype(&quot;string&quot;)
+        .str.replace(&quot;,&quot;, &quot;&quot;, regex=False),
+        errors=&quot;coerce&quot;
+    )
+
+    present = cleaned_values.notna()
+
+    assert original_values.notna().all()
+
+    assert np.allclose(
+        original_values[present].to_numpy(dtype=float),
+        cleaned_values[present].to_numpy(dtype=float),
+        rtol=1e-12,
+        atol=1e-12
+    )
+
+    print(
+        f&quot;{col}: values match; missing = {int((~present).sum())}&quot;
+    )
+
+print(&quot;Original vs cleaned: PASSED&quot;)
+</code></pre><pre class="output">temp_c: values match; missing = 10
+humidity_pct: values match; missing = 10
+vibration_mm_s: values match; missing = 10
+rpm: values match; missing = 10
+Original vs cleaned: PASSED
+</pre></section><section class="cell" id="cell-18"><h2>Save the Cleaned Dataset</h2>
+<p>After the preceding validation checks pass, the cleaned data is saved to a separate file. This preserves the original source and raw working copy unchanged.</p>
+<h3>Saving steps</h3>
+<p>Define the destination path in the project's data directory. Export the cleaned copy as a comma-separated values file without adding the row index as a data column. Finally, display the saved path and the resulting dataset dimensions.</p>
+<h3>Data files</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>File</th>
+<th style="text-align: right;">Rows</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>original_data.csv</code></td>
+<td style="text-align: right;">8,000</td>
+<td>Original source</td>
+</tr>
+<tr>
+<td><code>raw_data.csv</code></td>
+<td style="text-align: right;">8,020</td>
+<td>Raw working copy</td>
+</tr>
+<tr>
+<td><code>cleaned_data.csv</code></td>
+<td style="text-align: right;">8,000</td>
+<td>Cleaned data</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Variables</h3>
+<ul>
+<li><code>df_clean</code> — data after cleaning and validation</li>
+<li><code>output_path</code> — destination path for the cleaned-data file</li>
+</ul>
+<h3>Code elements</h3>
+<ul>
+<li><code>Path()</code> — define the save path</li>
+<li><code>to_csv()</code> — export the data to a file</li>
+<li><code>index=False</code> — omit the row index from the file</li>
+<li><code>shape</code> — display the cleaned dimensions</li>
+<li><code>print()</code> — display the saved path and results</li>
+</ul>
+<h3>Results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Records saved</td>
+<td style="text-align: right;">8,000</td>
+</tr>
+<tr>
+<td>Columns saved</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>Duplicate records removed earlier</td>
+<td style="text-align: right;">20</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Interpretation</h3>
+<p>The output confirms successful export to the specified file. The number of columns remains unchanged after duplicate removal. The cleaned data is now stored separately from the original and raw copies.</p>
+<h3>Methodological note</h3>
+<p>The data is saved after validation, without imputing missing values or removing outliers. Neither the original source nor the raw working copy is modified during saving. This step confirms that export occurred; the saved file's contents are checked in the next step after reloading.</p></section><section class="cell" id="cell-19"><p class="eyebrow">CODE CELL 20</p><pre><code>output_path = Path(&quot;../data/cleaned_data.csv&quot;)
+df_clean.to_csv(output_path, index=False)
+print(&quot;Saved:&quot;, output_path)
+print(&quot;Final shape:&quot;, df_clean.shape)</code></pre><pre class="output">Saved: ..\data\cleaned_data.csv
+Final shape: (8000, 8)
+</pre></section><section class="cell" id="cell-20"><h3>Additional Data-Type Validation</h3>
+<p>After the cleaned file is reloaded, an additional check validates its column types. It verifies that datetime, numeric, and categorical columns have the required types in the loaded data.</p>
+<h3>Columns checked</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Required type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reading_at</code></td>
+<td><code>Datetime</code></td>
+</tr>
+<tr>
+<td><code>temp_c</code></td>
+<td><code>Numeric</code></td>
+</tr>
+<tr>
+<td><code>humidity_pct</code></td>
+<td><code>Numeric</code></td>
+</tr>
+<tr>
+<td><code>vibration_mm_s</code></td>
+<td><code>Numeric</code></td>
+</tr>
+<tr>
+<td><code>rpm</code></td>
+<td><code>Numeric</code></td>
+</tr>
+<tr>
+<td><code>site</code></td>
+<td><code>String</code></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td><code>String</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Code elements</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>is_datetime64_any_dtype()</code></td>
+<td>Validate the datetime type</td>
+</tr>
+<tr>
+<td><code>is_numeric_dtype()</code></td>
+<td>Validate numeric types</td>
+</tr>
+<tr>
+<td><code>is_string_dtype()</code></td>
+<td>Validate string types</td>
+</tr>
+<tr>
+<td><code>assert</code></td>
+<td>Stop execution if a condition fails</td>
+</tr>
+<tr>
+<td><code>isna().sum().sum()</code></td>
+<td>Count all missing values</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Additional validation results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Required result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Datetime type validation</td>
+<td><code>PASSED</code></td>
+</tr>
+<tr>
+<td>Numeric column validation</td>
+<td><code>PASSED</code></td>
+</tr>
+<tr>
+<td>String column validation</td>
+<td><code>PASSED</code></td>
+</tr>
+<tr>
+<td>Missing-value count validation</td>
+<td><code>PASSED</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Methodological note</h3>
+<p>These checks reflect the types after reloading with the specified read settings. Dates are converted and certain column types are assigned while reading the saved file. Passing therefore verifies the types of the reloaded data under those settings. The <code>CSV</code> format is textual and does not independently preserve programming-language data types; column types are determined on reload. Passing type checks does not establish operational correctness of all measurements. Original data and values are not modified during this check.</p></section><section class="cell" id="cell-21"><p class="eyebrow">CODE CELL 22</p><pre><code>
+# Verify Saved Cleaned Dataset
+saved_path = Path(&quot;../data/cleaned_data.csv&quot;)
+
+print(&quot;File exists:&quot;, saved_path.exists())
+
+saved_df = pd.read_csv(
+    
+    saved_path,
+    parse_dates=[&quot;reading_at&quot;],
+    dtype={
+        &quot;site&quot;: &quot;string&quot;,
+        &quot;status&quot;: &quot;string&quot;,
+        &quot;rpm&quot;: &quot;Float64&quot;
+    }
+)
+
+print(&quot;Saved dataset shape:&quot;, saved_df.shape)
+print(&quot;Original cleaned shape:&quot;, df_clean.shape)
+
+print(&quot;Shape matches:&quot;, saved_df.shape == df_clean.shape)
+
+print(
+    &quot;Columns match:&quot;,
+    saved_df.columns.tolist() == df_clean.columns.tolist()
+)
+
+print(
+    &quot;Missing measurement cells:&quot;,
+    saved_df[value_cols].isna().sum().sum()
+)
+
+# Verify actual data values
+pd.testing.assert_frame_equal(
+
+    saved_df,
+    df_clean,
+    check_dtype=False,
+    check_exact=False,
+    rtol=1e-12,
+    atol=1e-12
+)
+
+print(&quot;Data integrity check: PASSED&quot;)
+
+# Verify data types after loading the saved CSV
+assert pd.api.types.is_datetime64_any_dtype(
+    saved_df[&quot;reading_at&quot;]
+)
+
+for col in value_cols:
+    assert pd.api.types.is_numeric_dtype(
+        saved_df[col]
+    ), f&quot;Invalid numeric type: {col}&quot;
+
+for col in [&quot;site&quot;, &quot;status&quot;]:
+    assert pd.api.types.is_string_dtype(
+        saved_df[col]
+    ), f&quot;Invalid category type: {col}&quot;
+
+assert (
+    saved_df[value_cols].isna().sum().sum()
+    == df_clean[value_cols].isna().sum().sum()
+)
+
+print(&quot;Datetime validation: PASSED&quot;)
+print(&quot;Numeric columns validation: PASSED&quot;)
+print(&quot;Category columns validation: PASSED&quot;)
+print(&quot;Missing values validation: PASSED&quot;)
+
+</code></pre><pre class="output">File exists: True
+Saved dataset shape: (8000, 8)
+Original cleaned shape: (8000, 8)
+Shape matches: True
+Columns match: True
+Missing measurement cells: 40
+Data integrity check: PASSED
+Datetime validation: PASSED
+Numeric columns validation: PASSED
+Category columns validation: PASSED
+Missing values validation: PASSED
+</pre></section><section class="cell" id="cell-22"><h3>Cross-Check Data Equivalence</h3>
+<p>An additional comparison checks data reconstructed from the raw copy against the saved cleaned dataset. It verifies that removing duplicates and normalizing formats did not cause unexplained differences in records or measurements.</p>
+<h3>Inspection steps</h3>
+<p>Create a temporary raw-data copy without fully duplicated records. Convert the date column to datetime and standardize site and operating-status labels. Convert RPM to numeric values after removing commas from affected values. Verify that the reading-time/device-identifier key is unique in each copy. Sort both copies by the same key and reset their indexes for a consistent comparison. Finally, compare every column and value while allowing very small numerical differences and ignoring data-type differences.</p>
+<h3>Variables</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>raw</code></td>
+<td>Raw data used in the cleaning notebook</td>
+</tr>
+<tr>
+<td><code>analysis_comparison</code></td>
+<td>Temporary copy reconstructed from raw data for comparison</td>
+</tr>
+<tr>
+<td><code>saved_df</code></td>
+<td>Cleaned data reloaded from the saved file</td>
+</tr>
+<tr>
+<td><code>keys</code></td>
+<td>Columns used to identify and sort records</td>
+</tr>
+<tr>
+<td><code>left</code></td>
+<td>Reconstructed data after sorting</td>
+</tr>
+<tr>
+<td><code>right</code></td>
+<td>Saved cleaned data after sorting</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Code elements</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>drop_duplicates()</code></td>
+<td>Exclude fully duplicated records</td>
+</tr>
+<tr>
+<td><code>pd.to_datetime()</code></td>
+<td>Convert date values to datetime</td>
+</tr>
+<tr>
+<td><code>str.strip()</code></td>
+<td>Remove excess whitespace</td>
+</tr>
+<tr>
+<td><code>str.upper()</code></td>
+<td>Standardize English letter case</td>
+</tr>
+<tr>
+<td><code>pd.to_numeric()</code></td>
+<td>Convert RPM values to numeric form</td>
+</tr>
+<tr>
+<td><code>duplicated()</code></td>
+<td>Check for duplicate keys</td>
+</tr>
+<tr>
+<td><code>sort_values()</code></td>
+<td>Sort records before comparison</td>
+</tr>
+<tr>
+<td><code>reset_index()</code></td>
+<td>Reset the row index</td>
+</tr>
+<tr>
+<td><code>assert</code></td>
+<td>Stop execution if a condition is not met</td>
+</tr>
+<tr>
+<td><code>assert_frame_equal()</code></td>
+<td>Compare the structure and values of both copies</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Records compared</td>
+<td>8,000</td>
+</tr>
+<tr>
+<td>Column names and order match</td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td>Data equivalence under comparison conditions</td>
+<td><code>PASSED</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3>Interpretation</h3>
+<p>The reconstructed raw-data copy and the saved cleaned dataset passed the comparison. They contain equivalent records and values after the specified transformations and sorting. No differences beyond the numerical comparison tolerances were found.</p>
+<h3>Methodological note</h3>
+<p>The comparison uses a temporary copy reconstructed from raw data with the stated transformations. It is not a direct comparison to the exploratory-analysis variable in the first notebook. The test permits data-type differences and very small numerical differences; passing therefore does not mean byte-for-byte identity of the files or identical storage and column types. Nor does it establish that all earlier analyses used the cleaned data directly. Neither the raw data nor the saved cleaned copy is modified during this comparison.</p></section><section class="cell" id="cell-23"><p class="eyebrow">CODE CELL 24</p><pre><code>
+# Cross-check analytical data against saved cleaned data
+analysis_comparison = raw.drop_duplicates(keep=&quot;first&quot;).copy()
+
+analysis_comparison[&quot;reading_at&quot;] = pd.to_datetime(
+    analysis_comparison[&quot;reading_at&quot;], errors=&quot;raise&quot;
+)
+
+for column in [&quot;site&quot;, &quot;status&quot;]:
+    analysis_comparison[column] = (
+        analysis_comparison[column]
+        .astype(&quot;string&quot;).str.strip().str.upper()
+    )
+
+analysis_comparison[&quot;rpm&quot;] = pd.to_numeric(
+    analysis_comparison[&quot;rpm&quot;]
+    .astype(&quot;string&quot;)
+    .str.replace(&quot;,&quot;, &quot;&quot;, regex=False),
+    errors=&quot;coerce&quot;
+)
+
+keys = [&quot;reading_at&quot;, &quot;device_id&quot;]
+
+assert not analysis_comparison.duplicated(keys).any()
+assert not saved_df.duplicated(keys).any()
+
+left = analysis_comparison.sort_values(keys).reset_index(drop=True)
+right = saved_df.sort_values(keys).reset_index(drop=True)
+
+pd.testing.assert_frame_equal(
+    left,
+    right,
+    check_dtype=False,
+    check_exact=False,
+    rtol=1e-12,
+    atol=1e-12
+)
+
+print(&quot;Rows compared:&quot;, len(left))
+print(&quot;Same columns:&quot;, left.columns.tolist() == right.columns.tolist())
+print(&quot;Data equivalence: PASSED&quot;)
+</code></pre><pre class="output">Rows compared: 8000
+Same columns: True
+Data equivalence: PASSED
+</pre></section><section class="cell" id="cell-24"><h2>Stage Two Summary and Treatment Limitations</h2>
+<p>Factory sensor data was cleaned and validated before saving the final copy. Processing started from the raw working dataset while preserving the original source unchanged.</p>
+<h3>Cleaning operations performed</h3>
+<ul>
+<li>Removed 20 fully duplicated records while retaining the first occurrence</li>
+<li>Converted recording times to datetime</li>
+<li>Standardized site and operating-status labels</li>
+<li>Removed thousands separators and converted RPM to numeric values</li>
+<li>Sorted records by recording time and device identifier</li>
+</ul>
+<h3>Decisions and limitations</h3>
+<ul>
+<li>Missing values — retain every missing cell without imputation</li>
+<li>Outliers — retain readings because they have not been established as errors</li>
+<li>Time gaps — do not create replacement readings from uncertain estimates</li>
+<li>Duplicates — remove only fully identical records</li>
+<li>Categories — normalize spelling without changing the original meaning of operating statuses</li>
+</ul>
+<h3>Final results</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th style="text-align: right;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Records before cleaning</td>
+<td style="text-align: right;">8,020</td>
+</tr>
+<tr>
+<td>Duplicate records removed</td>
+<td style="text-align: right;">20</td>
+</tr>
+<tr>
+<td>Records after cleaning</td>
+<td style="text-align: right;">8,000</td>
+</tr>
+<tr>
+<td>Columns</td>
+<td style="text-align: right;">8</td>
+</tr>
+<tr>
+<td>Missing cells retained</td>
+<td style="text-align: right;">40</td>
+</tr>
+<tr>
+<td>Potential unrecorded readings estimated from time gaps</td>
+<td style="text-align: right;">468</td>
+</tr>
+<tr>
+<td>Remaining duplicate records</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Final validation checks</h3>
+<p>The checks confirmed valid dates, consistent categories, numeric data types, chronological ordering, and no device associated with more than one site. Missing-value locations were matched before and after cleaning to verify that they did not change. The cleaned data passed the comparison with the original source under the specified conditions. Finally, the cleaned file was saved and reloaded to verify its contents.</p>
+<h3>Methodological note</h3>
+<p>The estimate of potential unrecorded readings assumes one reading every two hours. It is therefore not a confirmed count of missing records. Retaining outliers does not establish their operational correctness. Treatments remain limited to documented procedures, with no missing-value imputation or replacement readings.</p>
+<h3>Final conclusion</h3>
+<p>Cleaning and validation are complete, and the cleaned copy passed the quality checks defined in this project. Results were saved in a separate file while preserving the original and raw data files.</p>
+<p><strong>Final file:</strong> <code>cleaned_data.csv</code></p>
+<p>The data is ready for subsequent analyses within the quality limitations and assumptions documented in this project.</p></section><a class="button primary" href="../factory.html#files">Back to Project Files ←</a></main></body></html>
