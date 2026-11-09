@@ -2,19 +2,27 @@
 
 Artificial Intelligence Engineering · Data Analytics
 
-Target address: https://mohadmuayad.github.io/
+Published at: https://mohadmuayad.github.io/
 
 ## Hosting
-GitHub Pages: main branch, /(root). Keep .nojekyll. No build step, server, credentials or third-party runtime dependencies are required.
 
-## Local preview
-Run `python -m http.server 8000` in this folder, then open http://localhost:8000.
+GitHub Pages: `main` branch, `/(root)`. No build step, Node, secrets, or custom Actions workflow. Keep `.nojekyll`.
 
-## Updates and cache
-CSS and JavaScript filenames contain a SHA-256 content fingerprint. When editing either file, recompute the first 12 hex characters and update every HTML reference (including notebook readers). Publish all related files in the same commit. Keep previous fingerprinted assets during a transition if old HTML may still be cached. GitHub/browser caching and social-preview refresh are not fully controlled by this site. No service worker is installed.
+## Files
 
-## Content
-The reports are supplied English and Arabic editions. Project data is historical and synthetic, not a live feed. The downloadable analytical project preserves its original documentation and source attribution. Personal portrait and portfolio content are not assigned an open-source licence by this repository.
+- `index.html`: homepage and Project Milestone
+- `factory.html`: Factory Sensor Telemetry case study
+- `style.<hash>.css` / `app.<hash>.js`: versioned styles and scripts
+- `assets/`: images, Arabic and English reports, and site imagery
+- `downloads/`: analysis notebooks and English project archive
+- `notebooks/`: browsable notebooks
 
-## Rollback
-Revert the deployment commit to return to the last accepted version. Confirm the Pages deployment succeeds before assessing changes.
+## Safe updates
+
+The CSS and JavaScript filenames carry a SHA-256 fingerprint (first 12 hexadecimal characters). When these files change, give them new names and update references in both HTML files in one commit. Remove unused previous assets when publishing a fully new release. A browser may temporarily cache HTML or social previews after a deployment; invalidate by reloading and check fresh windows.
+
+For a local test run `python -m http.server 8000` from this directory and visit http://localhost:8000/; check `index.html` and `factory.html`.
+
+## Project notes
+
+The sensor data are synthetic and historical, not live telemetry. The portfolio retains the project's source attribution. The reports are in English and Arabic. The website, portrait, and project reports are not implicitly licensed for reuse.

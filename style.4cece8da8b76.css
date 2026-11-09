@@ -85,7 +85,7 @@ main,footer { max-width:1240px;margin:auto;padding:0 54px }
 .project-link b { font-size:20px;font-weight:400 }
 .skills-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line) }
 .skill { padding:30px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .2s }
-.skill:hover { background:var(--panel) }
+/* Hover styling is scoped to fine pointers in the home page refinements below. */
 .skill h3 { font-size:21px;margin-bottom:15px }
 .skill p { font-size:13px }
 .skill .skill-sub { color:var(--ink);font-size:14px;min-height:49px }
@@ -122,6 +122,18 @@ footer { padding-top:40px;border-top:1px solid var(--line);display:flex;justify-
 .toast.show { opacity:1 }
 .reveal { opacity:0;transform:translateY(22px);transition:opacity .8s ease,transform .8s ease }
 .reveal.seen { opacity:1;transform:none }
+/* Homepage titles can animate again when re-entering the viewing area.
+   No hidden default state: the content remains readable without JavaScript. */
+@keyframes home-heading-return {
+  from { opacity:.72;transform:translate3d(0,8px,0) }
+  to { opacity:1;transform:translate3d(0,0,0) }
+}
+@media (prefers-reduced-motion:no-preference) {
+  .home-page h2.heading-replay {
+    animation:home-heading-return .5s cubic-bezier(.22,.61,.36,1) both;
+  }
+}
+
 .factory-hero { padding-top:140px;border:0 }
 .back-link { color:var(--muted);font-size:12px;display:inline-block;margin-bottom:40px }
 .factory-heading { display:grid;grid-template-columns:1fr 1.1fr;gap:45px;align-items:center }
@@ -233,7 +245,7 @@ dialog p { color:#555;margin:15px 0 0 }
 .education>div { text-align:center }
 .contact-action { display:inline-flex;justify-content:center;align-items:center;gap:10px;min-height:48px;min-width:125px;padding:12px 16px;background:transparent;color:var(--accent);border:1px solid var(--line);border-bottom:2px solid var(--accent);border-radius:5px;font-size:13px;transition:background .25s,transform .25s }
 .contact-action svg { width:18px;height:18px;flex-shrink:0 }
-.contact-action:hover { background:var(--panel);transform:translateY(-2px) }
+/* Hover styling is scoped to fine pointers in the home page refinements below. */
 .link-arrow { width:18px;height:18px;vertical-align:middle;display:inline-block;flex-shrink:0 }
 .notebook-toc { display:grid;gap:10px;padding-top:20px;font-size:13px }
 .notebook-body a:not(.button) { color:var(--accent) }
@@ -273,8 +285,537 @@ main,footer{padding-left:23px;padding-right:23px}.hero{display:flex;flex-directi
 .case-group a{position:relative;flex:1;text-align:center;white-space:nowrap;padding:22px 20px;color:var(--muted);transition:color .25s}
 .case-group a:after{content:'';position:absolute;right:0;top:25%;height:50%;width:1px;background:linear-gradient(transparent,#a9c9dc99,transparent);transform:skew(-15deg)}
 .case-group a.active,.case-group a:hover{color:var(--ink);background:transparent}
-.case-nav.paused .case-track{animation-play-state:paused}
-.motion-toggle{display:block;margin:10px 0 0 auto;padding:5px 8px;background:transparent;color:var(--muted);font-size:11px;border-bottom:1px solid var(--line)}
 @keyframes section-loop{to{transform:translateX(-50%)}}
 @media(max-width:760px){.case-group{width:780px}.case-track{animation-duration:45s}.about-signature{padding:24px 0 0}.about-signature p{font-size:17px}}
-@media(prefers-reduced-motion:reduce){.case-nav{overflow-x:auto}.case-track{animation:none}.case-group{width:auto}.case-group[aria-hidden]{display:none}.motion-toggle{display:none}}
+@media(prefers-reduced-motion:reduce){.case-nav{overflow-x:auto}.case-track{animation:none}.case-group{width:auto}.case-group[aria-hidden]{display:none}}
+
+
+/* Home page V8 refinement — no factory-page or shared content changes */
+.home-page .journey .timeline { margin-top:44px }
+.home-page .skill { transition:background-color .34s ease }
+.home-page .skill.reveal { transition:opacity .8s ease,transform .8s ease,background-color .34s ease }
+@media (hover:hover) and (pointer:fine) {
+  .home-page .skill:hover { background-color:var(--panel) }
+  .home-page .contact-action:not(.copy-email):hover { background:var(--panel);transform:translateY(-2px) }
+  .home-page .copy-email:hover { color:#d9eaf5 }
+}
+/* Copy is a utility action: no latched hover/pressed background on touch or mouse. */
+.home-page .copy-email:active { transform:scale(.98) }
+.home-page .toast {
+  position:fixed;
+  bottom:calc(24px + env(safe-area-inset-bottom,0px));
+  left:50%;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  width:max-content;
+  max-width:calc(100vw - 32px);
+  padding:13px 19px;
+  background:#1d2c37;
+  color:var(--ink);
+  border:1px solid #547286;
+  border-radius:12px;
+  box-shadow:0 12px 38px #0008;
+  font-size:13px;
+  font-weight:500;
+  line-height:1.45;
+  text-align:left;
+  opacity:0;
+  visibility:hidden;
+  transform:translate(-50%,12px) scale(.98);
+  transition:opacity .22s ease,transform .25s ease,visibility .25s;
+  pointer-events:none;
+  z-index:50;
+}
+.home-page .toast::before {
+  content:"✓";
+  display:grid;
+  place-items:center;
+  flex:0 0 25px;
+  width:25px;
+  height:25px;
+  background:var(--accent);
+  color:var(--bg);
+  font:bold 15px/1 Arial,sans-serif;
+  border-radius:50%;
+}
+.home-page .toast[data-state="error"]::before { content:"!";background:#eac7a9 }
+.home-page .toast.show { opacity:1;visibility:visible;transform:translate(-50%,0) scale(1) }
+@media (max-width:760px) {
+  .home-page .journey .timeline { margin-top:32px }
+  .home-page .toast { bottom:calc(18px + env(safe-area-inset-bottom,0px));font-size:12px;padding:12px 15px }
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-page .skill,.home-page .skill.reveal,.home-page .toast { transition:none!important }
+  .home-page .copy-email:active { transform:none }
+}
+
+
+/* Homepage contact actions — primary email + compact copy utility.
+   A restrained match for the existing dark/accent design, independent of factory. */
+.home-page .email-row { gap:10px }
+.home-page .contact-email-primary {
+  min-width:0;
+  min-height:48px;
+  padding:0 18px;
+  gap:11px;
+  background:var(--accent);
+  border:1px solid var(--accent);
+  border-radius:7px;
+  color:var(--bg);
+  font-size:13px;
+  font-weight:600;
+  line-height:1.2;
+  white-space:nowrap;
+  transition:background-color .23s ease,border-color .23s ease,transform .23s ease;
+}
+.home-page .contact-email-primary .contact-mail-icon { width:18px;height:18px }
+.home-page .contact-email-primary .contact-arrow-icon { width:17px;height:17px;margin-left:5px }
+.home-page .contact-copy-icon {
+  position:relative;
+  display:inline-grid;
+  place-items:center;
+  flex:0 0 48px;
+  width:48px;
+  height:48px;
+  min-width:48px;
+  min-height:48px;
+  padding:0;
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:7px;
+  color:var(--accent);
+  transition:background-color .23s ease,border-color .23s ease,color .23s ease,transform .23s ease;
+  cursor:pointer;
+}
+.home-page .contact-copy-icon svg { width:19px;height:19px }
+.home-page .contact-copy-icon .check-glyph { display:none }
+.home-page .contact-copy-icon.is-copied { border-color:#7698ac;background:#263c4b;color:#d9eaf5 }
+.home-page .contact-copy-icon.is-copied .copy-glyph { display:none }
+.home-page .contact-copy-icon.is-copied .check-glyph { display:block }
+@media (hover:hover) and (pointer:fine) {
+  .home-page .contact-action.contact-email-primary:hover {
+    background:#c8e1ef;
+    border-color:#c8e1ef;
+    color:var(--bg);
+    transform:translateY(-2px);
+  }
+  .home-page .contact-copy-icon:not(.is-copied):hover {
+    background:#22323f;
+    border-color:#7896a8;
+    color:#d9eaf5;
+    transform:translateY(-2px);
+  }
+}
+.home-page .contact-email-primary:active,
+.home-page .contact-copy-icon:active { transform:scale(.98) }
+@media (max-width:760px) {
+  .home-page .email-row { gap:10px;flex-wrap:nowrap }
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-page .contact-email-primary,
+  .home-page .contact-copy-icon { transition:none!important }
+  .home-page .contact-email-primary:active,
+  .home-page .contact-copy-icon:active { transform:none }
+}
+
+
+/* Homepage Review 04 — approved hero line and restrained project-card emphasis.
+   Deliberately scoped to .home-page; the factory page stays untouched. */
+.home-page .hero-note { max-width:100%; }
+@media (min-width:1100px) {
+  .home-page .hero-note { white-space:nowrap;text-wrap:nowrap; }
+}
+.home-page .project-card {
+  border-color:#64879b;
+  box-shadow:0 0 0 1px rgb(169 201 220 / 5%);
+  transition:border-color .3s ease,transform .3s ease,box-shadow .35s ease;
+}
+@media (hover:hover) and (pointer:fine) {
+  .home-page .project-card:hover {
+    border-color:#a9c9dc;
+    box-shadow:0 0 0 1px rgb(169 201 220 / 14%),0 0 28px rgb(112 164 192 / 12%);
+  }
+}
+@media (hover:none), (pointer:coarse) {
+  .home-page .project-card:hover {
+    border-color:#64879b;
+    box-shadow:0 0 0 1px rgb(169 201 220 / 5%);
+    transform:none;
+  }
+}
+/* Also prevent sticky :hover on narrow touchscreen emulators/browsers. */
+@media (max-width:760px) {
+  .home-page .project-card:hover {
+    border-color:#64879b;
+    box-shadow:0 0 0 1px rgb(169 201 220 / 5%);
+    transform:none;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-page .project-card { transition:none; }
+}
+
+/* Homepage Review 06 — mobile hero balance and unobtrusive navigation.
+   All selectors are homepage-scoped; factory.html retains its existing appearance. */
+.home-page .hero .actions .button.text {
+  border:1px solid #69889b;
+  border-radius:3px;
+  padding:12px 20px;
+}
+@media (hover:hover) and (pointer:fine) {
+  .home-page .hero .actions .button.text:hover {
+    border-color:var(--accent);
+    background:rgb(169 201 220 / 5%);
+  }
+}
+@media (max-width:760px) {
+  /* Bring the first line closer to the 72px mobile navigation, without crowding it. */
+  .home-page .hero { padding-top:100px; }
+
+  /* A calm centre axis for supporting details; main hero copy remains left-aligned. */
+  .home-page .hero-social { flex-direction:column;align-items:center;justify-content:center;gap:9px; }
+  .home-page .hero-social .socials { justify-content:center; }
+  .home-page .hero-social>span { text-align:center; }
+  .home-page .scroll-cue { left:50%;right:auto;transform:translateX(-50%);justify-content:center;white-space:nowrap; }
+
+  /* Keep navigation in the layout during its opacity/transform transition.
+     visibility:hidden prevents focus or clicks while closed. */
+  .home-page #navlinks {
+    display:flex;
+    visibility:hidden;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-8px);
+    box-shadow:0 18px 30px rgb(0 0 0 / 19%);
+    max-height:calc(100dvh - 72px);
+    overflow-y:auto;
+    transition:opacity .22s ease,transform .22s cubic-bezier(.22,.61,.36,1),visibility 0s linear .22s;
+  }
+  .home-page #navlinks.open {
+    visibility:visible;
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0);
+    transition:opacity .22s ease,transform .22s cubic-bezier(.22,.61,.36,1),visibility 0s;
+  }
+  .home-page .menu-toggle span {
+    transform-origin:center;
+    transition:transform .22s ease,background-color .22s ease;
+  }
+  .home-page .menu-toggle[aria-expanded="true"] span:first-child { transform:translateY(4px) rotate(45deg); }
+  .home-page .menu-toggle[aria-expanded="true"] span:last-child { transform:translateY(-4px) rotate(-45deg); }
+}
+
+/* Homepage Review 07 — centred mobile hero introduction only.
+   The social row, portrait, scroll cue, navigation and desktop layout are preserved. */
+@media (max-width:760px) {
+  .home-page .hero-copy > .eyebrow,
+  .home-page .hero-copy > h1,
+  .home-page .hero-copy > .intro,
+  .home-page .hero-copy > .hero-note { text-align:center; }
+
+  /* Centre the complete role block while retaining its original left-hand rule. */
+  .home-page .hero-copy > .discipline {
+    display:table;
+    max-width:100%;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:left;
+  }
+  .home-page .hero-copy > .intro,
+  .home-page .hero-copy > .hero-note { margin-left:auto;margin-right:auto; }
+  .home-page .hero-copy > .actions { justify-content:center; }
+}
+/* Review 08: keep the complete role on one line on phones wide enough
+   for readable type. Narrow 320–359px phones retain the existing two-line
+   arrangement and vertical rule; nothing outside the homepage Hero changes. */
+@media (min-width:360px) and (max-width:760px) {
+  .home-page .hero-copy .discipline-main { font-size:clamp(19px,5.3vw,23px);white-space:nowrap; }
+  .home-page .hero-copy .discipline-main br { display:none; }
+}
+@media (min-width:360px) and (max-width:389px) {
+  /* Keep the two approved buttons on a single balanced row. */
+  .home-page .hero-copy > .actions { gap:8px; }
+  .home-page .hero-copy > .actions .button { padding:12px 13px;gap:12px;font-size:12px; }
+  .home-page .hero-copy > .actions .button.text { padding:11px 13px; }
+}
+@media (max-width:359px) {
+  .home-page .hero-copy > .eyebrow { font-size:9px;letter-spacing:1.15px;white-space:nowrap; }
+  .home-page .hero-copy > .actions { gap:8px; }
+  .home-page .hero-copy > .actions .button { padding:12px 10px;gap:10px;font-size:11px; }
+  .home-page .hero-copy > .actions .button.text { padding:11px 10px; }
+}
+
+
+/* Project Review 01 — factory-only refinements.
+   Homepage styling and behavior are intentionally unchanged. */
+.factory-page-body .factory-hero {
+  padding-top:122px;
+}
+
+/* Keep the last source credit precisely centered between the existing
+   file-list rule and the next section rule, without drawing new rules. */
+.factory-page-body #files { padding-bottom:0; }
+.factory-page-body #files > .dataset-source {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  min-height:180px;
+  max-width:900px;
+  padding:38px 12px;
+  margin:0 auto;
+  line-height:1.85;
+}
+
+@media (max-width:760px) {
+  .factory-page-body .factory-hero { padding-top:96px; }
+  .factory-page-body .factory-heading > div:first-child { text-align:center; }
+  .factory-page-body .factory-heading .discipline {
+    display:table;
+    max-width:100%;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:left;
+  }
+  .factory-page-body .factory-heading .hero-note {
+    margin-left:auto;
+    margin-right:auto;
+    max-width:480px;
+  }
+  .factory-page-body .factory-heading .tags { justify-content:center; }
+
+  /* Match the homepage's approved quiet nav enter/exit behavior. */
+  .factory-page-body #navlinks {
+    display:flex;
+    visibility:hidden;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-8px);
+    box-shadow:0 18px 30px rgb(0 0 0 / 19%);
+    max-height:calc(100dvh - 72px);
+    overflow-y:auto;
+    transition:opacity .22s ease,transform .22s cubic-bezier(.22,.61,.36,1),visibility 0s linear .22s;
+  }
+  .factory-page-body #navlinks.open {
+    visibility:visible;
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0);
+    transition:opacity .22s ease,transform .22s cubic-bezier(.22,.61,.36,1),visibility 0s;
+  }
+  .factory-page-body .menu-toggle span {
+    transform-origin:center;
+    transition:transform .22s ease,background-color .22s ease;
+  }
+  .factory-page-body .menu-toggle[aria-expanded="true"] span:first-child {
+    transform:translateY(4px) rotate(45deg);
+  }
+  .factory-page-body .menu-toggle[aria-expanded="true"] span:last-child {
+    transform:translateY(-4px) rotate(-45deg);
+  }
+  .factory-page-body #files > .dataset-source {
+    min-height:160px;
+    padding:30px 6px;
+  }
+}
+
+
+/* Project Review 02 — factory-only spacing and action refinement.
+   Original moving track, its long separating rule and the homepage remain intact. */
+.factory-page-body .case-nav {
+  margin-bottom:36px; /* restore breathing room before the existing report border */
+}
+.factory-page-body #findings .findings-heading {
+  margin-bottom:56px; /* allow the final title line to breathe before the finding rule */
+}
+.factory-page-body .case-end .actions .button {
+  min-height:49px;
+}
+.factory-page-body .case-end .button.outline {
+  border-color:#66869a;
+  padding:12px 20px; /* same overall height as the primary button */
+  color:var(--ink);
+  background:transparent;
+  transition:transform .22s ease,border-color .22s ease,background-color .22s ease,color .22s ease;
+}
+.factory-page-body .case-end .button.outline:hover,
+.factory-page-body .case-end .button.outline:active {
+  transform:none; /* no persistent lift on touch devices */
+}
+@media (hover:hover) and (pointer:fine) {
+  .factory-page-body .case-end .button.outline:hover {
+    transform:translateY(-2px);
+    border-color:var(--accent);
+    background:rgb(169 201 220 / 8%);
+  }
+  .factory-page-body .case-end .button.outline:active {
+    transform:translateY(0);
+  }
+}
+@media (hover:none), (pointer:coarse) {
+  .factory-page-body .case-end .button.outline:hover,
+  .factory-page-body .case-end .button.outline:active {
+    border-color:#66869a;
+    background:transparent;
+  }
+}
+@media (max-width:760px) {
+  .factory-page-body .case-nav { margin-bottom:28px; }
+  .factory-page-body #findings .findings-heading { margin-bottom:48px; }
+}
+
+/* Project-only: do not overlay the footer's own Back to Top link. */
+.factory-page-body.footer-in-view #backtop {
+  opacity:0;
+  pointer-events:none;
+}
+
+
+/* Project Review 03 — mobile CTA and findings balance.
+   Scoped to the factory page: homepage, navigation, and reports remain intact. */
+@media (max-width:760px) {
+  /* Equal prominence and a predictable two-column row on narrow devices. */
+  .factory-page-body .case-end .actions {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;
+    max-width:440px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .factory-page-body .case-end .actions .button {
+    min-width:0;
+    width:100%;
+    min-height:49px;
+    padding:12px 7px;
+    gap:7px;
+    font-size:clamp(10px,2.9vw,12px);
+    white-space:nowrap;
+  }
+  .factory-page-body .case-end .actions .button .link-arrow {
+    width:14px;
+    height:14px;
+    flex-shrink:0;
+  }
+  /* Restore a balanced visual pause before the first finding's long rule. */
+  .factory-page-body #findings .findings-heading { margin-bottom:64px; }
+}
+
+
+/* Project Milestone — factual, bilingual acknowledgement below the unchanged project card. */
+.home-page .project-milestone {
+  margin-top:26px;
+  padding:28px 32px;
+  border:1px solid #415769;
+  border-left:2px solid var(--accent);
+  border-radius:5px;
+  background:linear-gradient(115deg,#19232d,#17232d);
+}
+.home-page .milestone-kicker {
+  margin:0 0 20px;
+  color:var(--accent);
+  font:10px/1.6 monospace;
+  letter-spacing:1.6px;
+}
+.home-page .milestone-columns {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:32px;
+  align-items:start;
+}
+.home-page .milestone-language { min-width:0; }
+.home-page .milestone-language + .milestone-language {
+  border-left:1px solid var(--line);
+  padding-left:32px;
+}
+.home-page .milestone-language h3 {
+  font-size:clamp(19px,2vw,24px);
+  line-height:1.4;
+  letter-spacing:-.02em;
+  margin:0 0 14px;
+}
+.home-page .milestone-language p {
+  font-size:13px;
+  line-height:1.85;
+  margin:0;
+  color:var(--muted);
+}
+/* The Arabic milestone uses a modern, independent typeface without changing English UI. */
+.home-page .milestone-ar {
+  direction:rtl;
+  text-align:right;
+  font-family:'Tajawal','Segoe UI',Tahoma,Arial,sans-serif;
+  letter-spacing:normal;
+}
+.home-page .milestone-ar h3 {
+  font-family:inherit;
+  font-size:clamp(19px,1.8vw,21px);
+  font-weight:500;
+  letter-spacing:normal;
+  line-height:1.58;
+  margin-bottom:13px;
+}
+.home-page .milestone-ar h3 em {font-family:inherit;font-weight:500;}
+.home-page .milestone-ar p {
+  font-family:inherit;
+  font-size:13.5px;
+  font-weight:400;
+  line-height:1.9;
+  letter-spacing:normal;
+}
+@media (max-width:760px) {
+  .home-page .project-milestone { margin-top:22px;padding:23px 22px; }
+  .home-page .milestone-columns { grid-template-columns:1fr;gap:20px; }
+  .home-page .milestone-language + .milestone-language {
+    border-left:0;
+    border-top:1px solid var(--line);
+    padding-left:0;
+    padding-top:20px;
+  }
+  .home-page .milestone-language h3 { font-size:20px; }
+  .home-page .milestone-language p { font-size:13px; }
+  .home-page .milestone-ar h3 { font-size:19px;line-height:1.58; }
+  .home-page .milestone-ar p { font-size:13.5px;line-height:1.9; }
+}
+
+
+/* Project Review 10 — MOBILE HOME HERO ONLY.
+   Enhance the existing star field mildly and make its loops seamless by
+   animating one exact tile of repeating background pattern, not a translated
+   pseudo-element that snaps back after a non-matching distance.
+   Desktop animations and the Factory page are intentionally untouched. */
+@media (max-width:760px) {
+  .home-page .ambient::before {
+    background-image:radial-gradient(#a9c9dca8 1.05px,transparent 1.55px);
+    background-size:85px 85px;
+  }
+  .home-page .ambient::after {
+    background-image:radial-gradient(#a9c9dc9f 1.05px,transparent 1.55px);
+    background-size:130px 130px;
+    opacity:.62;
+  }
+}
+@keyframes home-star-tile-85 {
+  from { background-position:0 0 }
+  to { background-position:0 -85px }
+}
+@keyframes home-star-tile-130 {
+  from { background-position:0 0 }
+  to { background-position:0 -130px }
+}
+@media (max-width:760px) and (prefers-reduced-motion:no-preference) {
+  .home-page .ambient::before {
+    transform:none;
+    animation:home-star-tile-85 20s linear infinite;
+  }
+  .home-page .ambient::after {
+    transform:none;
+    animation:home-star-tile-130 26s linear infinite reverse;
+  }
+}
+@media (max-width:760px) and (prefers-reduced-motion:reduce) {
+  .home-page .ambient::before,
+  .home-page .ambient::after { animation:none!important;transform:none!important; }
+}
