@@ -1,0 +1,301 @@
+/* Dark Signal V2 / Notebook reader — stage 20.24–20.27.
+   A scoped reading shell; analytical cells and downloads remain unchanged. */
+.notebook-page-body {
+  --reader-rule:rgba(155,172,182,.25);
+  --reader-subtle:#172127;
+  min-height:100vh;
+  overflow-x:clip;
+  background:radial-gradient(ellipse 62% 380px at 55% 80px,rgba(106,126,139,.075),transparent 92%),#0d1216;
+  color:var(--ink);
+}
+html[data-theme="light"] .notebook-page-body {
+  --bg:#e9e8e4;
+  --panel:#f4f3ef;
+  --line:#c3c9c9;
+  --ink:#222d32;
+  --muted:#58656c;
+  --accent:#3a4b53;
+  --reader-rule:rgba(79,98,108,.28);
+  --reader-subtle:#eceeea;
+  background:radial-gradient(ellipse 65% 360px at 55% 80px,rgba(137,155,161,.10),transparent 91%),#e9e8e4;
+}
+.notebook-page-body .skip {z-index:80;}
+.notebook-page-body #progress {
+  height:1px;background:#adb7bd;opacity:.28;
+}
+html[data-theme="light"] .notebook-page-body #progress {background:#55666f;opacity:.28;}
+.notebook-page-body .notebook-nav {
+  height:78px;
+  padding:0 max(24px,calc((100vw - 1020px)/2));
+  background:linear-gradient(180deg,rgba(13,18,22,.93),rgba(13,18,22,.73));
+  border-bottom:1px solid transparent;
+  backdrop-filter:blur(16px);
+}
+.notebook-page-body .notebook-nav.scrolled {border-bottom-color:var(--reader-rule);}
+.notebook-page-body .notebook-nav::before {content:none;}
+html[data-theme="light"] .notebook-page-body .notebook-nav,
+html[data-theme="light"] .notebook-page-body .notebook-nav.scrolled {
+  background:linear-gradient(180deg,rgba(233,232,228,.96),rgba(233,232,228,.81));
+  border-bottom-color:transparent;
+}
+html[data-theme="light"] .notebook-page-body .notebook-nav.scrolled {border-bottom-color:var(--reader-rule);}
+.notebook-page-body .notebook-nav-links {display:flex;align-items:center;gap:24px;}
+.notebook-page-body .notebook-nav-links > a {
+  font:500 12px/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  color:var(--muted);
+  display:inline-flex;align-items:center;gap:5px;
+  transition:color .25s ease;
+}
+.notebook-page-body .notebook-nav-links > a:hover,
+.notebook-page-body .greeting:hover {color:var(--ink);}
+.notebook-page-body .notebook-nav-links .link-arrow {width:14px;height:14px;transform:rotate(-90deg);}
+.notebook-page-body .theme-toggle {width:38px;height:38px;}
+.notebook-page-body .greeting {font-size:13px;color:var(--ink);}
+.notebook-page-body .notebook-body {
+  box-sizing:border-box;
+  max-width:1060px;
+  min-width:0;
+  margin:0 auto;
+  padding:clamp(106px,11vw,150px) clamp(18px,4vw,48px) 92px;
+}
+.notebook-page-body .notebook-hero {
+  position:relative;
+  isolation:isolate;
+  min-width:0;
+  padding:3px 0 42px;
+  margin-bottom:34px;
+  border-bottom:1px solid var(--reader-rule);
+}
+.notebook-page-body .notebook-hero::after {
+  content:"";
+  position:absolute;right:0;bottom:-1px;
+  width:clamp(60px,12vw,150px);height:1px;
+  background:var(--accent);opacity:.45;
+}
+.notebook-page-body .notebook-hero .back-link {
+  display:inline-flex;align-items:center;gap:8px;
+  margin-bottom:35px;padding:7px 0;
+  color:var(--muted);font:500 12px/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  transition:color .2s ease;
+}
+.notebook-page-body .notebook-hero .back-link:hover {color:var(--ink);}
+.notebook-page-body .notebook-hero .back-link .link-arrow {width:16px;height:16px;transform:rotate(180deg);}
+.notebook-page-body .notebook-hero .eyebrow {
+  color:var(--accent);letter-spacing:.13em;margin-bottom:19px;
+  font-size:11px;
+}
+.notebook-page-body .notebook-hero h1 {
+  max-width:900px;
+  color:var(--ink);
+  font-size:clamp(36px,5.7vw,65px);
+  font-weight:400;
+  letter-spacing:-.045em;line-height:1.12;
+  margin:0 0 22px;
+  text-wrap:balance;
+}
+.notebook-page-body .notebook-hero > p:not(.eyebrow) {
+  max-width:62ch;
+  color:var(--muted);font-size:clamp(13px,1.2vw,15px);line-height:1.85;
+  margin-bottom:22px;
+}
+.notebook-page-body .notebook-hero .actions {gap:12px;margin:26px 0 0;}
+.notebook-page-body .notebook-hero .actions .button,
+.notebook-page-body .notebook-finish .button {
+  min-height:43px;
+  border:1px solid var(--reader-rule);
+  font:500 12px/1.3 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:.012em;
+  padding:12px 17px;
+  border-radius:4px;
+  gap:12px;
+}
+.notebook-page-body .button.primary {background:#d0d9dc;color:#10171b;border-color:#cbd5d9;}
+.notebook-page-body .button.primary:hover {background:#e1e8eb;}
+.notebook-page-body .button.outline {background:transparent;color:var(--ink);}
+.notebook-page-body .button.outline:hover {border-color:var(--muted);background:rgba(153,171,182,.075);}
+html[data-theme="light"] .notebook-page-body .button.primary {background:#344650;color:#f6f7f5;border-color:#344650;}
+html[data-theme="light"] .notebook-page-body .button.primary:hover {background:#23343c;}
+.notebook-page-body .notebook-index {
+  margin:0 0 46px;
+  border:1px solid var(--reader-rule);
+  border-radius:6px;
+  background:rgba(123,145,158,.045);
+  overflow:clip;
+  min-width:0;
+}
+.notebook-page-body .notebook-index summary {
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:58px;
+  padding:16px 22px;
+  color:var(--ink);
+  font:500 13px/1.5 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  cursor:pointer;
+  list-style:none;
+}
+.notebook-page-body .notebook-index summary::-webkit-details-marker {display:none;}
+.notebook-page-body .notebook-index summary::after {
+  content:"+";
+  font:300 21px/1 'Segoe UI',Arial,sans-serif;
+  color:var(--muted);
+  margin-left:20px;
+}
+.notebook-page-body .notebook-index[open] summary::after {content:"−";}
+.notebook-page-body .notebook-index[open] summary {border-bottom:1px solid var(--reader-rule);}
+.notebook-page-body .notebook-toc {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0 28px;
+  padding:15px 22px 20px;
+  min-width:0;
+}
+.notebook-page-body .notebook-toc a {
+  display:block;
+  padding:10px 0;
+  border-bottom:1px solid var(--reader-rule);
+  color:var(--muted)!important;
+  font:400 13px/1.6 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  overflow-wrap:anywhere;
+  transition:color .2s ease;
+}
+.notebook-page-body .notebook-toc a:hover {color:var(--ink)!important;}
+.notebook-page-body .cell {
+  min-width:0;
+  padding:42px 0 44px;
+  border-bottom:1px solid var(--reader-rule);
+  scroll-margin-top:100px;
+}
+.notebook-page-body .cell:first-of-type {padding-top:12px;}
+.notebook-page-body .cell h2 {
+  margin:8px 0 27px;
+  color:var(--ink);
+  font-size:clamp(24px,2.5vw,32px);
+  line-height:1.25;
+  letter-spacing:-.035em;
+  overflow-wrap:anywhere;
+}
+.notebook-page-body .cell h3 {
+  margin:39px 0 17px;
+  padding-top:0;
+  color:var(--ink);
+  font-size:clamp(19px,2vw,23px);
+  line-height:1.4;
+  letter-spacing:-.018em;
+  overflow-wrap:anywhere;
+}
+.notebook-page-body .cell > h3:first-child {margin-top:13px;}
+.notebook-page-body .cell h2 + h3 {margin-top:24px;}
+.notebook-page-body .cell p,
+.notebook-page-body .cell li {
+  font-size:14px;
+  line-height:1.83;
+}
+.notebook-page-body .cell p {margin-bottom:18px;}
+.notebook-page-body .cell ul,
+.notebook-page-body .cell ol {padding-left:24px;color:var(--muted);}
+.notebook-page-body .cell pre {
+  margin:18px 0 24px;
+  padding:17px 20px;
+  border:1px solid var(--reader-rule);
+  border-radius:5px;
+  background:var(--panel);
+  color:var(--ink);
+  font:12px/1.7 ui-monospace,Consolas,monospace;
+  overflow-x:auto;
+  max-width:100%;
+  white-space:pre;
+  tab-size:4;
+}
+.notebook-page-body .cell code {font-family:ui-monospace,Consolas,monospace;}
+.notebook-page-body .cell .table-scroll,
+.notebook-page-body .cell .output {max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;}
+.notebook-page-body .cell .table-scroll {margin:17px 0 27px;}
+.notebook-page-body .cell table {margin:0;max-width:none;}
+.notebook-page-body .cell th,
+.notebook-page-body .cell td {padding:12px 14px;vertical-align:top;line-height:1.55;}
+.notebook-page-body .cell th {font-weight:600;}
+.notebook-page-body .cell img {max-width:100%;height:auto;}
+.notebook-page-body .notebook-finish {
+  margin:70px 0 0;
+  padding:42px 0 20px;
+  border-top:1px solid var(--reader-rule);
+}
+.notebook-page-body .notebook-finish .eyebrow {margin-bottom:24px;}
+.notebook-page-body .notebook-finish-actions {display:flex;gap:12px;flex-wrap:wrap;}
+.notebook-page-body .notebook-finish-actions .link-arrow {width:15px;height:15px;transform:rotate(-90deg);}
+.notebook-page-body .notebook-footer {
+  width:100%;max-width:1060px;
+  margin:auto;
+  padding:28px 48px 46px;
+  border-top:1px solid var(--reader-rule);
+  display:flex;justify-content:space-between;align-items:center;gap:18px;
+  color:var(--muted);
+  font:400 12px/1.5 'Nunito Sans','Segoe UI',Arial,sans-serif;
+}
+.notebook-page-body .notebook-footer a {display:inline-flex;gap:8px;align-items:center;color:var(--ink);}
+.notebook-page-body .notebook-footer .link-arrow {height:14px;width:14px;transform:rotate(-90deg);}
+.notebook-page-body .notebook-backtop {
+  display:grid;place-items:center;
+  position:fixed;right:23px;bottom:24px;
+  width:43px;height:43px;
+  background:var(--panel);border:1px solid var(--reader-rule);
+  border-radius:5px;color:var(--ink);
+  opacity:0;visibility:hidden;pointer-events:none;
+  transform:translateY(10px);
+  transition:opacity .28s ease,transform .28s ease,visibility .28s ease;
+  z-index:19;
+}
+.notebook-page-body .notebook-backtop.visible {
+  opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);
+}
+.notebook-page-body .notebook-backtop svg {width:19px;height:19px;transform:rotate(-135deg);}
+html[data-theme="light"] .notebook-page-body .notebook-index {background:rgba(93,118,130,.04);}
+html[data-theme="light"] .notebook-page-body .cell .output table {background:var(--panel);}
+@media(max-width:760px) {
+  .notebook-page-body .notebook-nav {height:66px;padding-inline:clamp(15px,4vw,26px);}
+  .notebook-page-body .notebook-nav-links {gap:clamp(10px,2.7vw,18px);}
+  .notebook-page-body .notebook-nav .greeting {font-size:12px;}
+  .notebook-page-body .notebook-nav-links > a {font-size:11px;}
+  .notebook-page-body .notebook-nav-links .link-arrow {display:none;}
+  .notebook-page-body .notebook-body {padding:96px clamp(16px,4vw,28px) 66px;}
+  .notebook-page-body .notebook-hero {padding-bottom:30px;margin-bottom:25px;}
+  .notebook-page-body .notebook-hero .back-link {margin-bottom:22px;}
+  .notebook-page-body .notebook-hero h1 {font-size:clamp(33px,9vw,46px);}
+  .notebook-page-body .notebook-hero .actions {gap:10px;}
+  .notebook-page-body .notebook-hero .actions .button {font-size:11px;min-height:42px;}
+  .notebook-page-body .notebook-index {margin-bottom:24px;}
+  .notebook-page-body .notebook-toc {grid-template-columns:minmax(0,1fr);padding:8px 17px 18px;}
+  .notebook-page-body .notebook-index summary {padding:15px 17px;}
+  .notebook-page-body .cell {padding:32px 0 36px;}
+  .notebook-page-body .cell h3 {margin-top:32px;font-size:20px;}
+  .notebook-page-body .cell h2 {font-size:clamp(23px,6vw,29px);}
+  .notebook-page-body .cell pre {padding:15px 13px;font-size:11.5px;}
+  .notebook-page-body .cell th,.notebook-page-body .cell td {padding:10px 12px;}
+  .notebook-page-body .notebook-footer {padding:25px 18px 35px;flex-wrap:wrap;}
+  .notebook-page-body .notebook-backtop {right:15px;bottom:16px;}
+}
+@media(max-width:370px) {
+  .notebook-page-body .notebook-nav-links {gap:9px;}
+  .notebook-page-body .notebook-nav-links > a {font-size:10px;}
+  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {display:none;}
+  .notebook-page-body .notebook-hero h1 {font-size:33px;}
+  .notebook-page-body .notebook-hero .actions .button {padding:12px 11px;}
+  .notebook-page-body .notebook-hero .eyebrow {font-size:10px;}
+}
+@media(prefers-reduced-motion:no-preference) {
+  .notebook-page-body .notebook-hero {animation:notebook-enter .55s cubic-bezier(.22,.61,.36,1) both;}
+  @keyframes notebook-enter {from {opacity:0;transform:translateY(12px);}to {opacity:1;transform:none;}}
+}
+@media(prefers-reduced-motion:reduce) {
+  .notebook-page-body *, .notebook-page-body *::before, .notebook-page-body *::after {animation-duration:0.01ms!important;transition-duration:0.01ms!important;}
+  .notebook-page-body .notebook-backtop {transform:none;}
+}
+
+/* Keep notebook identity and download arrow geometry aligned with the site. */
+.notebook-page-body .notebook-hero-label {display:inline;}
+.notebook-page-body .notebook-download-arrow {width:16px;height:16px;transform:rotate(45deg);}
+@media(max-width:450px) {
+  .notebook-page-body .notebook-hero-label {display:block;margin-top:4px;}
+}

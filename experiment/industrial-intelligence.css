@@ -1,0 +1,460 @@
+/* Dark Signal V2 / Experience 1.1 / Scene Integrity Polish Review 03
+   The exact user-approved factory architecture, illumination and mountains remain.
+   A night-sky extension above the chimneys prevents clipped smoke.
+   Moving SVG haze and signal highlights are illustrative, not live telemetry.
+*/
+.home-page #projects .ds-living-card {
+  width:100%;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;
+  grid-template-rows:auto auto auto;position:relative;isolation:isolate;overflow:hidden;
+  background:#0d1013;border:1px solid #373d42;border-radius:9px;
+  box-shadow:0 18px 54px rgba(0,0,0,.11);
+}
+.home-page #projects .ds-living-card:hover,
+.home-page #projects .ds-living-card.reveal.seen:hover {transform:none;translate:none;cursor:default;}
+.home-page #projects .ds-living-card .ds-card-intro {
+  grid-column:1/-1;grid-row:1;order:initial;display:flex;flex-direction:column;align-items:center;gap:0;
+  margin:0;padding:clamp(23px,3vw,32px) clamp(16px,3vw,33px) 13px;
+  text-align:center;background:#0d1013;color:#e6eaec;
+}
+.home-page #projects .ds-living-card .ds-card-intro .eyebrow {
+  margin:0 0 8px;color:#aab3b9;font:500 clamp(9px,.98vw,11px)/1.6 'Nunito Sans','Segoe UI',sans-serif;letter-spacing:.17em;
+}
+.home-page #projects .ds-living-card .ds-card-intro h3 {
+  margin:0 0 10px;color:#eef0f1;font:550 clamp(29px,4vw,46px)/1.13 'Nunito Sans','Segoe UI',sans-serif;
+  letter-spacing:-.042em;text-wrap:balance;
+}
+.home-page #projects .ds-living-card .ds-card-intro > p:last-child {
+  color:#b6bdc1;margin:0;max-width:72ch;font:400 clamp(11.5px,1.2vw,14px)/1.65 'Nunito Sans','Segoe UI',sans-serif;text-align:center;
+}
+.home-page #projects .ds-living-card .ds-industrial-artwork {
+  grid-column:1/-1;grid-row:2;order:initial;position:relative;width:100%;overflow:hidden;display:block;min-width:0;
+  margin:0;padding:0 12px;background:#0d1013;border:0;
+}
+.ds-scene-frame {width:100%;position:relative;display:block;margin:0;min-width:0;overflow:hidden;container-type:inline-size;background:#081219;isolation:isolate;}
+.ds-scene-stage {width:100%;position:relative;aspect-ratio:1648/676;overflow:hidden;}
+.ds-scene-visual {display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;}
+.ds-scene-visual--mobile {display:none;}
+.ds-scene-overlay {display:block;position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;}
+.ds-scene-overlay--mobile {display:none;}
+
+/* One shared route system, balanced and unhurried in both desktop and mobile compositions. */
+.ds-scene-wire {fill:none;stroke:#59c9c8;stroke-opacity:.5;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;}
+.ds-scene-anchor,.ds-scene-arrival{fill:#7aded8;opacity:.86;filter:drop-shadow(0 0 7px rgba(56,215,210,.38));}
+.ds-flow-signal {fill:none;stroke:#c1f9f3;stroke-width:8;stroke-linecap:round;
+ stroke-dasharray:.6 99.4;stroke-dashoffset:100;opacity:.83;
+ filter:drop-shadow(0 0 6px rgba(86,222,215,.62));
+ animation:ds-industrial-flow 9.6s linear infinite;}
+.ds-flow-signal-2{animation-delay:-3.2s;}
+.ds-flow-signal-3{animation-delay:-6.4s;}
+@keyframes ds-industrial-flow {from{stroke-dashoffset:100;}to{stroke-dashoffset:0;}}
+.ds-smoke-cloud{fill:#bdc6cc;opacity:0;transform-box:fill-box;transform-origin:center center;
+ animation:ds-industrial-smoke 11.4s ease-out infinite;
+ animation-delay:calc(-1.2s * var(--site-index) - 2.6s * var(--puff-index));}
+@keyframes ds-industrial-smoke{
+ 0%{opacity:0;transform:translate(0,10px) scale(.6);}
+ 19%{opacity:.25;}40%{opacity:.24;}75%{opacity:.11;}
+ 100%{opacity:0;transform:translate(35px,-85px) scale(1.8);}
+}
+/* Seamless sky and ground: only the far margins fade, never the factories or Analysis Hub. */
+.ds-scene-visual--desktop{-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 10%,#000 94%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,#000 10%,#000 94%,transparent 100%);}
+.ds-scene-frame{background:#0d1013;}
+.ds-scene-stage{background:#0d1013;}
+.ds-mobile-composition{display:none;position:absolute;inset:0;overflow:hidden;
+ background:linear-gradient(180deg,#0d1013 0%,#0b151b 13%,#091a23 32%,#081923 45%,#08141c 69%,#0b1218 88%,#0d1013 100%);}
+.ds-mobile-composition::before{content:"";position:absolute;inset:15% 0 58%;opacity:.5;
+ background:linear-gradient(160deg,transparent 33%,rgba(28,51,65,.4) 37%,transparent 43%),linear-gradient(24deg,transparent 35%,rgba(35,64,79,.35) 40%,transparent 51%);
+ pointer-events:none;}
+.ds-mobile-building,.ds-mobile-hub{position:absolute;display:block;object-fit:contain;pointer-events:none;}
+.ds-mobile-building{width:32%;height:28%;top:13%;}
+.ds-mobile-building--nor{left:1%;}.ds-mobile-building--riv{left:34%;}.ds-mobile-building--slt{left:67%;}
+.ds-mobile-hub{left:2%;top:67%;width:96%;height:28.5%;}
+.ds-scene-overlay{z-index:4;}
+@container(max-width:690px){
+  .ds-scene-stage{aspect-ratio:1000/780;}
+  .ds-scene-visual--desktop,.ds-scene-overlay--desktop{display:none;}
+  .ds-mobile-composition,.ds-scene-overlay--mobile{display:block;}
+  .ds-flow-signal{stroke-width:9;}
+}
+.home-page #projects .ds-living-card .ds-art-caption {
+  display:flex;align-items:center;justify-content:center;gap:8px;margin:0;padding:4px 6px 9px;
+  color:#9da9ad;text-align:center;font:500 clamp(8px,.8vw,9px)/1.45 'Nunito Sans','Segoe UI',sans-serif;letter-spacing:.055em;
+}
+/* One integrated footer row: no tinted statistics box, no empty vertical band. */
+.home-page #projects .ds-living-card .ds-case-metrics {
+  grid-column:1;grid-row:3;order:initial;align-self:center;display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));gap:0;min-width:0;margin:0 0 0 25px;
+  padding:17px 6px 18px 0;border:0;border-top:1px solid #343b40;background:transparent;border-radius:0;
+}
+.home-page #projects .ds-living-card .ds-case-metrics > div {
+  display:flex;min-width:0;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;border-right:1px solid #393f44;border-bottom:0;padding:0 13px;
+}
+.home-page #projects .ds-living-card .ds-case-metrics > div:last-child {border-right:0;padding-right:8px;}
+.home-page #projects .ds-living-card .ds-case-metrics strong {
+  color:#eef0f1;font:550 clamp(23px,2.5vw,34px)/1.13 'Nunito Sans','Segoe UI',sans-serif;letter-spacing:-.025em;
+}
+.home-page #projects .ds-living-card .ds-case-metrics span {
+  margin-top:4px;color:#acb3b8;font:400 clamp(10px,.93vw,12px)/1.4 'Nunito Sans','Segoe UI',sans-serif;
+}
+.home-page #projects .ds-living-card .ds-card-footer {
+  grid-column:2;grid-row:3;order:initial;align-self:stretch;display:flex;align-items:center;
+  justify-content:flex-end;min-width:0;width:auto;margin:0 25px 0 0;
+  padding:13px 0 15px 11px;border-top:1px solid #343b40;text-align:center;
+}
+.home-page #projects .ds-living-card .ds-card-footer .project-link {
+  display:inline-flex;min-height:47px;width:clamp(195px,19vw,242px);align-items:center;
+  justify-content:space-between;gap:12px;padding:10px 16px;border:1px solid #777e83;
+  border-radius:6px;background:#1c2226;color:#edf0f1;
+  font:600 12.5px/1.4 'Nunito Sans','Segoe UI',sans-serif;
+  cursor:pointer;transition:background .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+.home-page #projects .ds-living-card .ds-card-footer .project-link svg {height:18px;width:18px;color:inherit;transition:translate .25s ease;}
+@media(hover:hover) and (pointer:fine){
+ .home-page #projects .ds-living-card .ds-card-footer .project-link:hover {
+   background:#292f34;border-color:#c3c9cd;box-shadow:0 3px 18px rgba(0,0,0,.16);
+ }
+ .home-page #projects .ds-living-card .ds-card-footer .project-link:hover svg {translate:2px -2px;}
+}
+.home-page #projects .ds-living-card .ds-card-footer .project-link:focus-visible {
+ outline:2px solid #b6c6ca;outline-offset:4px;
+}
+/* Detail-page snapshot uses the same scene and a restrained charcoal shell. */
+.factory-page-body .control-panel {background:#0d1013;border-color:#3b4146;}
+.factory-page-body .control-panel .ds-industrial-panel-art {background:#0d1013;min-width:0;padding:9px 7px;overflow:hidden;}
+.factory-page-body .control-panel .ds-industrial-panel-art::before,
+.factory-page-body .control-panel .ds-industrial-panel-art::after {display:none;}
+.factory-page-body .control-panel .ds-scene-frame {width:100%;}
+.factory-page-body .control-panel .panel-stats {border-color:#343b40;background:#0d1013;}
+.factory-page-body .control-panel .panel-stats b {color:#edf0f1;}
+.factory-page-body .control-panel .panel-stats span,
+.factory-page-body .control-panel .panel-note {color:#adb7bc;}
+.factory-page-body .control-panel .panel-bar {color:#e1e6e8;border-color:#343b40;}
+.factory-page-body .control-panel .panel-bar .muted {color:#aeb8bd;}
+/* Keep the night illustration independent of the website's Light/Dark mode. */
+html[data-theme="light"] .home-page #projects .ds-living-card,
+html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-intro,
+html[data-theme="light"] .home-page #projects .ds-living-card .ds-industrial-artwork,
+html[data-theme="light"] .factory-page-body .control-panel {background:#0d1013;border-color:#444a4f;}
+html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-intro h3,
+html[data-theme="light"] .home-page #projects .ds-living-card .ds-case-metrics strong,
+html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-footer .project-link {color:#edf0f1;}
+html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-intro > p:last-child,
+html[data-theme="light"] .home-page #projects .ds-living-card .ds-case-metrics span {color:#b6bdc1;}
+
+@media(max-width:960px){
+  .home-page #projects .ds-living-card {display:flex;flex-direction:column;}
+  .home-page #projects .ds-living-card .ds-card-intro {order:1;}
+  .home-page #projects .ds-living-card .ds-industrial-artwork {order:2;}
+  .home-page #projects .ds-living-card .ds-case-metrics {
+    order:3;align-self:stretch;margin:0 18px;padding:13px 0 8px;border-top:1px solid #343b40;
+  }
+  .home-page #projects .ds-living-card .ds-card-footer {
+    order:4;width:100%;align-self:stretch;justify-content:center;
+    margin:0;padding:11px 18px 17px;border:0;
+  }
+  .home-page #projects .ds-living-card .ds-card-footer .project-link {width:min(100%,310px);}
+}
+@media(max-width:620px){
+  .home-page #projects .ds-living-card .ds-card-intro {padding:23px 15px 11px;}
+  .home-page #projects .ds-living-card .ds-card-intro .eyebrow {font-size:9px;letter-spacing:.1em;}
+  .home-page #projects .ds-living-card .ds-card-intro h3 {font-size:clamp(28px,7.2vw,38px);margin-bottom:10px;}
+  .home-page #projects .ds-living-card .ds-card-intro > p:last-child {font-size:12px;line-height:1.58;}
+  .home-page #projects .ds-living-card .ds-industrial-artwork {padding:0 5px;}
+  .home-page #projects .ds-living-card .ds-art-caption {font-size:7.5px;letter-spacing:.02em;padding-bottom:7px;}
+  .home-page #projects .ds-living-card .ds-case-metrics {margin:0 12px;padding:12px 0 6px;}
+  .home-page #projects .ds-living-card .ds-case-metrics > div {padding:0 4px;}
+  .home-page #projects .ds-living-card .ds-case-metrics strong {font-size:clamp(24px,7vw,30px);}
+  .home-page #projects .ds-living-card .ds-case-metrics span {font-size:9px;}
+  .home-page #projects .ds-living-card .ds-card-footer {padding:10px 12px 17px;}
+  .home-page #projects .ds-living-card .ds-card-footer .project-link {min-height:46px;width:100%;}
+
+}
+@media(prefers-reduced-motion:reduce){
+ .ds-flow-signal,.ds-smoke-cloud {animation:none!important;opacity:0!important;}
+ .home-page #projects .ds-living-card .ds-card-footer .project-link,
+ .home-page #projects .ds-living-card .ds-card-footer .project-link svg {transition:none!important;}
+}
+
+/* The small desktop project snapshot must show all buildings, not a clipped landscape crop. */
+.factory-page-body .control-panel .ds-scene-frame{width:100%;}
+.factory-page-body .control-panel .ds-industrial-panel-art{padding:9px 5px;background:#0d1013;}
+
+@media(prefers-reduced-motion:reduce){
+ .ds-smoke-cloud[style*="--puff-index:0"]{opacity:.15!important;transform:translate(12px,-24px) scale(1.12)!important;}
+}
+
+
+/* ============================================================
+   Review 04 — Unified Scene : One set of site badges, one wire
+   system, no overlapping overlays or split footer dividers.
+   Original approved raster is preserved: its top/bottom are
+   displayed non-destructively via two masks of the SAME image.
+   ============================================================ */
+.home-page #projects .ds-living-card .ds-industrial-artwork {padding-inline:0;}
+.home-page #projects .ds-living-card .ds-industrial-artwork::after {
+  content:"";position:absolute;z-index:8;bottom:0;left:25px;right:25px;
+  border-bottom:1px solid #394147;pointer-events:none;
+}
+.home-page #projects .ds-living-card .ds-case-metrics,
+.home-page #projects .ds-living-card .ds-card-footer {border-top:0!important;}
+.ds-scene-stage {
+  background:linear-gradient(180deg,#0d1013 0%,#081924 14%,#081b25 41%,#081822 59%,#0c171e 84%,#0d1013 100%);
+}
+.ds-scene-visual--desktop.ds-scene-visual--upper {
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 10%,#000 43.8%,transparent 44.2%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 10%,#000 43.8%,transparent 44.2%);
+}
+.ds-scene-visual--desktop.ds-scene-visual--lower {
+  -webkit-mask-image:linear-gradient(to bottom,transparent 62.8%,#000 65.2%,#000 94%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 62.8%,#000 65.2%,#000 94%,transparent 100%);
+}
+.ds-scene-overlay{z-index:4;}
+.ds-scene-wire {stroke:#5cd3d0;stroke-opacity:.71;stroke-width:3.7;filter:drop-shadow(0 0 4px rgba(56,211,211,.24));}
+.ds-scene-anchor,.ds-scene-arrival {opacity:.68;}
+.ds-flow-signal{stroke-width:7.5;opacity:.82;}
+/* Site badges are shared between the 1648x676 wide scene and the
+   1000x780 narrow scene. Badges always cover their anchor endpoints. */
+.ds-unified-site-data {
+  position:absolute;z-index:6;left:9.8%;right:9.2%;top:44.45%;height:8.15%;
+  display:grid;grid-template-columns:repeat(3,28.2%);justify-content:space-between;
+  pointer-events:none;
+}
+.ds-site-badge {
+  color:#edf2f4;min-width:0;display:flex;align-items:center;justify-content:center;
+  gap:clamp(4px,.6cqw,9px);padding:0 clamp(5px,1.0cqw,14px);
+  white-space:nowrap;border:1px solid rgba(139,166,178,.78);
+  border-radius:clamp(5px,.9cqw,11px);
+  background:rgba(7,18,25,.96);box-shadow:0 2px 12px rgba(0,0,0,.16);
+  font:500 clamp(10px,1.5cqw,19px)/1.22 'Nunito Sans','Segoe UI',sans-serif;
+}
+.ds-site-badge__meta,.ds-site-badge__value{display:flex;align-items:center;gap:clamp(3px,.48cqw,8px);min-width:0;}
+.ds-site-badge__value{color:#ebae61;}
+.ds-site-badge__value strong{font-weight:750;letter-spacing:-.012em;font-variant-numeric:tabular-nums;}
+.ds-site-badge__value small{font-size:.81em;font-weight:600;}
+.ds-site-badge__top{display:contents;}
+.ds-site-badge__name{display:none;}
+.ds-site-badge__split{align-self:stretch;max-height:47%;margin:auto clamp(2px,.8cqw,12px);border-left:1px solid rgba(138,164,176,.55);}
+.ds-badge-icon{display:block;flex:none;width:clamp(10px,2.2cqw,26px);height:clamp(10px,2.2cqw,26px);stroke:#d9e6ea;}
+.ds-badge-icon--wave{stroke:#71d6d3;}
+/* In compact/narrow view: three identical mini-cards, names first,
+   complete data beneath, routes strictly BELOW the card borders. */
+@container (max-width:690px){
+  .ds-scene-stage{aspect-ratio:1000/875;}
+  .ds-mobile-building{top:12%;height:29%;}
+  .ds-mobile-hub{top:68%;height:29%;left:1%;width:98%;}
+  .ds-scene-visual--desktop{display:none;}
+  .ds-mobile-composition,.ds-scene-overlay--mobile{display:block;}
+  .ds-scene-overlay--desktop{display:none;}
+  .ds-unified-site-data{
+    top:42.5%;left:1.3%;right:1.3%;height:11.7%;
+    grid-template-columns:repeat(3,minmax(0,1fr));gap:1%;
+  }
+  .ds-site-badge {
+    flex-direction:column;gap:1px;padding:2px 0;
+    border-radius:clamp(3px,1.0cqw,6px);background:rgba(5,17,24,.96);
+    font-size:clamp(9px,2.35cqw,12.5px);line-height:1.15;
+  }
+  .ds-site-badge__top{display:flex;align-items:center;justify-content:center;gap:clamp(2px,.65cqw,5px);min-width:0;width:100%;}
+  .ds-site-badge__name {display:block;font-size:1.04em;font-weight:750;line-height:1.12;}
+  .ds-site-badge__meta,.ds-site-badge__value{gap:2px;}
+  .ds-site-badge__split{display:none;}
+  .ds-badge-icon {width:clamp(8px,2.1cqw,13px);height:clamp(8px,2.1cqw,13px);}
+  .ds-site-badge__value small{font-size:.75em;}
+  .ds-scene-wire{stroke-width:2.6;stroke-opacity:.68;}
+  .ds-flow-signal{stroke-width:8.1;}
+}
+.factory-page-body .control-panel .ds-industrial-panel-art {
+  padding:0!important;overflow:hidden;background:#0d1013;
+}
+.factory-page-body .control-panel .ds-scene-frame{margin:0;border:0;width:100%;}
+@media(max-width:620px){
+  .home-page #projects .ds-living-card .ds-industrial-artwork {padding-inline:0;}
+  .home-page #projects .ds-living-card .ds-industrial-artwork::after {left:12px;right:12px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .ds-flow-signal{animation:none!important;opacity:0!important;}
+  .ds-smoke-cloud{animation:none!important;}
+}
+
+
+/* ==============================================================
+   Scene Motion & Consistency — Polish Review 05
+   - Approved artwork untouched, same factories and warm windows
+   - Site cards share one two-row template at all scene widths
+   - Exactly three continuous routes; no floating arrival markers
+   - Separate sky-to-card blend for the three mobile building crops
+   - Responsive caption with stronger readability
+   ============================================================== */
+
+/* Render one semantic card design; only scale its type and spacing. */
+.ds-unified-site-data { z-index:6; }
+.ds-site-badge {
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  gap:1px; min-width:0; padding:1px 5px;
+  background:rgba(8,17,23,.96);
+  border:1px solid rgba(143,169,180,.72);
+  border-radius:clamp(5px,.8cqw,9px);
+  font:550 clamp(8.7px,1.15cqw,13.5px)/1.08 'Nunito Sans','Segoe UI',sans-serif;
+}
+.ds-site-badge__top { display:flex; width:100%; align-items:center; justify-content:center; gap:clamp(4px,.7cqw,10px); }
+.ds-site-badge__name {display:block; font-weight:800; color:#f0f2f4; letter-spacing:.03em; }
+.ds-site-badge__meta {gap:3px; color:#c6d0d4; }
+.ds-site-badge__value {gap:clamp(2px,.38cqw,5px); font-variant-numeric:tabular-nums; }
+.ds-site-badge__value strong {font-weight:750; color:#e6ad62; }
+.ds-site-badge__value small {font-size:.81em; letter-spacing:0; color:#e6ad62;}
+.ds-site-badge__split {display:none;}
+.ds-badge-icon {width:clamp(11px,1.42cqw,17px);height:clamp(11px,1.42cqw,17px);}
+.ds-badge-icon--wave {color:#72d6d1;}
+/* Wires live between badges and hub, with three sockets directly under the frames. */
+.ds-scene-routes {pointer-events:none;}
+.ds-scene-wire {
+  fill:none; stroke:#68c9c8; stroke-opacity:.67; stroke-width:3.0;
+  stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 3px rgba(83,208,204,.18));
+}
+.ds-scene-anchor { fill:#9de7e0;opacity:.72; filter:drop-shadow(0 0 4px rgba(99,219,214,.52)); }
+.ds-flow-signal {stroke:#b9eeea; stroke-width:7.5; stroke-linecap:round;opacity:.76;
+ filter:drop-shadow(0 0 5px rgba(83,211,211,.46));animation-duration:11.1s;}
+.ds-flow-signal-2{animation-delay:-3.7s;}
+.ds-flow-signal-3{animation-delay:-7.4s;}
+.ds-scene-stage {background:linear-gradient(180deg,#0d1013 0%,#0b151d 11%,#0a1b25 29%,#091b25 46%,#091a23 55%,#08151d 75%,#0d1013 100%);}
+.ds-mobile-composition {
+ background:linear-gradient(180deg,#0d1013 0%,#0d1013 5%,#0c171e 13%,#0b202b 23%,#0a1c25 39%,#091a23 50%,#091923 72%,#0d1013 100%);
+}
+/* The top 22% of each raster crop is sky, not architecture. Fade only that sky,
+   retaining 100% opacity from the factory roofs through the foundations. */
+.ds-mobile-building {
+  -webkit-mask-image:linear-gradient(to bottom, transparent 0%,#000 25%,#000 98%,transparent 100%);
+  mask-image:linear-gradient(to bottom, transparent 0%,#000 25%,#000 98%,transparent 100%);
+}
+.ds-mobile-hub {
+  -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 4%,#000 96%,transparent 100%);
+  mask-image:linear-gradient(to right,transparent 0%,#000 4%,#000 96%,transparent 100%);
+}
+/* Muted scene-to-body transition without dark seams. */
+.ds-scene-frame { background:#0d1013; }
+@container(max-width:690px){
+ .ds-site-badge {gap:2px; font-size:clamp(9.4px,2.6cqw,12.5px);padding:2px 1px;}
+ .ds-site-badge__top {gap:clamp(2px,.7cqw,5px);}
+ .ds-site-badge__meta {gap:2px;}
+ .ds-badge-icon {width:clamp(9px,2.35cqw,13px);height:clamp(9px,2.35cqw,13px);}
+ .ds-site-badge__value small {font-size:.78em;}
+ .ds-scene-wire {stroke-width:2.6;stroke-opacity:.7;}
+ .ds-flow-signal {stroke-width:8;}
+}
+.home-page #projects .ds-living-card .ds-art-caption {
+  padding:9px 8px 11px;gap:8px;color:#bac4c9;
+  font:600 clamp(10px,1vw,12px)/1.42 'Nunito Sans','Segoe UI',sans-serif;
+  letter-spacing:.065em;text-wrap:balance;
+}
+.home-page #projects .ds-living-card .ds-art-caption .status-dot{flex:none;}
+@media(max-width:620px){
+ .home-page #projects .ds-living-card .ds-art-caption {
+  padding:9px 16px 11px;letter-spacing:.035em;font-size:clamp(10px,2.5vw,11px);
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .ds-flow-signal,.ds-smoke-cloud {animation:none!important;}
+ .ds-flow-signal {opacity:0!important;}
+}
+
+/* ==============================================================
+   Review 07 — restricted sky blending and receiver alignment.
+   Scene art + architecture are preserved; routes are Review 05's
+   original rounded geometry with only vertical roof entry extended.
+   No single hub dot and no recoloring or movement of buildings.
+   ============================================================== */
+
+/* One continuous dark charcoal base. Feather the artwork into it very
+   gradually: the top 20% is sky, safely above factory architecture. */
+.ds-scene-frame {background:#0d1013;}
+.ds-scene-stage {
+  background:linear-gradient(180deg,
+    #0d1013 0%,#0d1013 2%,#0c1116 8%,#0a161d 18%,
+    #0a1922 37%,#091821 59%,#0a151b 82%,#0d1013 100%);
+}
+.ds-scene-visual--desktop.ds-scene-visual--upper {
+  -webkit-mask-image:linear-gradient(to bottom,
+    transparent 0%,rgba(0,0,0,.025) 3%,rgba(0,0,0,.12) 6%,
+    rgba(0,0,0,.32) 9%,rgba(0,0,0,.62) 13%,#000 19%,
+    #000 43%,transparent 45%);
+  mask-image:linear-gradient(to bottom,
+    transparent 0%,rgba(0,0,0,.025) 3%,rgba(0,0,0,.12) 6%,
+    rgba(0,0,0,.32) 9%,rgba(0,0,0,.62) 13%,#000 19%,
+    #000 43%,transparent 45%);
+}
+.ds-mobile-composition {
+  background:linear-gradient(180deg,
+    #0d1013 0%,#0d1013 3%,#0d1217 11%,#0b171d 18%,
+    #0b1c25 34%,#0a1a23 53%,#09171f 76%,#0d1013 100%);
+}
+/* Each mobile factory crop is transparent in the sky so only the smoke
+   and chimneys remain distinct, and the background does not jump in tone. */
+.ds-mobile-building {
+  -webkit-mask-image:linear-gradient(to bottom,
+    transparent 0%,rgba(0,0,0,.1) 8%,rgba(0,0,0,.36) 17%,
+    rgba(0,0,0,.75) 25%,#000 34%,#000 95%,transparent 100%);
+  mask-image:linear-gradient(to bottom,
+    transparent 0%,rgba(0,0,0,.1) 8%,rgba(0,0,0,.36) 17%,
+    rgba(0,0,0,.75) 25%,#000 34%,#000 95%,transparent 100%);
+}
+
+/* Moderately sized, legible two-line badges; no oversized labels.
+   Devices are a little stronger and mm/s is almost the same cap height
+   as its number, without increasing the badge width. */
+.ds-site-badge {
+  font-size:clamp(10.3px,1.37cqw,14.5px);
+  line-height:1.16;
+  gap:clamp(1px,.17cqw,3px);
+  font-weight:570;
+}
+.ds-site-badge__name {font-size:1em;font-weight:780;}
+.ds-site-badge__meta {font-size:1.045em;font-weight:620;}
+.ds-site-badge__value strong {font-size:1.095em;font-weight:750;line-height:1.06;}
+.ds-site-badge__value small {font-size:.92em;font-weight:650;line-height:1.06;}
+.ds-badge-icon {width:clamp(11px,1.45cqw,17px);height:clamp(11px,1.45cqw,17px);}
+.ds-unified-site-data {top:44.3%;height:10.15%;}
+@container (max-width:690px){
+  .ds-site-badge {font-size:clamp(9.8px,3.18cqw,12.5px);line-height:1.14;gap:2px;padding:2px 1px;}
+  .ds-site-badge__top {gap:clamp(2px,.7cqw,5px);}
+  .ds-site-badge__meta {font-size:1.04em;gap:2px;}
+  .ds-site-badge__value strong {font-size:1.13em;}
+  .ds-site-badge__value small {font-size:.90em;}
+  .ds-badge-icon {width:clamp(9px,2.55cqw,13px);height:clamp(9px,2.55cqw,13px);}
+  .ds-unified-site-data {top:42%;height:13%;}
+}
+
+
+/* Experience 1.1 — Final Visual Harmony Review 08
+   Narrow scenes ONLY: unify the source-crop sky with the site charcoal,
+   avoiding a visible green-tinted stripe. The architecture, route geometry,
+   smoke animation and buildings are otherwise unchanged. */
+@container (max-width:690px) {
+  .ds-scene-stage {
+    background:linear-gradient(180deg,
+      #0d1013 0%, #0d1013 8%, #0d1216 16%,
+      #0c161c 27%, #0b1a22 40%, #0a1a22 54%,
+      #0b171d 74%, #0d1013 100%);
+  }
+  .ds-mobile-composition {
+    background:linear-gradient(180deg,
+      #0d1013 0%, #0d1013 8%, #0d1216 16%,
+      #0c161c 27%, #0b1a22 40%, #0a1a22 54%,
+      #0b171d 74%, #0d1013 100%);
+  }
+  .ds-mobile-composition::before {
+    opacity:.27;
+    -webkit-mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) 33%,#000 70%,transparent);
+    mask-image:linear-gradient(to bottom,transparent,rgba(0,0,0,.3) 33%,#000 70%,transparent);
+  }
+  .ds-mobile-building {
+    -webkit-mask-image:linear-gradient(to bottom,
+      transparent 0%, rgba(0,0,0,.06) 7%, rgba(0,0,0,.22) 13%,
+      rgba(0,0,0,.45) 20%, rgba(0,0,0,.8) 28%, #000 36%,
+      #000 94%, transparent 100%);
+    mask-image:linear-gradient(to bottom,
+      transparent 0%, rgba(0,0,0,.06) 7%, rgba(0,0,0,.22) 13%,
+      rgba(0,0,0,.45) 20%, rgba(0,0,0,.8) 28%, #000 36%,
+      #000 94%, transparent 100%);
+  }
+}
