@@ -3,47 +3,13 @@
    No notebook content, code, dataset or chart is manipulated. */
 (() => {
   const root = document.documentElement;
-  const body = document.body;
-  const themeButton = document.querySelector('.notebook-nav .theme-toggle');
   const progress = document.getElementById('progress');
   const nav = document.querySelector('.notebook-nav');
   const backtop = document.getElementById('backtop');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
-  let themeBusy = false;
-
-  function applyTheme(theme, persist = false) {
-    const light = theme === 'light';
-    if (light) root.dataset.theme = 'light';
-    else delete root.dataset.theme;
-    if (persist) {
-      try { localStorage.setItem('mm-dark-signal-theme', light ? 'light' : 'dark'); } catch (_) {}
-    }
-    if (themeButton) {
-      themeButton.setAttribute('aria-pressed', String(light));
-      themeButton.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
-      themeButton.title = light ? 'Switch to dark mode' : 'Switch to light mode';
-    }
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', light ? '#e9e8e4' : '#111820');
-  }
-  applyTheme(root.dataset.theme === 'light' ? 'light' : 'dark');
-  themeButton?.addEventListener('click', () => {
-    if (themeBusy) return;
-    const next = root.dataset.theme === 'light' ? 'dark' : 'light';
-    if (reduce.matches || typeof document.startViewTransition !== 'function') {
-      applyTheme(next, true);
-      return;
-    }
-    themeBusy = true;
-    root.classList.add('theme-dissolving');
-    try {
-      document.startViewTransition(() => applyTheme(next, true)).finished
-        .catch(() => {}).finally(() => {root.classList.remove('theme-dissolving');themeBusy = false;});
-    } catch (_) {
-      applyTheme(next, true);
-      root.classList.remove('theme-dissolving');
-      themeBusy = false;
-    }
-  });
+  root.removeAttribute('data-theme');
+  try {localStorage.removeItem('mm-dark-signal-theme');} catch (_) {}
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content','#111820');
   let raf = 0;
   function updateScroll() {
     raf = 0;

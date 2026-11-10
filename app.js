@@ -61,35 +61,50 @@ if($('.project-milestone')&&!document.getElementById('milestone-fonts')){
 }
 
 if($('#year'))$('#year').textContent=new Date().getFullYear();
-// Polish 08 — one menu state and one measured backdrop for both themes.
+// One accessible, dark-only mobile navigation drawer.
 const toggle=$('.menu-toggle'), menu=$('#navlinks'), navigationBar=$('.nav');
-const syncMenuBackdrop=()=>{
+const mobileNav=matchMedia('(max-width:760px)');
+function syncMenuBackdrop(){
   if(!navigationBar||!menu)return;
-  const open=menu.classList.contains('open')&&matchMedia('(max-width:760px)').matches;
+  const open=mobileNav.matches&&menu.classList.contains('open');
   const available=Math.max(0,window.innerHeight-72);
   const menuHeight=open?Math.min(menu.scrollHeight,available):0;
   navigationBar.style.setProperty('--ds-drawer-height',`${Math.ceil(menuHeight)}px`);
-};
-function closeMenu(){
+}
+function syncMenuAccess(){
+  if(menu)menu.inert=mobileNav.matches&&!menu.classList.contains('open');
+}
+function closeMenu(restoreFocus=false){
   menu?.classList.remove('open');
   toggle?.setAttribute('aria-expanded','false');
   toggle?.setAttribute('aria-label','Open navigation');
+  syncMenuAccess();
   syncMenuBackdrop();
+  if(restoreFocus)toggle?.focus();
 }
 toggle?.addEventListener('click',()=>{
+  if(!mobileNav.matches)return;
   const open=menu.classList.toggle('open');
   toggle.setAttribute('aria-expanded',String(open));
   toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');
+  syncMenuAccess();
   syncMenuBackdrop();
 });
-menu?.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
-onDoc('keydown',e=>{if(e.key==='Escape'&&menu?.classList.contains('open')){closeMenu();toggle.focus()}});
-onDoc('click',e=>{if(!e.target.closest('.nav'))closeMenu()});
+menu?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>closeMenu()));
+onDoc('keydown',event=>{
+  if(event.key==='Escape'&&menu?.classList.contains('open')){
+    event.preventDefault();
+    closeMenu(true);
+  }
+});
+onDoc('click',event=>{if(!event.target.closest?.('.nav'))closeMenu()});
 const handleNavResize=()=>{
-  if(!matchMedia('(max-width:760px)').matches&&menu?.classList.contains('open'))closeMenu();
-  else syncMenuBackdrop();
+  if(!mobileNav.matches&&menu?.classList.contains('open'))closeMenu();
+  else{syncMenuAccess();syncMenuBackdrop();}
 };
 window.addEventListener('resize',handleNavResize);
+mobileNav.addEventListener?.('change',handleNavResize);
+syncMenuAccess();
 syncMenuBackdrop();
 // Stage 20.4 — avoid a duplicate floating shortcut over the footer link.
 // Also keep the invisible shortcut out of the keyboard tab order.
@@ -303,6 +318,7 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
     window.removeEventListener('scroll',scrollState);
     window.removeEventListener('resize',scrollState);
     window.removeEventListener('resize',handleNavResize);
+    mobileNav.removeEventListener?.('change',handleNavResize);
     clearTimeout(toastTimer);
     clearTimeout(copyResetTimer);
     if(stopTopGlide)stopTopGlide();

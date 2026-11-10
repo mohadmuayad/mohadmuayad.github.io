@@ -130,16 +130,6 @@
 .factory-page-body .control-panel .panel-note {color:#adb7bc;}
 .factory-page-body .control-panel .panel-bar {color:#e1e6e8;border-color:#343b40;}
 .factory-page-body .control-panel .panel-bar .muted {color:#aeb8bd;}
-/* Keep the night illustration independent of the website's Light/Dark mode. */
-html[data-theme="light"] .home-page #projects .ds-living-card,
-html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-intro,
-html[data-theme="light"] .home-page #projects .ds-living-card .ds-industrial-artwork,
-html[data-theme="light"] .factory-page-body .control-panel {background:#0d1013;border-color:#444a4f;}
-html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-intro h3,
-html[data-theme="light"] .home-page #projects .ds-living-card .ds-case-metrics strong,
-html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-footer .project-link {color:#edf0f1;}
-html[data-theme="light"] .home-page #projects .ds-living-card .ds-card-intro > p:last-child,
-html[data-theme="light"] .home-page #projects .ds-living-card .ds-case-metrics span {color:#b6bdc1;}
 
 @media(max-width:960px){
   .home-page #projects .ds-living-card {display:flex;flex-direction:column;}

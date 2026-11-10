@@ -3,7 +3,6 @@
 * { box-sizing:border-box }
 html { scroll-behavior:smooth;scroll-padding-top:110px;
   background-color:#080b0d;color-scheme:dark }
-html[data-theme="light"] {background-color:#e8e8e4;color-scheme:light }
 body { margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 Arial,Helvetica,sans-serif }
 a { color:inherit;text-decoration:none }
 button { border:0 }
@@ -12,7 +11,6 @@ img,svg { max-width:100% }
 img { display:block;height:auto }
 /* Neutral text selection: intentional selection stays visible without a cyan flash. */
 ::selection { background:rgba(150,166,175,.37);color:inherit }
-html[data-theme="light"] ::selection { background:rgba(72,89,99,.26);color:inherit }
 :focus-visible { outline:2px solid var(--accent);outline-offset:6px }
 p { color:var(--muted);margin:0 0 22px;text-wrap:pretty }
 h1,h2,h3 { line-height:1.13;font-weight:400;margin:0 0 26px;letter-spacing:-.035em;text-wrap:balance }
@@ -1743,353 +1741,6 @@ body.home-page {
 /* Factory 08 QA: keep the atmospheric layer inside the case hero's actual
    content box, avoiding horizontal scrollbars at mid-size viewports. */
 .factory-page-body .factory-hero::before {left:0;right:0;}
-
-/* Dark Signal — Theme Switch 09. The default remains the approved dark palette.
-   An explicit opt-in Stone Light variant is applied consistently to both pages. */
-.theme-toggle {
-  flex:0 0 auto;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:38px;height:38px;
-  padding:8px;
-  border:1px solid rgba(143,157,166,.30);
-  border-radius:4px;
-  background:rgba(141,156,164,.03);
-  color:#c7d0d5;
-  cursor:pointer;
-  transition:border-color .36s ease,background-color .36s ease,color .36s ease;
-}
-.theme-toggle:hover {border-color:#98a9b3;background:rgba(168,186,194,.08);color:#f0f3f5;}
-.theme-toggle svg {width:19px;height:19px;flex:0 0 auto;}
-.theme-icon-moon {display:none;}
-html[data-theme="light"] .theme-icon-sun {display:none;}
-html[data-theme="light"] .theme-icon-moon {display:block;}
-@media(max-width:760px){
-  #navlinks .theme-toggle {
-    align-self:center;
-    width:100%;height:44px;
-    margin-top:12px;
-    background:rgba(141,156,164,.06);
-  }
-}
-@media(prefers-reduced-motion:reduce){.theme-toggle{transition:none;}}
-
-/* The light palette is a crafted stone/ink variant, not a generic inverted page. */
-html[data-theme="light"] body.home-page,
-html[data-theme="light"] body.factory-page-body {
-  --bg:#e9e8e4;
-  --panel:#f4f3ef;
-  --line:#c3c9c9;
-  --ink:#222d32;
-  --muted:#58656c;
-  --accent:#3a4b53;
-  background:#e9e8e4;
-  color:#222d32;
-}
-html[data-theme="light"] p {color:var(--muted);}
-html[data-theme="light"] .section h2 {color:#263039;}
-html[data-theme="light"] .section h2 em {color:#5d6a70;}
-html[data-theme="light"] .eyebrow {color:#64727a;}
-html[data-theme="light"] .theme-toggle {border-color:#abb4b7;color:#33434b;background:rgba(50,65,72,.035);}
-html[data-theme="light"] .theme-toggle:hover {border-color:#566b75;color:#1e2e35;background:rgba(79,97,105,.08);}
-html[data-theme="light"] .nav,
-html[data-theme="light"] .nav.scrolled {background:transparent;border:0;box-shadow:none;}
-html[data-theme="light"] .nav::before,
-html[data-theme="light"] .nav.scrolled::before,
-html[data-theme="light"] .factory-page-body .nav::before,
-html[data-theme="light"] .factory-page-body .nav.scrolled::before {
-  background:linear-gradient(180deg,rgba(233,232,228,.97) 0%,rgba(233,232,228,.86) 51%,rgba(233,232,228,.32) 78%,rgba(233,232,228,0) 100%);
-  -webkit-backdrop-filter:none;
-  backdrop-filter:none;
-}
-html[data-theme="light"] .nav .greeting,
-html[data-theme="light"] .nav #navlinks a,
-html[data-theme="light"] .factory-page-body .nav #navlinks a {color:#3c4a51;}
-html[data-theme="light"] .nav #navlinks a.active,
-html[data-theme="light"] .nav #navlinks a:hover {color:#1b282f;}
-html[data-theme="light"] .nav .nav-cta,
-html[data-theme="light"] .factory-page-body .nav .nav-cta {border-color:#aeb7bb;background:rgba(40,58,64,.025);}
-html[data-theme="light"] .nav .menu-toggle span {background:#415159;}
-html[data-theme="light"] #progress {background:#55666f;}
-html[data-theme="light"] .section {border-color:#c4cacb;}
-html[data-theme="light"] .button.primary,
-html[data-theme="light"] .home-page .hero .button.primary,
-html[data-theme="light"] .home-page #contact .contact-email-primary,
-html[data-theme="light"] .factory-page-body .report-edition .button.primary,
-html[data-theme="light"] .factory-page-body .case-end .button.primary {background:#32414a;border-color:#32414a;color:#f5f7f7;}
-html[data-theme="light"] .button.primary:hover,
-html[data-theme="light"] .home-page .hero .button.primary:hover,
-html[data-theme="light"] .home-page #contact .contact-email-primary:hover,
-html[data-theme="light"] .factory-page-body .report-edition .button.primary:hover,
-html[data-theme="light"] .factory-page-body .case-end .button.primary:hover {background:#1d2c33;color:#fff;}
-html[data-theme="light"] .home-page .hero {color:#243039;}
-html[data-theme="light"] .home-page .hero::before {
-  background:radial-gradient(ellipse 54% 46% at 34% 37%,rgba(136,151,155,.18),transparent 77%),
-    radial-gradient(ellipse 48% 50% at 87% 55%,rgba(140,153,160,.13),transparent 84%),
-    linear-gradient(180deg,#ecebe7,#e8e8e4 60%,#e4e5e1);
-}
-html[data-theme="light"] .home-page .hero::after {
-  background-image:repeating-linear-gradient(90deg,transparent 0,transparent 118px,rgba(72,91,100,.13) 119px,transparent 120px),
-    repeating-linear-gradient(0deg,transparent 0,transparent 101px,rgba(72,91,100,.08) 102px,transparent 103px);
-}
-html[data-theme="light"] .home-page .hero .dark-signal-canvas {filter:invert(1) contrast(.82);opacity:.65;}
-html[data-theme="light"] .home-page .hero h1 {color:#233039;text-shadow:none;}
-html[data-theme="light"] .home-page .hero h1 em {color:#657278;}
-html[data-theme="light"] .home-page .hero .intro,
-html[data-theme="light"] .home-page .hero .discipline-main {color:#25323a;}
-html[data-theme="light"] .home-page .hero .eyebrow,
-html[data-theme="light"] .home-page .hero .discipline-secondary,
-html[data-theme="light"] .home-page .hero .hero-note,
-html[data-theme="light"] .home-page .hero .hero-social>span,
-html[data-theme="light"] .home-page .scroll-cue,
-html[data-theme="light"] .home-page .scroll-cue span {color:#596a73;}
-html[data-theme="light"] .home-page .hero .status-dot {background:#566a73;box-shadow:0 0 10px rgba(81,99,108,.18);}
-html[data-theme="light"] .home-page .hero .discipline {border-color:#8999a1;}
-html[data-theme="light"] .home-page .hero .button.text {border-color:#87959c;color:#30414a;}
-html[data-theme="light"] .home-page .hero .button.text:hover {border-color:#485e69;color:#1b2c34;background:rgba(50,72,80,.07);}
-html[data-theme="light"] .home-page .hero .portrait-frame {border-color:#586971;box-shadow:0 25px 55px rgba(31,42,46,.20);}
-html[data-theme="light"] .home-page #about {--section-ambient:linear-gradient(180deg,#e5e5e1,#f0efeb 46%,#e8e8e4);}
-html[data-theme="light"] .home-page #projects {--section-ambient:radial-gradient(ellipse at 50% 44%,rgba(133,150,155,.12),transparent 83%),linear-gradient(180deg,#e8e8e4,#e4e5e1,#ecebe7);}
-html[data-theme="light"] .home-page #skills {--section-ambient:linear-gradient(180deg,#ecebe7,#e9e9e5 56%,#e6e7e3);}
-html[data-theme="light"] .home-page #journey {--section-ambient:radial-gradient(ellipse at 50% 30%,rgba(133,150,155,.11),transparent 83%),linear-gradient(180deg,#e6e7e3,#e9e8e4);}
-html[data-theme="light"] .home-page #education {--section-ambient:linear-gradient(180deg,#e9e8e4,#eeede9 50%,#e8e8e4);}
-html[data-theme="light"] .home-page .section:not(#contact)::after {background:linear-gradient(90deg,transparent,rgba(75,96,106,.25) 20%,rgba(75,96,106,.18) 80%,transparent);}
-html[data-theme="light"] .home-page .section h2 {color:#29343a;}
-html[data-theme="light"] .home-page .section h2 em {color:#627078;}
-html[data-theme="light"] .home-page .section .eyebrow {color:#5d7079;}
-html[data-theme="light"] .home-page .section-aside,
-html[data-theme="light"] .home-page .about-copy>p:not(.lead) {color:#596770;}
-html[data-theme="light"] .home-page .section .lead,
-html[data-theme="light"] .home-page #about .identity-name,
-html[data-theme="light"] .home-page #about .about-signature p {color:#29343a;}
-html[data-theme="light"] .home-page #about .identity-role,
-html[data-theme="light"] .home-page #about .identity-place,
-html[data-theme="light"] .home-page #about .signature-focus {color:#52636e;}
-html[data-theme="light"] .home-page #about .about-signature {border-color:#bbc4c7;background:radial-gradient(ellipse at 50% 0%,rgba(106,123,132,.09),transparent 77%);}
-html[data-theme="light"] .home-page #projects .project-card {
-  border-color:#aeb7bb;
-  background:linear-gradient(130deg,#f8f7f3,#ecece8);
-  box-shadow:0 17px 38px rgba(39,52,60,.07);
-}
-html[data-theme="light"] .home-page #projects .project-visual {border-color:#bdc6c7;background:radial-gradient(ellipse at 50% 35%,rgba(119,142,154,.12),transparent 84%),#e4e7e5;}
-html[data-theme="light"] .home-page #projects .project-copy {background:transparent;}
-html[data-theme="light"] .home-page #projects .project-copy h3,
-html[data-theme="light"] .home-page #projects .project-numbers strong {color:#26333a;}
-html[data-theme="light"] .home-page #projects .project-copy p,
-html[data-theme="light"] .home-page #projects .project-numbers span,
-html[data-theme="light"] .home-page #projects .visual-label {color:#586970;}
-html[data-theme="light"] .home-page #projects .tags span,
-html[data-theme="light"] .home-page #skills .skill .tags span {border-color:#b5bfc3;color:#4a616e;}
-html[data-theme="light"] .home-page #projects .project-link {color:#354955;border-color:#bfc9ca;}
-html[data-theme="light"] .home-page #projects .project-link b {color:#425865;}
-html[data-theme="light"] .home-page #projects .project-milestone {
-  border-color:#abb7bb;
-  border-left-color:#647a85;
-  background:linear-gradient(130deg,#f9f8f4,#eeeeea);
-  box-shadow:0 11px 25px rgba(40,52,59,.065);
-}
-html[data-theme="light"] .home-page #projects .milestone-kicker,
-html[data-theme="light"] .home-page #projects .milestone-language p {color:#53636b;}
-html[data-theme="light"] .home-page #projects .milestone-language h3 {color:#27343b;}
-html[data-theme="light"] .home-page #projects .milestone-language h3 em {color:#64737c;}
-html[data-theme="light"] .home-page #projects .milestone-language + .milestone-language {border-color:#bbc5c8;}
-html[data-theme="light"] .home-page #skills .skill {
-  border-color:#b8c2c4;
-  background:linear-gradient(140deg,#f7f7f3,#eeefeb);
-  box-shadow:0 6px 21px rgba(49,64,72,.035);
-}
-html[data-theme="light"] .home-page #skills .skill::before {background:linear-gradient(90deg,transparent,rgba(92,111,120,.20),transparent);}
-html[data-theme="light"] .home-page #skills .skill::after {background:linear-gradient(140deg,rgba(74,94,105,.045),rgba(91,109,119,.07));}
-html[data-theme="light"] .home-page #skills .skill h3,
-html[data-theme="light"] .home-page #skills .skill .skill-sub {color:#2b3b43;}
-html[data-theme="light"] .home-page #skills .skill p {color:#596972;}
-html[data-theme="light"] .home-page #journey .timeline article {border-color:#aeb9be;background:linear-gradient(180deg,rgba(97,117,124,.055),transparent 73%);}
-html[data-theme="light"] .home-page #journey .timeline-dot {background:#596d75;border-color:#596d75;box-shadow:0 0 0 5px #e9e8e4;}
-html[data-theme="light"] .home-page #journey .timeline article.next .timeline-dot {background:#e9e8e4;}
-html[data-theme="light"] .home-page #journey .timeline h3,
-html[data-theme="light"] .home-page #education h2 {color:#28353c;}
-html[data-theme="light"] .home-page #journey .timeline p,
-html[data-theme="light"] .home-page #journey .timeline .eyebrow,
-html[data-theme="light"] .home-page #education p {color:#53656f;}
-html[data-theme="light"] .home-page #education .pill {border-color:#acb7ba;color:#526671;background:rgba(88,110,121,.03);}
-html[data-theme="light"] .home-page #education .pill .status-dot {background:#677983;box-shadow:none;}
-html[data-theme="light"] .home-page #contact {color:#2d373c;}
-html[data-theme="light"] .home-page #contact::before {background:radial-gradient(ellipse 46% 46% at 50% 47%,rgba(115,134,144,.14),transparent 84%),linear-gradient(180deg,#e8e8e4 0%,#e8e7e3 44%,#ecebe7 100%);}
-html[data-theme="light"] .home-page #contact::after {background:linear-gradient(90deg,transparent,rgba(75,96,106,.22),transparent);}
-html[data-theme="light"] .home-page #contact .contact-signal-canvas {filter:invert(1) contrast(.92);opacity:.60;}
-html[data-theme="light"] .home-page #contact h2 {color:#2a363c;}
-html[data-theme="light"] .home-page #contact h2 em {color:#65747d;}
-html[data-theme="light"] .home-page #contact .eyebrow,
-html[data-theme="light"] .home-page #contact > p:not(.eyebrow) {color:#51636e;}
-html[data-theme="light"] .home-page #contact .contact-copy-icon {border-color:#8b999f;color:#344750;}
-html[data-theme="light"] .home-page #contact .contact-socials {color:#34454f;}
-html[data-theme="light"] .home-page #contact .contact-socials .arrow {color:#53656e;}
-html[data-theme="light"] .home-page footer {border-color:#c3c9c9;}
-html[data-theme="light"] .home-page footer::before {background:linear-gradient(180deg,#ecebe7,#e9e8e4);}
-html[data-theme="light"] .home-page footer .footer-name {color:#27353c;}
-html[data-theme="light"] .home-page footer .footer-name span,
-html[data-theme="light"] .home-page footer .footer-bottom {color:#596871;}
-
-html[data-theme="light"] .factory-page-body .factory-hero::before {
-  background:radial-gradient(ellipse 45% 43% at 69% 50%,rgba(140,154,162,.18),transparent 85%),
-    linear-gradient(180deg,#e8e8e4,#e5e6e3 70%,#e9e8e4);
-}
-html[data-theme="light"] .factory-page-body .factory-heading h1,
-html[data-theme="light"] .factory-page-body .section h2 {color:#28353c;}
-html[data-theme="light"] .factory-page-body .factory-heading h1 em,
-html[data-theme="light"] .factory-page-body .section h2 em {color:#607079;}
-html[data-theme="light"] .factory-page-body .factory-heading .discipline {border-color:#8e9ca2;}
-html[data-theme="light"] .factory-page-body .factory-heading .tags span,
-html[data-theme="light"] .factory-page-body .tags span {border-color:#b0bbbe;color:#53666f;}
-html[data-theme="light"] .factory-page-body .control-panel {background:linear-gradient(150deg,#f2f3ef,#e2e6e4);border-color:#a5b2b8;box-shadow:0 20px 45px rgba(33,51,58,.11);}
-html[data-theme="light"] .factory-page-body .panel-bar {color:#44555e;border-color:#c2cccc;}
-html[data-theme="light"] .factory-page-body .panel-stats {border-color:#c2cccc;}
-html[data-theme="light"] .factory-page-body .panel-stats b {color:#293c45;}
-html[data-theme="light"] .factory-page-body .panel-note {color:#576a74;}
-html[data-theme="light"] .factory-page-body .factory-diagram [stroke="#a9c9dc"],
-html[data-theme="light"] .factory-page-body .factory-diagram [stroke="#7893a5"] {stroke:#596f7a;}
-html[data-theme="light"] .factory-page-body .factory-diagram [fill="#a9c9dc"] {fill:#526b77;}
-html[data-theme="light"] .factory-page-body .factory-diagram [fill="#aab9c5"] {fill:#647b86;}
-html[data-theme="light"] .factory-page-body .case-nav {background:linear-gradient(105deg,#ecefea,#dce3e1 49%,#ececea);border-color:#a9b8bd;box-shadow:none;}
-html[data-theme="light"] .factory-page-body .case-group a.active,
-html[data-theme="light"] .factory-page-body .case-group a:hover {color:#203139;}
-html[data-theme="light"] .factory-page-body .section:not(.factory-hero) {border-color:#c3c9c9;}
-html[data-theme="light"] .factory-page-body .report-cover {box-shadow:11px 12px 0 rgba(128,148,153,.24),0 16px 36px rgba(35,50,60,.12);}
-html[data-theme="light"] .factory-page-body .report-cover span {background:#344650;color:#fff;}
-html[data-theme="light"] .factory-page-body .report-edition,
-html[data-theme="light"] .factory-page-body .pipeline,
-html[data-theme="light"] .factory-page-body .note-panel {border-color:#b5c0c2;background:linear-gradient(140deg,#f7f6f2,#e7e9e6);}
-html[data-theme="light"] .factory-page-body .data-dictionary {background:rgba(86,110,120,.045);border-color:#b7c2c5;}
-html[data-theme="light"] .factory-page-body .metrics-grid article,
-html[data-theme="light"] .factory-page-body .process-list article,
-html[data-theme="light"] .factory-page-body .finding,
-html[data-theme="light"] .factory-page-body .file-list article {border-color:#bec9cb;}
-html[data-theme="light"] .factory-page-body .report-meta,
-html[data-theme="light"] .factory-page-body .report-credit {color:#526771;border-color:#bac4c8;}
-html[data-theme="light"] .factory-page-body .report-edition .button.outline,
-html[data-theme="light"] .factory-page-body .case-end .button.outline {border-color:#889aa3;color:#293e49;}
-html[data-theme="light"] .factory-page-body .chart-open {background:#fff;border-color:#b4c0c4;box-shadow:0 10px 25px rgba(29,44,52,.10);}
-html[data-theme="light"] .factory-page-body footer {border-color:#b5bfc4;}
-html[data-theme="light"] .factory-page-body #backtop {background:#f3f3ef;border-color:#a8b6bb;color:#2d414a;}
-/* Chart dialogs stay near-black in both modes for high contrast around images. */
-@media(max-width:760px) {
-  html[data-theme="light"] .home-page .nav #navlinks,
-  html[data-theme="light"] .home-page .nav #navlinks.open,
-  html[data-theme="light"] .factory-page-body .nav #navlinks,
-  html[data-theme="light"] .factory-page-body .nav #navlinks.open {
-    background:linear-gradient(180deg,rgba(237,237,233,.985),rgba(232,232,228,.985) 90%,rgba(232,232,228,.96));
-  }
-  html[data-theme="light"] .home-page .nav::before,
-  html[data-theme="light"] .home-page .nav.scrolled::before,
-  html[data-theme="light"] .home-page .nav:has(#navlinks.open)::before,
-  html[data-theme="light"] .home-page .nav.scrolled:has(#navlinks.open)::before {
-    background:linear-gradient(180deg,rgba(233,232,228,.99),rgba(233,232,228,.92) 54%,rgba(233,232,228,0));
-  }
-}
-
-/* Light-mode QA: ensure the case-study section eyebrows remain legible against stone. */
-html[data-theme="light"] .factory-page-body .section .eyebrow,
-html[data-theme="light"] .factory-page-body .report-section .eyebrow {color:#536b75;}
-/* Light Signal — Visual Refinement 10 (light theme ONLY)
-   Fixes navigation band/menu contrast and gives the light palette its own
-   restrained architectural depth. Approved Dark Signal remains untouched. */
-
-/* Identical top-of-page and scrolled optical surface: no artificial gray seam. */
-html[data-theme="light"] .home-page .nav,
-html[data-theme="light"] .home-page .nav.scrolled,
-html[data-theme="light"] .factory-page-body .nav,
-html[data-theme="light"] .factory-page-body .nav.scrolled {
-  background:transparent;
-  border:0;
-  box-shadow:none;
-  -webkit-backdrop-filter:none;
-  backdrop-filter:none;
-}
-html[data-theme="light"] .home-page .nav::before,
-html[data-theme="light"] .home-page .nav.scrolled::before,
-html[data-theme="light"] .factory-page-body .nav::before,
-html[data-theme="light"] .factory-page-body .nav.scrolled::before {
-  inset:0 0 -14px;
-  background:linear-gradient(180deg,
-    rgba(241,240,236,.78) 0%,
-    rgba(241,240,236,.53) 51%,
-    rgba(241,240,236,.18) 79%,
-    rgba(241,240,236,0) 100%);
-  -webkit-backdrop-filter:none;
-  backdrop-filter:none;
-  -webkit-mask-image:none;
-  mask-image:none;
-  transition:none;
-}
-html[data-theme="light"] .home-page .nav .greeting,
-html[data-theme="light"] .factory-page-body .nav .greeting {color:#29383f;}
-html[data-theme="light"] .home-page .nav .nav-cta,
-html[data-theme="light"] .factory-page-body .nav .nav-cta {
-  border-color:rgba(75,91,99,.34);
-  background:rgba(250,249,245,.44);
-}
-
-/* A continuous, opaque panel on mobile. Contrast remains high throughout the
-   opening/closing transition; the moving page cannot show through menu links. */
-@media(max-width:760px) {
-  html[data-theme="light"] .home-page .nav #navlinks,
-  html[data-theme="light"] .home-page .nav #navlinks.open,
-  html[data-theme="light"] .factory-page-body .nav #navlinks,
-  html[data-theme="light"] .factory-page-body .nav #navlinks.open {
-    background:#f0efeb;
-    border:0;
-    box-shadow:0 16px 26px rgba(33,48,54,.065);
-    -webkit-backdrop-filter:none;
-    backdrop-filter:none;
-  }
-  html[data-theme="light"] .home-page .nav:has(#navlinks.open)::before,
-  html[data-theme="light"] .home-page .nav.scrolled:has(#navlinks.open)::before,
-  html[data-theme="light"] .factory-page-body .nav:has(#navlinks.open)::before,
-  html[data-theme="light"] .factory-page-body .nav.scrolled:has(#navlinks.open)::before {
-    background:linear-gradient(180deg,#f0efeb 0%,#f0efeb 68%,rgba(240,239,235,0) 100%);
-  }
-  html[data-theme="light"] .home-page #navlinks.open > a:not(.nav-cta),
-  html[data-theme="light"] .factory-page-body #navlinks.open > a:not(.nav-cta),
-  html[data-theme="light"] .home-page .nav #navlinks a,
-  html[data-theme="light"] .factory-page-body .nav #navlinks a {
-    color:#263840;
-  }
-  html[data-theme="light"] .home-page #navlinks.open > .nav-cta,
-  html[data-theme="light"] .factory-page-body #navlinks.open > .nav-cta {
-    color:#263840;
-    background:#e5e6e2;
-    border:1px solid #a9b5b8;
-  }
-  html[data-theme="light"] .home-page #navlinks .theme-toggle,
-  html[data-theme="light"] .factory-page-body #navlinks .theme-toggle {
-    background:#e3e5e1;
-    color:#283b43;
-    border-color:#a3b0b5;
-  }
-}
-
-/* Light Signal's own motion vocabulary: quiet silver 'breathing' instead of
-   recoloring the dark effect. Motion is behind content and loops smoothly. */
-html[data-theme="light"] .home-page .hero::before {
-  background:
-    radial-gradient(ellipse 57% 40% at 34% 37%,rgba(100,118,125,.17),transparent 82%),
-    radial-gradient(ellipse 42% 58% at 92% 57%,rgba(105,124,132,.11),transparent 86%),
-    radial-gradient(ellipse 45% 26% at 50% 96%,rgba(91,113,125,.07),transparent 90%),
-    linear-gradient(180deg,#f0efeb 0%,#e7e8e4 61%,#e9e8e4 100%);
-  animation:light-signal-breath 20s ease-in-out infinite;
-}
-html[data-theme="light"] .home-page .hero::after {
-  opacity:.36;
-  background-image:
-    repeating-linear-gradient(90deg,transparent 0,transparent 118px,rgba(75,94,104,.10) 119px,transparent 120px),
-    repeating-linear-gradient(0deg,transparent 0,transparent 101px,rgba(83,103,114,.06) 102px,transparent 103px);
-  animation:light-signal-lines 16s ease-in-out infinite;
-}
-html[data-theme="light"] .home-page .hero .dark-signal-canvas {
-  filter:grayscale(1) invert(1) contrast(.92);
-  opacity:.72;
-}
 @keyframes light-signal-breath {
   0%,100% {opacity:.91;}
   50% {opacity:1;}
@@ -2097,49 +1748,6 @@ html[data-theme="light"] .home-page .hero .dark-signal-canvas {
 @keyframes light-signal-lines {
   0%,100% {opacity:.29;}
   50% {opacity:.42;}
-}
-
-/* Distinct spatial planes replace flat white fields. No new decorative HTML. */
-html[data-theme="light"] .home-page #about {
-  --section-ambient:radial-gradient(ellipse 55% 33% at 74% 23%,rgba(118,137,143,.10),transparent 80%),linear-gradient(180deg,#e9e8e4,#f2f1ed 46%,#e9eae6);
-}
-html[data-theme="light"] .home-page #projects {
-  --section-ambient:radial-gradient(ellipse 57% 46% at 50% 43%,rgba(105,129,137,.13),transparent 84%),linear-gradient(180deg,#e9eae6,#e2e6e4 52%,#eeede9);
-}
-html[data-theme="light"] .home-page #skills {
-  --section-ambient:radial-gradient(ellipse 47% 34% at 82% 15%,rgba(124,141,146,.105),transparent 81%),linear-gradient(180deg,#eeede9,#eff0ec 52%,#e8eae6);
-}
-html[data-theme="light"] .home-page #journey {
-  --section-ambient:radial-gradient(ellipse 56% 45% at 24% 47%,rgba(112,134,141,.105),transparent 85%),linear-gradient(180deg,#e8eae6,#eeede9);
-}
-html[data-theme="light"] .home-page #education {
-  --section-ambient:radial-gradient(ellipse 50% 38% at 70% 44%,rgba(119,138,142,.075),transparent 86%),linear-gradient(180deg,#eeede9,#e8e9e5);
-}
-html[data-theme="light"] .home-page #projects .project-card,
-html[data-theme="light"] .home-page #projects .project-milestone,
-html[data-theme="light"] .home-page #skills .skill {
-  border-color:#a4b4b8;
-  box-shadow:0 12px 34px rgba(38,54,60,.075),0 1px 0 rgba(255,255,255,.78) inset;
-}
-html[data-theme="light"] .home-page #skills .skill {
-  background:linear-gradient(142deg,#f9f9f6 0%,#edf0ec 100%);
-}
-html[data-theme="light"] .home-page #skills .skill .skill-sub {color:#3c4c54;}
-html[data-theme="light"] .home-page #skills .skill p {color:#4c5f67;}
-html[data-theme="light"] .home-page #journey .timeline article {
-  background:linear-gradient(180deg,rgba(110,135,143,.08),rgba(255,255,255,.02) 72%);
-}
-
-@media(max-width:760px){
-  /* Preserve the approved page order while reducing overly uniform blank spans. */
-  html[data-theme="light"] .home-page #about,
-  html[data-theme="light"] .home-page #projects,
-  html[data-theme="light"] .home-page #skills,
-  html[data-theme="light"] .home-page #journey {padding-top:clamp(78px,12vw,94px);padding-bottom:clamp(82px,13vw,98px);}
-}
-@media(prefers-reduced-motion:reduce) {
-  html[data-theme="light"] .home-page .hero::before,
-  html[data-theme="light"] .home-page .hero::after {animation:none!important;opacity:1;}
 }
 
 /* Light Signal 11 — Typography & Diagram Clarity (review stage 1/2).
@@ -2151,7 +1759,6 @@ html[data-theme="light"] .home-page #journey .timeline article {
   font:400 12px/1.7 monospace;
   letter-spacing:1.7px;
 }
-html[data-theme="light"] .home-page #about .signature-label {color:#465d67;}
 /* Keep section hierarchy recognizable without changing content width. */
 .home-page .section-heading h2,
 .home-page #journey > h2,
@@ -2171,42 +1778,6 @@ html[data-theme="light"] .home-page #about .signature-label {color:#465d67;}
   font-size:12px;
   letter-spacing:1.7px;
 }
-/* Light diagram: architectural silver/steel ink against a softly graded plane.
-   The SVG drawing and data remain byte-identical to the approved files. */
-html[data-theme="light"] .home-page #projects .project-visual {
-  background:
-    radial-gradient(ellipse 85% 75% at 55% 41%,rgba(108,143,151,.21),transparent 84%),
-    linear-gradient(147deg,#e1e9e8 0%,#f4f4ef 48%,#dbe4e3 100%);
-}
-html[data-theme="light"] .home-page #projects .factory-diagram {
-  filter:none;
-  background:radial-gradient(ellipse at 50% 48%,rgba(216,230,230,.2),transparent 80%);
-}
-html[data-theme="light"] .factory-page-body .control-panel .factory-diagram {
-  background:
-    radial-gradient(ellipse at 67% 38%,rgba(127,160,169,.15),transparent 78%),
-    linear-gradient(150deg,#e5ebea,#f2f3ef 57%,#dce5e5);
-}
-html[data-theme="light"] .home-page .factory-diagram g[stroke="#7893a5"],
-html[data-theme="light"] .factory-page-body .factory-diagram g[stroke="#7893a5"] {
-  stroke:#526c78;
-  stroke-width:2;
-}
-html[data-theme="light"] .home-page .factory-diagram .signal-line,
-html[data-theme="light"] .factory-page-body .factory-diagram .signal-line {
-  stroke:#638a94;
-  stroke-width:2.3;
-}
-html[data-theme="light"] .home-page .factory-diagram g[fill="#a9c9dc"],
-html[data-theme="light"] .factory-page-body .factory-diagram g[fill="#a9c9dc"] {fill:#567f89;}
-html[data-theme="light"] .home-page .factory-diagram g[fill="#aab9c5"],
-html[data-theme="light"] .factory-page-body .factory-diagram g[fill="#aab9c5"] {fill:#435e69;}
-html[data-theme="light"] .home-page .factory-diagram pattern path,
-html[data-theme="light"] .factory-page-body .factory-diagram pattern path {
-  stroke:#8fa6ae;
-  stroke-width:.8;
-  opacity:.8;
-}
 @media(max-width:760px) {
   .home-page .section-heading h2,
   .home-page #journey > h2,
@@ -2219,51 +1790,6 @@ html[data-theme="light"] .factory-page-body .factory-diagram pattern path {
   .home-page #contact > .eyebrow,
   .factory-page-body .section > .eyebrow {font-size:11px;letter-spacing:1.45px;}
 }
-
-/* Stage 12 — Soft Theme Dissolve / mobile icon alignment.
-   Only the opt-in palette change uses this transition; existing navigation
-   View Transitions keep their current behavior. */
-@keyframes theme-dissolve-old {
-  from {opacity:1;}
-  to {opacity:0;}
-}
-@keyframes theme-dissolve-new {
-  from {opacity:0;}
-  to {opacity:1;}
-}
-html.theme-dissolving::view-transition-old(root),
-html.theme-dissolving::view-transition-new(root) {
-  animation-duration:.62s;
-  animation-timing-function:cubic-bezier(.22,.61,.36,1);
-  animation-fill-mode:both;
-  mix-blend-mode:normal;
-}
-html.theme-dissolving::view-transition-old(root) {animation-name:theme-dissolve-old;}
-html.theme-dissolving::view-transition-new(root) {animation-name:theme-dissolve-new;}
-
-/* The sun and moon occupy EXACTLY the same centered layer and never participate
-   in normal button layout. No display:none <-> block or baseline changes. */
-html .theme-toggle {
-  position:relative;
-  overflow:hidden;
-  line-height:0;
-}
-html .theme-toggle .theme-icon-sun,
-html .theme-toggle .theme-icon-moon {
-  display:block;
-  position:absolute;
-  left:50%;top:50%;
-  width:19px;height:19px;
-  margin:0;
-  transform:translate(-50%,-50%);
-  transform-origin:center;
-  transition:opacity .42s cubic-bezier(.22,.61,.36,1),
-             visibility 0s linear .42s;
-}
-html .theme-toggle .theme-icon-sun {opacity:1;visibility:visible;}
-html .theme-toggle .theme-icon-moon {opacity:0;visibility:hidden;}
-html[data-theme="light"] .theme-toggle .theme-icon-sun {opacity:0;visibility:hidden;}
-html[data-theme="light"] .theme-toggle .theme-icon-moon {opacity:1;visibility:visible;}
 
 /* Keep the theme button's center fixed during accordion expansion: only its
    parent panel grows. The contents have one padding geometry in both states. */
@@ -2299,19 +1825,6 @@ html[data-theme="light"] .theme-toggle .theme-icon-moon {opacity:1;visibility:vi
     transition:max-height .46s cubic-bezier(.22,.61,.36,1),
       opacity .35s ease,visibility 0s;
   }
-  html #navlinks .theme-toggle {
-    box-sizing:border-box;
-    min-height:44px;
-    flex:0 0 44px;
-    padding:0;
-    align-self:stretch;
-  }
-}
-@media(prefers-reduced-motion:reduce) {
-  html.theme-dissolving::view-transition-old(root),
-  html.theme-dissolving::view-transition-new(root) {animation:none!important;}
-  html .theme-toggle .theme-icon-sun,
-  html .theme-toggle .theme-icon-moon {transition:none!important;}
 }
 
 
@@ -2392,14 +1905,6 @@ html[data-theme="light"] .theme-toggle .theme-icon-moon {opacity:1;visibility:vi
     border-color:#65757e;
     box-shadow:0 10px 28px rgba(0,0,0,.12);
   }
-  html[data-theme="light"] .home-page #projects .project-card:hover {
-    border-color:#84969e;
-    box-shadow:0 15px 32px rgba(38,54,60,.11),0 1px 0 rgba(255,255,255,.78) inset;
-  }
-  html[data-theme="light"] .home-page #skills .skill:hover {
-    border-color:#879ba3;
-    box-shadow:0 12px 27px rgba(38,54,60,.10),0 1px 0 rgba(255,255,255,.78) inset;
-  }
 }
 /* No sticky lift after tapping a card on mobile. Scroll reveals still work. */
 @media (hover:none),(pointer:coarse) {
@@ -2457,13 +1962,6 @@ html[data-theme="light"] .theme-toggle .theme-icon-moon {opacity:1;visibility:vi
 .home-page #contact .contact-copy-icon.is-error {
   border-color:#b1947d;background:rgba(168,113,76,.12);color:#f2d0b9;
 }
-html[data-theme="light"] .home-page #contact .contact-copy-icon.is-copied {
-  background:#d8e4e2;border-color:#718c8c;color:#2f5054;
-  box-shadow:0 0 0 1px rgba(65,94,101,.06);
-}
-html[data-theme="light"] .home-page #contact .contact-copy-icon.is-error {
-  background:#f4e8df;border-color:#a58169;color:#80573c;
-}
 .home-page .toast {
   background:#17252d;
   border-color:#627b89;
@@ -2477,17 +1975,6 @@ html[data-theme="light"] .home-page #contact .contact-copy-icon.is-error {
 .home-page .toast::before {background:#c5d8dd;color:#182a32;}
 .home-page .toast[data-state="error"] {border-color:#967864;}
 .home-page .toast[data-state="error"]::before {background:#dfbba0;color:#372a24;}
-html[data-theme="light"] .home-page .toast {
-  background:#f4f4ef;border-color:#9caaac;color:#27383e;
-  box-shadow:0 13px 36px rgba(37,52,56,.17);
-}
-html[data-theme="light"] .home-page .toast::before {background:#506d74;color:#f5f7f6;}
-html[data-theme="light"] .home-page .toast[data-state="error"] {
-  background:#f7eee8;border-color:#b3937e;color:#654a39;
-}
-html[data-theme="light"] .home-page .toast[data-state="error"]::before {
-  background:#a7785b;color:#fff;
-}
 @media(prefers-reduced-motion:reduce) {
   .home-page #contact .contact-copy-icon,
   .home-page #contact .contact-copy-icon .copy-glyph,
@@ -2502,24 +1989,17 @@ html[data-theme="light"] .home-page .toast[data-state="error"]::before {
    Remove the browser's full-width touch flash and accidental text selection
    from the controls only. Do NOT disable visible keyboard focus. */
 .nav a,
-.nav .menu-toggle,
-.nav .theme-toggle {
+.nav .menu-toggle{
   -webkit-tap-highlight-color:transparent;
   -webkit-user-select:none;
   user-select:none;
   touch-action:manipulation;
 }
 .nav a:focus-visible,
-.nav .menu-toggle:focus-visible,
-.nav .theme-toggle:focus-visible {
+.nav .menu-toggle:focus-visible{
   outline:2px solid #a9c0cc;
   outline-offset:4px;
   border-radius:3px;
-}
-html[data-theme="light"] .nav a:focus-visible,
-html[data-theme="light"] .nav .menu-toggle:focus-visible,
-html[data-theme="light"] .nav .theme-toggle:focus-visible {
-  outline-color:#506b79;
 }
 
 
@@ -2578,35 +2058,11 @@ html[data-theme="light"] .nav .theme-toggle:focus-visible {
   outline:2px solid #a1b0b8;
   outline-offset:4px;
 }
-html[data-theme="light"] :where(a[href], button, summary, [role="button"]):focus-visible {
-  outline-color:#4e636c;
-}
 /* The nav has its own higher-specificity focus rules from Stage 19. */
 @media (hover:none), (pointer:coarse) {
   .home-page #skills .skill:hover {transform:none;}
   .factory-page-body .chart-open:hover {transform:none;}
 }
-/* Mobile dark panel: equal optical depth on both pages, with a gentle misted
-   gradient rather than a flat opaque slab. Light theme keeps Stone Light. */
-@media (max-width:760px) {
-  html:not([data-theme="light"]) .home-page .nav #navlinks,
-  html:not([data-theme="light"]) .home-page .nav #navlinks.open,
-  html:not([data-theme="light"]) .factory-page-body .nav #navlinks,
-  html:not([data-theme="light"]) .factory-page-body .nav #navlinks.open {
-    /* Keep every control above the fade: no clipping of the theme button. */
-    padding-bottom:78px;
-    border-bottom:0;
-    border-radius:0;
-    -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 38px),transparent 100%);
-    mask-image:linear-gradient(to bottom,#000 0%,#000 calc(100% - 38px),transparent 100%);
-    box-shadow:0 20px 46px rgba(0,0,0,.3);
-  }
-  html:not([data-theme="light"]) .home-page #navlinks.open,
-  html:not([data-theme="light"]) .factory-page-body #navlinks.open {
-    box-shadow:0 24px 54px rgba(0,0,0,.36);
-  }
-}
-
 /* Polish 09 cleanup: removed legacy 20.3 opaque header/open-menu seam.
    The experimental drawer now supplies one unified charcoal surface. */
 .footer-name {cursor:default;}
@@ -2636,13 +2092,6 @@ html[data-theme="light"] :where(a[href], button, summary, [role="button"]):focus
 .factory-page-body #backtop.visible {transform:translateY(0);}
 .home-page #backtop .link-arrow,
 .factory-page-body #backtop .link-arrow {width:19px;height:19px;}
-html[data-theme="light"] .home-page #backtop,
-html[data-theme="light"] .factory-page-body #backtop {
-  background:linear-gradient(145deg,rgba(247,247,243,.98),rgba(229,232,229,.98));
-  color:#2e454f;
-  border-color:#9daeb5;
-  box-shadow:0 8px 24px rgba(39,55,63,.14),inset 0 1px rgba(255,255,255,.65);
-}
 .home-page.footer-in-view #backtop,
 .factory-page-body.footer-in-view #backtop {
   opacity:0;
@@ -2655,11 +2104,6 @@ html[data-theme="light"] .factory-page-body #backtop {
     transform:translateY(-2px);
     border-color:#a9bac4;
     box-shadow:0 12px 31px rgba(0,0,0,.28);
-  }
-  html[data-theme="light"] .home-page #backtop.visible:hover,
-  html[data-theme="light"] .factory-page-body #backtop.visible:hover {
-    border-color:#657d89;
-    box-shadow:0 12px 29px rgba(39,55,63,.17);
   }
 }
 @media (max-width:760px) {
@@ -2854,12 +2298,6 @@ html[data-theme="light"] .factory-page-body #backtop {
 }
 .home-page #projects .project-link b {display:inline-flex;align-items:center;justify-content:center;}
 .home-page #projects .project-link svg {width:18px;height:18px;}
-/* Phone key is true-sized HTML, keeping labels legible even when an SVG is
-   scaled below 400px; decorative duplicate text is hidden from accessibility. */
-html[data-theme="light"] .home-page #projects .project-visual {--ds-diagram-grid:rgba(68,101,112,.15);}
-html[data-theme="light"] .home-page #projects .project-focus span {
-  color:#415862;border-color:#9baeb5;background:rgba(85,118,130,.075);
-}
 @media (max-width:760px) {
   .home-page #projects .project-visual {padding:18px 10px 20px;gap:10px;}
   .home-page #projects .project-visual .visual-label {font-size:9px;}
@@ -2931,11 +2369,6 @@ html[data-theme="light"] .home-page #projects .project-focus span {
   color:var(--muted);
   text-align:center;
 }
-html[data-theme="light"] .home-page #projects .project-milestone {
-  background:#f1f1ed;
-  border-color:#b5c0c2;
-  border-left-color:#84959d;
-}
 @media(max-width:760px) {
   .home-page #projects .project-milestone {padding:29px 19px 33px;}
   .home-page #projects .milestone-kicker {font-size:10px;letter-spacing:.10em;}
@@ -2950,11 +2383,6 @@ html[data-theme="light"] .home-page #projects .project-milestone {
 .factory-page-body #progress {
   height:1px;
   background:#adb7bd;
-  opacity:.28;
-}
-html[data-theme="light"] .home-page #progress,
-html[data-theme="light"] .factory-page-body #progress {
-  background:#55666f;
   opacity:.28;
 }
 
@@ -3144,8 +2572,6 @@ html[data-theme="light"] .factory-page-body #progress {
   z-index:1;
   filter:grayscale(.94) saturate(.42) brightness(.91);
 }
-html[data-theme="light"] .home-page #projects .project-visual .factory-diagram,
-html[data-theme="light"] .factory-page-body .control-panel .factory-diagram {filter:grayscale(.55) saturate(.6) brightness(.96);}
 /* Shared SVG strokes/text on both pages, including embedded SVG fill colors. */
 
 /* 20.15: The atmospheric hero fills the viewport, not merely the central 1240px main. */
@@ -3176,12 +2602,8 @@ html[data-theme="light"] .factory-page-body .control-panel .factory-diagram {fil
   box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;
 }
 .home-page #projects .project-focus span {border-color:#77868e;background:#202e34;color:#e1e7ea;}
-html[data-theme="light"] .home-page #projects .project-copy .tags span,
-html[data-theme="light"] .factory-page-body .factory-heading .tags span {border-color:#9aabb1;background:#e1e7e5;color:#364c56;}
-html[data-theme="light"] .home-page #projects .project-focus span {background:#d8e1df;border-color:#859ba3;color:#304851;}
 @media(hover:hover) and (pointer:fine) {
   .home-page #projects .project-card:hover .project-focus span {background:#25333a;border-color:#87969d;}
-  html[data-theme="light"] .home-page #projects .project-card:hover .project-focus span {background:#d6dfdc;border-color:#82949a;}
 }
 
 /* 20.20: Compact Back control with the same diagonal arrow geometry as Explore My Work. */
@@ -3197,7 +2619,6 @@ html[data-theme="light"] .home-page #projects .project-focus span {background:#d
 }
 .factory-page-body .back-link .link-arrow {width:16px;height:16px;flex:none;}
 .factory-page-body .back-link:hover {background:rgba(149,170,181,.07);border-color:#8e9ca3;}
-html[data-theme="light"] .factory-page-body .back-link:hover {background:#dce4e2;}
 /* 20.21: Keep compact captions comfortably readable in both telemetry summaries. */
 .factory-page-body .panel-stats span {
   display:block;
@@ -3328,11 +2749,6 @@ html[data-theme="light"] .factory-page-body .back-link:hover {background:#dce4e2
   margin:0;
   filter:grayscale(.85) saturate(.5) brightness(.94);
 }
-html[data-theme="light"] .home-page #projects .master-diagram .factory-diagram,
-html[data-theme="light"] .factory-page-body .master-diagram .factory-diagram {
-  filter:grayscale(.48) saturate(.72) brightness(.79) contrast(1.09);
-  background:transparent;
-}
 .master-diagram .diagram-heading {position:absolute;z-index:2;inset:5.2% 5% auto 7%;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;pointer-events:none;}
 .master-diagram .diagram-heading span {
   display:block;
@@ -3416,11 +2832,6 @@ html[data-theme="light"] .factory-page-body .master-diagram .factory-diagram {
     border-color:#63727a;
     box-shadow:0 5px 18px rgba(0,0,0,.085);
   }
-  html[data-theme="light"] .home-page #skills .skill.reveal.seen:hover,
-  html[data-theme="light"] .home-page #skills .skill:not(.reveal):hover {
-    border-color:#899aa1;
-    box-shadow:0 7px 21px rgba(38,54,60,.075),0 1px 0 rgba(255,255,255,.72) inset;
-  }
   .home-page #skills .skill:hover::after {opacity:.58;}
 }
 @media (hover:none),(pointer:coarse){
@@ -3449,12 +2860,6 @@ html[data-theme="light"] .factory-page-body .master-diagram .factory-diagram {
     border-color:#71818a;
     background:linear-gradient(143deg,#13191d 0%,#0d1215 85%);
     box-shadow:none;
-  }
-  html[data-theme="light"] .home-page #skills .skill.reveal.seen:hover,
-  html[data-theme="light"] .home-page #skills .skill:not(.reveal):hover {
-    border-color:#82939c;
-    background:linear-gradient(142deg,#f9f9f6 0%,#edf0ec 100%);
-    box-shadow:0 12px 34px rgba(38,54,60,.075),0 1px 0 rgba(255,255,255,.78) inset;
   }
 }
 @media (hover:none),(pointer:coarse) {

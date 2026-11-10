@@ -8,7 +8,6 @@
   --ex-normal: 300ms;
   --ex-surface-glint: inset 0 1px 0 rgba(205,222,228,.055);
 }
-html[data-theme="light"] { --ex-surface-glint: inset 0 1px 0 rgba(255,255,255,.55); }
 
 /* E01.1 — Intentional feedback, only on actual controls. */
 .home-page .button, .factory-page-body .button,
@@ -17,13 +16,11 @@ html[data-theme="light"] { --ex-surface-glint: inset 0 1px 0 rgba(255,255,255,.5
 .home-page .nav-cta, .factory-page-body .nav-cta,
 .notebook-page-body .notebook-index summary,
 .notebook-page-body .notebook-toc a,
-.home-page .social, .factory-page-body .social,
-.home-page .theme-toggle, .factory-page-body .theme-toggle,
-.notebook-page-body .theme-toggle {
+.home-page .social, .factory-page-body .social{
   transition-duration: var(--ex-normal);
   transition-timing-function: var(--ex-soft-ease);
 }
-:is(.home-page,.factory-page-body,.notebook-page-body) :is(.button,.back-link,.nav-cta,.theme-toggle,.dialog-close,.notebook-backtop):active {
+:is(.home-page,.factory-page-body,.notebook-page-body) :is(.button,.back-link,.nav-cta,.dialog-close,.notebook-backtop):active {
   scale: .985;
 }
 @media (hover:hover) and (pointer:fine) {
@@ -40,17 +37,6 @@ html[data-theme="light"] { --ex-surface-glint: inset 0 1px 0 rgba(255,255,255,.5
 }
 :is(.home-page,.factory-page-body,.notebook-page-body) .link-arrow {
   transition:translate var(--ex-fast) var(--ex-soft-ease);
-}
-
-/* E01.2 — Shorter, quieter palette dissolve; existing theme logic and storage stay intact. */
-html.theme-dissolving::view-transition-old(root),
-html.theme-dissolving::view-transition-new(root) {
-  animation-duration: 380ms;
-  animation-timing-function: var(--ex-soft-ease);
-}
-html .theme-toggle .theme-icon-sun,
-html .theme-toggle .theme-icon-moon {
-  transition-duration: 300ms;
 }
 :is(.home-page,.factory-page-body,.notebook-page-body),
 :is(.home-page,.factory-page-body,.notebook-page-body) .nav,
@@ -76,13 +62,6 @@ html .theme-toggle .theme-icon-moon {
 .notebook-page-body .notebook-index,
 .factory-page-body .note-panel {
   box-shadow:var(--ex-surface-glint),0 12px 35px rgba(0,0,0,.045);
-}
-html[data-theme="light"] .home-page #projects .project-card,
-html[data-theme="light"] .notebook-page-body .notebook-index {
-  box-shadow:var(--ex-surface-glint),0 12px 35px rgba(27,44,54,.065);
-}
-html[data-theme="light"] .factory-page-body .control-panel {
-  box-shadow:var(--ex-surface-glint),0 16px 40px rgba(32,48,58,.095);
 }
 
 /* EXPERIMENT 01 / Global Scroll Stability Audit.
@@ -166,7 +145,7 @@ html[data-theme="light"] .factory-page-body .control-panel {
   outline:2px solid var(--accent);
   outline-offset:3px;
 }
-:is(.home-page,.factory-page-body,.notebook-page-body) :is(.button,.theme-toggle,.menu-toggle,.dialog-close,summary) {
+:is(.home-page,.factory-page-body,.notebook-page-body) :is(.button,.menu-toggle,.dialog-close,summary) {
   -webkit-tap-highlight-color:transparent;
 }
 @media (hover:none) {
@@ -174,8 +153,6 @@ html[data-theme="light"] .factory-page-body .control-panel {
   .home-page #skills .skill:hover {box-shadow:var(--ex-surface-glint);}
 }
 @media (prefers-reduced-motion:reduce) {
-  html.theme-dissolving::view-transition-old(root),
-  html.theme-dissolving::view-transition-new(root) {animation:none!important;}
   :is(.home-page,.factory-page-body,.notebook-page-body) *,
   :is(.home-page,.factory-page-body,.notebook-page-body) *::before,
   :is(.home-page,.factory-page-body,.notebook-page-body) *::after {
@@ -243,9 +220,6 @@ html[data-theme="light"] .factory-page-body .control-panel {
 /* Both X marks now use the same .social link language as their siblings.
    The SVG geometry stays untouched; currentColor carries the theme and hover. */
 .home-page .social-x-linked {opacity:1;filter:none;}
-html[data-theme="light"] .home-page #contact .contact-footer .footer-name {color:#293a43;}
-html[data-theme="light"] .home-page #contact .contact-footer .footer-name span,
-html[data-theme="light"] .home-page #contact .contact-footer .social {color:#53666e;}
 .home-page .site-legal-footer {
   display:block;
   padding-top:0;
@@ -295,20 +269,12 @@ html[data-theme="light"] .home-page #contact .contact-footer .social {color:#536
     clip-path:none;
     transition:height 540ms cubic-bezier(.22,.61,.36,1);
   }
-  html[data-theme="light"] :is(.home-page,.factory-page-body) .nav::before,
-  html[data-theme="light"] :is(.home-page,.factory-page-body) .nav.scrolled::before,
-  html[data-theme="light"] :is(.home-page,.factory-page-body) .nav:has(#navlinks.open)::before {
-    background:linear-gradient(180deg,rgba(240,241,238,.94),rgba(235,239,236,.86) 55%,rgba(218,229,228,.46));
-  }
   :is(.home-page,.factory-page-body) .nav::after,
-  :is(.home-page,.factory-page-body) .nav:has(#navlinks.open)::after,
-  html[data-theme="light"] :is(.home-page,.factory-page-body) .nav::after {content:none;}
+  :is(.home-page,.factory-page-body) .nav:has(#navlinks.open)::after{content:none;}
   :is(.home-page,.factory-page-body) .nav #navlinks,
   :is(.home-page,.factory-page-body) .nav #navlinks.open,
-  html:not([data-theme="light"]) :is(.home-page,.factory-page-body) .nav #navlinks,
-  html:not([data-theme="light"]) :is(.home-page,.factory-page-body) .nav #navlinks.open,
-  html[data-theme="light"] :is(.home-page,.factory-page-body) .nav #navlinks,
-  html[data-theme="light"] :is(.home-page,.factory-page-body) .nav #navlinks.open {
+  :is(.home-page,.factory-page-body) .nav #navlinks,
+  :is(.home-page,.factory-page-body) .nav #navlinks.open{
     position:absolute;
     top:72px;left:0;right:0;
     display:flex;flex-direction:column;align-items:stretch;gap:0;
@@ -330,8 +296,7 @@ html[data-theme="light"] .home-page #contact .contact-footer .social {color:#536
       opacity 430ms cubic-bezier(.22,.61,.36,1),visibility 0s linear 540ms;
   }
   :is(.home-page,.factory-page-body) .nav #navlinks.open,
-  html:not([data-theme="light"]) :is(.home-page,.factory-page-body) .nav #navlinks.open,
-  html[data-theme="light"] :is(.home-page,.factory-page-body) .nav #navlinks.open {
+  :is(.home-page,.factory-page-body) .nav #navlinks.open{
     padding:0 24px 12px;
     /* Match the drawer animation to its real measured content height.
        The previous 448px end point finished *after* the content did, which
@@ -348,7 +313,6 @@ html[data-theme="light"] .home-page #contact .contact-footer .social {color:#536
   :is(.home-page,.factory-page-body) .nav #navlinks::before,
   :is(.home-page,.factory-page-body) .nav #navlinks.open::before {content:none;}
   :is(.home-page,.factory-page-body) .nav #navlinks > a:not(.nav-cta) {padding:9px 2px;}
-  :is(.home-page,.factory-page-body) .nav #navlinks .theme-toggle {margin-top:10px;}
   :is(.home-page,.factory-page-body) .nav #navlinks > * {position:relative;z-index:1;}
 }
 @media (prefers-reduced-motion:reduce) {
@@ -374,12 +338,6 @@ html[data-theme="light"] .home-page #contact .contact-footer .social {color:#536
 .home-page.footer-in-view #backtop.visible,
 .factory-page-body.footer-in-view #backtop.visible {
   opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0);
-}
-html[data-theme="light"] .home-page #backtop,
-html[data-theme="light"] .factory-page-body #backtop {
-  color:#f2f4f1;
-  background:linear-gradient(150deg,#4d5457,#353c40);
-  border-color:rgba(65,74,78,.55);
 }
 @media(max-width:760px) {
   .home-page #backtop,.factory-page-body #backtop {
@@ -434,27 +392,6 @@ html[data-theme="light"] .factory-page-body #backtop {
   font:600 14px/1 Arial,sans-serif;
 }
 .home-page .toast[data-state="error"]::before {content:"!";}
-html[data-theme="light"] .home-page #contact .contact-copy-icon {
-  background:linear-gradient(145deg,#e1e4e1,#c8d0cb);
-  color:#262d30;
-  border-color:#a4afac;
-}
-html[data-theme="light"] .home-page #contact .contact-copy-icon.is-copied {
-  background:linear-gradient(145deg,#c3d0c8,#dae1da);
-  border-color:#87978e;
-  color:#24312c;
-}
-html[data-theme="light"] .home-page .toast {
-  background:linear-gradient(145deg,#f2f3f0,#e2e7e2);
-  color:#293033;
-  border-color:#aab5b0;
-  box-shadow:0 10px 26px rgba(39,57,65,.14);
-}
-html[data-theme="light"] .home-page .toast::before {
-  background:#c2cac4;
-  color:#222a2b;
-  border-color:#abb9b1;
-}
 
 /* Polish 05: the contact copy button eases in/out instead of replacing a
    gradient instantly on hover. Both glyphs retain the approved geometry. */
@@ -486,11 +423,6 @@ html[data-theme="light"] .home-page .toast::before {
     box-shadow:0 8px 18px rgba(0,0,0,.10),inset 0 1px rgba(235,249,252,.035);
   }
   .home-page #contact .contact-copy-icon:not(.is-copied):not(.is-error):hover::before {opacity:1;}
-  html[data-theme="light"] .home-page #contact .contact-copy-icon:not(.is-copied):not(.is-error):hover {
-    background:linear-gradient(145deg,#e1e4e1,#c8d0cb);
-    color:#202a2d;
-    border-color:#8e9b9c;
-  }
 }
 @media(prefers-reduced-motion:reduce) {
   .home-page #contact .contact-copy-icon::before {transition:none!important;}
@@ -553,8 +485,6 @@ html[data-theme="light"] .home-page .toast::before {
   color:#afbec6;
 }
 .home-page .scroll-cue .link-arrow {stroke-width:1.6;}
-html[data-theme="light"] .home-page .hero-social>span,
-html[data-theme="light"] .home-page .scroll-cue span {color:#536670;}
 .home-page #projects .milestone-layout {
   grid-template-columns:minmax(0,1fr);
   max-width:700px;
@@ -677,12 +607,7 @@ html.ds-route-swapping {scroll-behavior:auto!important;overflow-anchor:none;}
   }
   .home-page #projects .project-link:is(:hover,:focus-visible) .link-arrow {translate:2px -2px;}
 }
-html[data-theme="light"] .home-page #projects .project-link {
-  background:rgba(76,104,113,.065);
-  color:#293c45;
-  border-color:rgba(72,103,116,.44);
-}
-html[data-theme="light"] .home-page #projects .project-link:hover,
+
   .home-page #projects .project-link:focus-visible {
   background:rgba(77,112,121,.12);
   border-color:rgba(54,86,99,.66);
@@ -707,11 +632,6 @@ html[data-theme="light"] .home-page #projects .project-link:hover,
     transform:none!important;
     border-color:#425058;
     box-shadow:var(--ex-surface-glint),0 12px 34px rgba(0,0,0,.035);
-  }
-  html[data-theme="light"] .home-page #projects .project-card:hover,
-  html[data-theme="light"] .home-page #projects .project-card.reveal.seen:hover {
-    border-color:#bdc6c7;
-    box-shadow:var(--ex-surface-glint),0 12px 35px rgba(27,44,54,.065);
   }
 }
 
