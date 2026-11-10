@@ -1,44 +1,12 @@
 const $=s=>document.querySelector(s);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-/* User-controlled palette, independent of OS preferences; the default stays Dark Signal. */
-function applyTheme(theme,persist=false){
-  const light=theme==='light';
-  if(light)document.documentElement.dataset.theme='light';
-  else delete document.documentElement.dataset.theme;
-  if(persist){try{localStorage.setItem('mm-dark-signal-theme',light?'light':'dark')}catch{}}
-  document.querySelectorAll('.theme-toggle').forEach(button=>{
-    button.setAttribute('aria-pressed',String(light));
-    button.setAttribute('aria-label',light?'Switch to dark mode':'Switch to light mode');
-    button.title=light?'Switch to dark mode':'Switch to light mode';
-  });
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',light?'#e9e8e4':'#080b0d');
+/* Dark-only release: clear any legacy palette preference. This deliberately
+   does not alter theme-independent navigation, motion, or visual effects. */
+function enforceDarkOnly(){
+  document.documentElement.removeAttribute('data-theme');
+  try{localStorage.removeItem('mm-dark-signal-theme')}catch{}
 }
-
-
-// Theme transitions share the same reduced-motion policy as other visual effects.
-let themeTransitionInFlight=false;
-function switchTheme(){
-  if(themeTransitionInFlight)return;
-  const nextTheme=document.documentElement.dataset.theme==='light'?'dark':'light';
-  if(reduce||typeof document.startViewTransition!=='function'){
-    applyTheme(nextTheme,true);
-    return;
-  }
-  themeTransitionInFlight=true;
-  const root=document.documentElement;
-  root.classList.add('theme-dissolving');
-  try{
-    const transition=document.startViewTransition(()=>applyTheme(nextTheme,true));
-    transition.finished.catch(()=>{}).finally(()=>{
-      root.classList.remove('theme-dissolving');
-      themeTransitionInFlight=false;
-    });
-  }catch{
-    applyTheme(nextTheme,true);
-    root.classList.remove('theme-dissolving');
-    themeTransitionInFlight=false;
-  }
-}
+enforceDarkOnly();
 
 let interruptCurrentSectionGlide=()=>{};
 function initPage(){
@@ -93,12 +61,6 @@ if($('.project-milestone')&&!document.getElementById('milestone-fonts')){
 }
 
 if($('#year'))$('#year').textContent=new Date().getFullYear();
-applyTheme(document.documentElement.dataset.theme==='light'?'light':'dark');
-const themeToggle=$('.theme-toggle');
-// The View Transitions API snapshots both complete themes and gently dissolves
-// between them. This does not affect navigation, layout or saved user settings.
-// A direct switch remains available on older browsers or with reduced motion.
-themeToggle?.addEventListener('click',()=>switchTheme());
 // Polish 08 — one menu state and one measured backdrop for both themes.
 const toggle=$('.menu-toggle'), menu=$('#navlinks'), navigationBar=$('.nav');
 const syncMenuBackdrop=()=>{
@@ -123,7 +85,11 @@ toggle?.addEventListener('click',()=>{
 menu?.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
 onDoc('keydown',e=>{if(e.key==='Escape'&&menu?.classList.contains('open')){closeMenu();toggle.focus()}});
 onDoc('click',e=>{if(!e.target.closest('.nav'))closeMenu()});
-window.addEventListener('resize',syncMenuBackdrop);
+const handleNavResize=()=>{
+  if(!matchMedia('(max-width:760px)').matches&&menu?.classList.contains('open'))closeMenu();
+  else syncMenuBackdrop();
+};
+window.addEventListener('resize',handleNavResize);
 syncMenuBackdrop();
 // Stage 20.4 — avoid a duplicate floating shortcut over the footer link.
 // Also keep the invisible shortcut out of the keyboard tab order.
@@ -336,7 +302,7 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
     for(const [name,callback] of documentListeners)document.removeEventListener(name,callback);
     window.removeEventListener('scroll',scrollState);
     window.removeEventListener('resize',scrollState);
-    window.removeEventListener('resize',syncMenuBackdrop);
+    window.removeEventListener('resize',handleNavResize);
     clearTimeout(toastTimer);
     clearTimeout(copyResetTimer);
     if(stopTopGlide)stopTopGlide();
