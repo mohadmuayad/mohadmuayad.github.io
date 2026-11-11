@@ -776,3 +776,94 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   }
   .notebook-page-body .notebook-hero .eyebrow {font-size:11px;}
 }
+
+/* Project card framing — continuous section rules and equal metric cells.
+   Keep the approved imagery, scene overlays, typography and interactions intact. */
+.home-page #projects .ds-living-card {
+  --ds-card-rule:rgba(182,188,193,.26);
+}
+.home-page #projects .ds-living-card .ds-card-intro {
+  border-bottom:1px solid var(--ds-card-rule);
+  padding-bottom:clamp(20px,2.5vw,28px);
+}
+.home-page #projects .ds-living-card .ds-industrial-artwork {
+  border-bottom:1px solid var(--ds-card-rule);
+}
+.home-page #projects .ds-living-card .ds-industrial-artwork::after {
+  content:none;
+  display:none;
+}
+.home-page #projects .ds-living-card .ds-case-metrics {
+  align-self:stretch;
+  margin:0;
+  padding:0;
+  border:0!important;
+  border-bottom:1px solid var(--ds-card-rule)!important;
+}
+.home-page #projects .ds-living-card .ds-case-metrics > div {
+  min-width:0;
+  padding:clamp(16px,2vw,22px) clamp(6px,1vw,12px);
+  border-right:1px solid var(--ds-card-rule);
+  border-bottom:0;
+}
+.home-page #projects .ds-living-card .ds-case-metrics > div:last-child {
+  border-right:0;
+  padding-right:clamp(6px,1vw,12px);
+}
+.home-page #projects .ds-living-card .ds-card-footer {
+  align-self:stretch;
+  margin:0;
+  padding:clamp(12px,1.8vw,18px) clamp(16px,2.2vw,25px);
+  border:0!important;
+  border-bottom:1px solid var(--ds-card-rule)!important;
+}
+/* The desktop call-to-action continues the same metric row, rather than
+   leaving a line that ends before the card edge. */
+@media(min-width:961px) {
+  .home-page #projects .ds-living-card .ds-case-metrics {
+    border-right:1px solid var(--ds-card-rule)!important;
+  }
+}
+@media(max-width:960px) {
+  .home-page #projects .ds-living-card .ds-case-metrics {
+    width:100%;
+    margin:0;
+    padding:0;
+  }
+  .home-page #projects .ds-living-card .ds-card-footer {
+    width:100%;
+    margin:0;
+    padding:14px 18px 18px;
+    border-bottom:0!important;
+  }
+}
+@media(max-width:620px) {
+  .home-page #projects .ds-living-card .ds-card-intro {padding-bottom:19px;}
+  .home-page #projects .ds-living-card .ds-case-metrics {margin:0;padding:0;}
+  .home-page #projects .ds-living-card .ds-case-metrics > div {padding:15px 4px 16px;}
+  .home-page #projects .ds-living-card .ds-case-metrics > div:last-child {padding-right:4px;}
+  .home-page #projects .ds-living-card .ds-card-footer {padding:14px 12px 17px;}
+}
+/* Factory detail snapshot: one full-width rule beneath the scene, three
+   equally framed figures, and a full-width rule before the explanatory note. */
+.factory-page-body .control-panel .ds-industrial-panel-art {
+  border-bottom:1px solid rgba(182,188,193,.25);
+}
+.factory-page-body .control-panel .panel-stats {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:0;
+  padding:0;
+  border-top:0;
+  border-bottom:1px solid rgba(182,188,193,.25);
+}
+.factory-page-body .control-panel .panel-stats > div {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:clamp(15px,2vw,22px) 6px;
+  border-right:1px solid rgba(182,188,193,.25);
+}
+.factory-page-body .control-panel .panel-stats > div:last-child {border-right:0;}
