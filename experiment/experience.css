@@ -1045,3 +1045,124 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 }
 
 
+
+
+/* 2026-11-12 — Smooth shortcut drawer + unified unobtrusive return links.
+   Drawer content is always on its own opaque surface; no transient reveal
+   of the page behind a separately expanding blurred pseudo-background. */
+@media (max-width:760px) {
+  :is(.home-page,.factory-page-body) > .nav,
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open) {
+    height:72px!important;
+    min-height:72px!important;
+    overflow:visible;
+  }
+  :is(.home-page,.factory-page-body) > .nav::before,
+  :is(.home-page,.factory-page-body) > .nav.scrolled::before,
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open)::before,
+  :is(.home-page,.factory-page-body) > .nav.scrolled:has(#navlinks.open)::before {
+    height:82px!important;
+    background:linear-gradient(180deg,rgba(7,9,10,.99) 0%,rgba(7,9,10,.98) 87%,rgba(7,9,10,0) 100%)!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    -webkit-mask-image:none!important;
+    mask-image:none!important;
+    transition:none!important;
+  }
+  :is(.home-page,.factory-page-body) > .nav #navlinks,
+  :is(.home-page,.factory-page-body) > .nav #navlinks.open {
+    position:absolute!important;
+    top:72px!important;
+    inset-inline:0!important;
+    display:flex!important;
+    flex-direction:column!important;
+    margin:0!important;
+    padding:0 24px!important;
+    gap:0!important;
+    max-height:0;
+    overflow:hidden!important;
+    visibility:hidden;
+    opacity:1!important;
+    pointer-events:none;
+    transform:none!important;
+    background:#0a0d0f!important;
+    border:0!important;
+    box-shadow:0 17px 24px rgba(0,0,0,.22)!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    transition:max-height 430ms cubic-bezier(.22,.61,.36,1),visibility 0s linear 430ms!important;
+    will-change:max-height;
+  }
+  :is(.home-page,.factory-page-body) > .nav #navlinks.open {
+    max-height:min(var(--ds-drawer-height, 420px),calc(100dvh - 72px));
+    visibility:visible;
+    pointer-events:auto;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+    padding:0 24px 12px!important;
+    transition:max-height 430ms cubic-bezier(.22,.61,.36,1),visibility 0s!important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  :is(.home-page,.factory-page-body) > .nav #navlinks,
+  :is(.home-page,.factory-page-body) > .nav #navlinks.open {
+    transition:none!important;
+    will-change:auto;
+  }
+}
+/* A lightweight navigation hint, consistent between the case study and readers. */
+.factory-page-body .factory-page {position:relative;}
+.factory-page-body .factory-page > .ds-page-back,
+.notebook-page-body .notebook-hero .back-link {
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:7px;
+  width:max-content;
+  max-width:100%;
+  min-height:30px;
+  padding:4px 0;
+  border:0!important;
+  border-radius:0;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#aeb7bd!important;
+  font:500 11.5px/1.5 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:.01em;
+  text-decoration:none;
+  transition:color 180ms ease!important;
+}
+.factory-page-body .factory-page > .ds-page-back::before,
+.notebook-page-body .notebook-hero .back-link::before {
+  content:"←";
+  font:400 17px/1 'Segoe UI Symbol','Segoe UI',Arial,sans-serif;
+  color:#aeb7bd;
+  transition:translate 180ms ease;
+}
+.notebook-page-body .notebook-hero .back-link > .link-arrow {display:none;}
+.factory-page-body .factory-page > .ds-page-back {
+  position:absolute;
+  z-index:2;
+  top:79px;
+  right:0;
+  margin:0;
+}
+.factory-page-body .factory-hero {
+  padding-top:clamp(84px,7vw,104px);
+}
+@media (hover:hover) and (pointer:fine) {
+  .factory-page-body .factory-page > .ds-page-back:hover,
+  .notebook-page-body .notebook-hero .back-link:hover {color:#eef1f2!important;}
+  .factory-page-body .factory-page > .ds-page-back:hover::before,
+  .notebook-page-body .notebook-hero .back-link:hover::before {translate:-2px 0;}
+}
+@media(max-width:760px) {
+  .factory-page-body .factory-page > .ds-page-back {
+    top:79px;
+    right:0;
+  }
+  .factory-page-body .factory-hero {
+    padding-top:125px;
+  }
+  .notebook-page-body .notebook-hero .back-link {margin-bottom:28px;}
+}
