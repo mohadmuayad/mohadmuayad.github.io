@@ -761,12 +761,16 @@ html.ds-route-incoming main {
     padding:10px 12px;
     font-size:13px;
   }
-  .home-page #projects .milestone-story-content {padding:8px 3px 4px;}
+  .home-page #projects .milestone-story-content {
+    padding:12px clamp(9px,3vw,14px) 8px;
+    text-align:left;
+  }
   .home-page #projects .milestone-story-content p {
     font-size:13px;
     line-height:1.76;
     text-wrap:pretty;
   }
+  .home-page #projects .milestone-story-content p + p {margin-top:16px;}
 }
 @media (prefers-reduced-motion:reduce) {
   .home-page #projects .milestone-story::details-content,
