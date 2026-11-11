@@ -1374,3 +1374,30 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     font-size:10px;letter-spacing:.075em;line-height:1.5;
   }
 }
+
+/* Concise evidence-led description: readable prose, controlled two-line rhythm. */
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-heading {
+  padding:15px 15px 16px;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-title {
+  margin-bottom:9px;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-heading p {
+  max-width:39ch;
+  margin:0 auto;
+  color:#b6c0c5;
+  font:400 13px/1.55 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:0;
+  text-wrap:pretty;
+}
+@media(max-width:760px) {
+  .home-page #projects .ds-entry-split-card .ds-entry-evidence-heading {
+    padding:15px 14px 16px;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-evidence-heading p {
+    max-width:40ch;
+    font-size:13px;
+    line-height:1.55;
+    letter-spacing:0;
+  }
+}
