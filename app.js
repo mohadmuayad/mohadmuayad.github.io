@@ -86,11 +86,22 @@ function closeMenu(restoreFocus=false){
 }
 toggle?.addEventListener('click',()=>{
   if(!mobileNav.matches)return;
-  const open=menu.classList.toggle('open');
-  toggle.setAttribute('aria-expanded',String(open));
-  toggle.setAttribute('aria-label',open?'Close navigation':'Open navigation');
+  const opening=!menu.classList.contains('open');
+  if(opening){
+    // Measure the content before toggling the open class. A committed closed
+    // frame gives CSS a real 0px start state instead of a one-frame jump.
+    const available=Math.max(0,window.innerHeight-72);
+    const desired=Math.min(menu.scrollHeight+12,available);
+    navigationBar?.style.setProperty('--ds-drawer-height',`${Math.ceil(desired)}px`);
+    void menu.offsetHeight;
+    menu.classList.add('open');
+  }else{
+    menu.classList.remove('open');
+  }
+  toggle.setAttribute('aria-expanded',String(opening));
+  toggle.setAttribute('aria-label',opening?'Close navigation':'Open navigation');
   syncMenuAccess();
-  syncMenuBackdrop();
+  if(!opening)syncMenuBackdrop();
 });
 menu?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>closeMenu()));
 onDoc('keydown',event=>{
