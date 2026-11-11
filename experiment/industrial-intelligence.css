@@ -1135,3 +1135,34 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   .home-page #projects .ds-entry-split-card > .project-milestone {padding:24px 16px 28px;}
   .home-page #projects .ds-entry-information .ds-card-footer .project-link {width:100%;}
 }
+
+/* Entry split placement correction: explicitly reset legacy grid placement.
+   Old .ds-industrial-artwork used grid-column:1/-1 and grid-row:2, which
+   displaced the visual beneath the information and left an empty right cell. */
+@media(min-width:961px) {
+  .home-page #projects .ds-entry-split-card .ds-entry-split {
+    display:grid;grid-template-columns:minmax(0,1.65fr) minmax(290px,1fr);
+    grid-template-rows:auto;align-items:stretch;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-split > .ds-industrial-artwork {
+    grid-column:1;grid-row:1;order:0;align-self:stretch;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-split > .ds-entry-information {
+    grid-column:2;grid-row:1;order:0;align-self:stretch;
+  }
+}
+@media(max-width:960px) {
+  .home-page #projects .ds-entry-split-card {
+    display:block;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-split {
+    display:flex;flex-direction:column;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-split > .ds-industrial-artwork {
+    grid-column:auto;grid-row:auto;order:0;width:100%;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-split > .ds-entry-information {
+    grid-column:auto;grid-row:auto;order:1;width:100%;
+  }
+  .home-page #projects .ds-entry-split-card > .project-milestone {order:initial;}
+}
