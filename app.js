@@ -532,7 +532,9 @@ function initDarkSignal(canvas){
     const span=Math.max(180,bottom-top);
     const mid=(top+bottom)*.5;
     const radius=Math.max(1,Math.min(sx*.99,(cx-28)/1.13,(w-cx-28)/1.13));
-    const count=27;
+    // On narrow screens, preserve the full field with fewer, more legible strands.
+    // Desktop keeps the original 27-strand composition exactly as before.
+    const count=mob?23:27;
     const spacing=radius*2/(count-1);
     const smooth=(a,b,x)=>{const u=Math.max(0,Math.min(1,(x-a)/Math.max(1,b-a)));return u*u*(3-2*u)};
     const halo=ctx.createRadialGradient(cx,mid,14,cx,mid,radius*1.52);
@@ -554,13 +556,16 @@ function initDarkSignal(canvas){
       return cx+p*spacing*breathing+wave*.10+sweep+independent;
     };
     for(let i=0;i<count;i++){
+      // Keep the centre 23 phases of the original 27, instead of changing the
+      // wave shapes or speeding up the motion when thinning the mobile field.
+      const originalIndex=i+(27-count)/2;
       const p=i-(count-1)/2;
       const edge=Math.max(0,1-Math.abs(p)/((count+1)/2));
       const strength=Math.pow(edge,1.55);
-      const phase=i*.58;
-      const shimmer=.60+.40*Math.sin(t*.37+i*.5);
+      const phase=originalIndex*.58;
+      const shimmer=.60+.40*Math.sin(t*.37+originalIndex*.5);
       // A slight centre lift from the prototype, without brightening edges.
-      const opacity=.029+.335*strength*shimmer;
+      const opacity=.029+(mob?.347:.335)*strength*shimmer;
       ctx.beginPath();
       ctx.moveTo(pointAt(i,top),top);
       for(let y=top+4;y<bottom;y+=4)ctx.lineTo(pointAt(i,y),y);
@@ -575,10 +580,10 @@ function initDarkSignal(canvas){
       gradient.addColorStop(.84,color(opacity*.18));
       gradient.addColorStop(1,color(0));
       ctx.strokeStyle=gradient;
-      ctx.lineWidth=i%4===0?1.15:.75;
+      ctx.lineWidth=originalIndex%4===0?1.15:.75;
       ctx.stroke();
       // Retain the original slow pulse timing and neutral-metal colors.
-      if(i%3===0){
+      if(originalIndex%3===0){
         const yLight=mid+span*.32*Math.sin(t*.31+phase);
         const ya=Math.max(top,yLight-38),yb=Math.min(bottom,yLight+38);
         if(yb>ya){
