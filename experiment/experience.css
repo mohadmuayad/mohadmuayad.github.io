@@ -183,7 +183,7 @@
   width:min(100%,620px);
   margin:clamp(50px,6vw,78px) auto 0;
   padding-top:clamp(28px,4vw,42px);
-  border-top:1px solid rgba(165,185,194,.20);
+  border-top:0;
 }
 .home-page #contact .contact-footer .footer-name {
   color:var(--ink);
@@ -1040,8 +1040,6 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 @media(prefers-reduced-motion:reduce) {
   :is(.home-page,.factory-page-body,.notebook-page-body) > .nav {
     transition:none!important;
-    transform:none!important;
-    opacity:1!important;
   }
   .notebook-page-body .notebook-hero {animation:none!important;}
 }
