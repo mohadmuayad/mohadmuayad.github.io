@@ -1,3 +1,16 @@
+// Shared, predictable history-aware return links with an in-site fallback.
+document.addEventListener('click',event=>{
+  const link=event.target.closest('a[data-history-back]');
+  if(!link)return;
+  const referrer=document.referrer;
+  let sameSitePrevious=false;
+  try{
+    const previous=new URL(referrer);
+    const current=new URL(location.href);
+    sameSitePrevious=previous.origin===current.origin && (previous.pathname!==current.pathname || previous.search!==current.search || previous.hash!==current.hash);
+  }catch{}
+  if(sameSitePrevious && history.length>1){event.preventDefault();history.back();}
+});
 const $=s=>document.querySelector(s);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* Dark-only release: clear any legacy palette preference. This deliberately
