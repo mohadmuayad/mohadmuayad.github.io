@@ -1496,3 +1496,34 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   }
   .factory-page-body .factory-hero {padding-top:125px;}
 }
+
+/* Project card finishing: lift the desktop metrics and centered project link
+   together, and make the three evidence steps easier to read at every size. */
+@media(min-width:961px) {
+  body.home-page #projects article.ds-entry-split-card div.ds-entry-information {
+    padding-bottom:14px!important;
+  }
+}
+.home-page #projects .ds-entry-evidence-steps {
+  column-gap:clamp(10px,1.2vw,15px);
+  row-gap:5px;
+}
+.home-page #projects .ds-entry-evidence-steps > span {
+  gap:5px;
+}
+.home-page #projects .ds-entry-evidence-steps svg {
+  width:15px;
+  height:15px;
+  flex-basis:15px;
+}
+.home-page #projects .ds-entry-evidence-steps b {
+  font-size:12px;
+  line-height:1.35;
+}
+@media(max-width:760px) {
+  .home-page #projects .ds-entry-evidence-steps {
+    column-gap:10px;
+    row-gap:6px;
+  }
+}
+
