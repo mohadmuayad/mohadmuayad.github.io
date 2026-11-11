@@ -17,8 +17,19 @@
     event.preventDefault();
     const prior = running.get(details);
     const opening = !(prior ? prior.opening : details.open);
+    // The milestone's description has a separate, gentle editorial fade.
+    // Other disclosures retain their existing height-only animation.
+    const story = details.classList.contains('milestone-story')
+      ? details.querySelector('.milestone-story-content') : null;
+    // Preserve the visible position when a quick second tap reverses motion.
+    const currentVisual = story && prior?.contentAnimation ? getComputedStyle(story) : null;
+    const fromOpacity = currentVisual ? currentVisual.opacity : (details.open ? '1' : '0');
+    const fromTransform = currentVisual ? currentVisual.transform : (opening ? 'translateY(8px)' : 'translateY(0px)');
     const startHeight = details.getBoundingClientRect().height;
-    if (prior) prior.animation.cancel();
+    if (prior) {
+      prior.animation.cancel();
+      prior.contentAnimation?.cancel();
+    }
 
     const savedHeight = prior ? prior.savedHeight : details.style.height;
     const savedOverflow = prior ? prior.savedOverflow : details.style.overflow;
@@ -49,10 +60,21 @@
       [{height:`${startHeight}px`},{height:`${endHeight}px`}],
       {duration, easing, fill:'both'}
     );
-    running.set(details,{animation,opening,savedHeight,savedOverflow});
+    // Slightly delay the reveal, so the panel opens before its text arrives.
+    // During closing, fade first and let the existing height animation finish.
+    // Opacity/transform do not alter text wrapping or panel measurements.
+    const contentAnimation = story ? story.animate(
+      [
+        {opacity:fromOpacity, transform:fromTransform},
+        {opacity:opening ? 1 : 0, transform:opening ? 'translateY(0px)' : 'translateY(-4px)'}
+      ],
+      {duration:opening ? 520 : 300, delay:opening ? 115 : 0, easing, fill:'both'}
+    ) : null;
+    running.set(details,{animation,contentAnimation,opening,savedHeight,savedOverflow});
     animation.addEventListener('finish', () => {
       if (running.get(details)?.animation !== animation) return;
       if (!opening) details.open = false;
+      contentAnimation?.cancel();
       animation.cancel();
       details.style.height = savedHeight;
       details.style.overflow = savedOverflow;
