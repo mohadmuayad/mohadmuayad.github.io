@@ -1206,3 +1206,18 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 
 /* Add breathing room from the viewport edge to notebook return links. */
 .notebook-page-body .notebook-hero .back-link {margin:8px auto 22px 14px;}
+
+
+/* Return affordances align to page content and use a restrained chevron. */
+.factory-page-body .factory-page > .ds-page-back {left:clamp(40px,3.8vw,72px)!important;right:auto!important;top:96px!important;}
+.factory-page-body .factory-page > .ds-page-back::before {content:none!important;display:none!important;}
+.factory-page-body .back-chevron,
+.notebook-page-body .back-chevron {display:inline-block;margin-left:4px;color:currentColor;transition:transform 180ms ease;}
+.notebook-page-body .notebook-hero .back-link {margin-left:14px;}
+@media(hover:hover) and (pointer:fine) {
+ .factory-page-body .factory-page > .ds-page-back:hover .back-chevron,
+ .notebook-page-body .notebook-hero .back-link:hover .back-chevron {transform:translateX(2px);}
+}
+@media(max-width:760px) {
+ .factory-page-body .factory-page > .ds-page-back {left:24px!important;top:96px!important;}
+}
