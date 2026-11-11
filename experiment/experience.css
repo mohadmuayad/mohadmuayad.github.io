@@ -1202,3 +1202,7 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
     transform:translateY(-1px);
   }
 }
+
+
+/* Add breathing room from the viewport edge to notebook return links. */
+.notebook-page-body .notebook-hero .back-link {margin:8px auto 22px 14px;}
