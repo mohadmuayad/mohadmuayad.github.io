@@ -1261,3 +1261,39 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   .home-page #projects {padding-top:65px;}
   .home-page #projects .ds-project-section-heading {margin-bottom:17px;}
 }
+
+/* Final entry alignment: section eyebrow matches the site's mobile headings,
+   and the destination action is centered in its own information cell. */
+.home-page #projects .ds-entry-split-card .ds-entry-information .ds-card-footer {
+  display:flex;
+  flex:1 1 auto;
+  align-self:stretch;
+  width:100%;
+  min-height:88px;
+  align-items:center;
+  justify-content:center;
+  padding:12px 18px;
+  margin:0;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-information .ds-card-footer .project-link {
+  display:inline-flex;
+  flex:0 1 278px;
+  width:min(100%,278px);
+  margin:0 auto;
+}
+@media(max-width:760px) {
+  .home-page #projects {padding-top:59px;}
+  .home-page #projects .ds-project-section-heading .eyebrow {
+    font-size:11px;
+    letter-spacing:1.45px;
+    line-height:1.7;
+    margin-bottom:10px;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-information .ds-card-footer {
+    flex:0 0 auto;
+    min-height:86px;
+    padding:15px 18px;
+    align-items:center;
+    justify-content:center;
+  }
+}
