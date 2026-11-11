@@ -500,7 +500,9 @@ function initDarkSignal(canvas){
   const mobile=()=>window.matchMedia('(max-width:760px)').matches;
   const point=(x,y)=>{ctx.lineTo(x,y)};
   const size=()=>{
-    const bounds=hero.getBoundingClientRect();
+    // The drawing surface is viewport-aligned, while the artwork keeps its
+    // original hero-relative scale. Match bitmap pixels to the actual CSS box.
+    const bounds=canvas.getBoundingClientRect();
     const dpr=Math.min(window.devicePixelRatio||1,1.5);
     w=Math.max(1,bounds.width);h=Math.max(1,bounds.height);
     canvas.width=Math.max(1,Math.round(w*dpr));
@@ -513,13 +515,21 @@ function initDarkSignal(canvas){
     const title=hero.querySelector('h1');
     if(!title)return;
     const hr=hero.getBoundingClientRect();
+    const cr=canvas.getBoundingClientRect();
     const tr=title.getBoundingClientRect();
-    const cx=(tr.left+tr.width*.53-hr.left);
-    const cy=(tr.top+tr.height*.56-hr.top);
+    // Align the exact same moving field with the title, not a padded box.
+    const cx=(tr.left+tr.width*.53-cr.left);
+    const cy=(tr.top+tr.height*.56-cr.top);
     const mob=mobile();
-    const sx=mob?Math.min(w*.46,165):Math.min(w*.41,275);
-    const sy=mob?Math.min(h*.30,265):Math.min(h*.43,310);
-    const shape=(y,p)=>Math.sin(y*.010+p*.83-t*.19)*16+Math.sin(y*.019-p*.27+t*.13)*8;
+    const originalSx=mob?Math.min(hr.width*.46,165):Math.min(hr.width*.41,275);
+    // Only shrink the field where its outer ellipse would be hard-clipped.
+    // Preserve the original scale everywhere else (notably desktop).
+    const sx=Math.max(1,Math.min(originalSx,(cx-4)/1.16,(w-cx-4)/1.16));
+    const sy=mob?Math.min(hr.height*.30,265):Math.min(hr.height*.43,310);
+    // Mobile adds invisible headroom above the hero. Offset the sampling
+    // coordinate so each filament keeps its exact original wave phase.
+    const yOrigin=cr.top-hr.top;
+    const shape=(y,p)=>Math.sin((y+yOrigin)*.010+p*.83-t*.19)*16+Math.sin((y+yOrigin)*.019-p*.27+t*.13)*8;
     // Wide, matte luminosity sits behind the name, never in front of it.
     const halo=ctx.createRadialGradient(cx,cy,13,cx,cy,sx*1.45);
     halo.addColorStop(0,'rgba(116,129,135,.085)');

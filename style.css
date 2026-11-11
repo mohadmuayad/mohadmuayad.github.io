@@ -847,11 +847,26 @@ main,footer{padding-left:23px;padding-right:23px}.hero{display:flex;flex-directi
 .home-page .hero .dark-signal-canvas {
   position:absolute;
   inset:0;
+  left:50%;
+  right:auto;
   z-index:0;
-  width:100%;
+  /* Let the existing filaments breathe beyond the padded content edges.
+     Cap very wide screens to avoid unnecessarily large GPU surfaces. */
+  width:min(100vw,1600px);
+  width:min(100cqw,1600px);
   height:100%;
+  transform:translateX(-50%);
   pointer-events:none;
   display:block;
+}
+@media (max-width:760px) {
+  /* Allow the unchanged tall wave to extend above the hero without a
+     horizontal cutoff in the visible viewport or beneath the mobile nav. */
+  .home-page .hero .dark-signal-canvas {
+    top:-140px;
+    bottom:auto;
+    height:calc(100% + 140px);
+  }
 }
 .home-page .hero-copy,.home-page .portrait-wrap {z-index:2;}
 .home-page .hero h1 {color:#f0f1f2;text-shadow:0 2px 38px rgba(0,0,0,.18);}
