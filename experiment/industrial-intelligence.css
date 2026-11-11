@@ -867,3 +867,83 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   border-right:1px solid rgba(182,188,193,.25);
 }
 .factory-page-body .control-panel .panel-stats > div:last-child {border-right:0;}
+
+/* Experience 1.1 — Pearl analytical signature beneath the Factory metrics. */
+.factory-page-body .control-panel .ds-analytical-signal {
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:11px;padding:clamp(19px,3vw,30px) 12px clamp(20px,3vw,30px);
+  background:linear-gradient(180deg,#111416,#0d1013);
+  text-align:center;color:#dde2e5;
+}
+.factory-page-body .ds-signal-icons {display:flex;align-items:center;justify-content:center;gap:18px;}
+.factory-page-body .ds-signal-icon {
+  display:grid;place-items:center;width:37px;height:37px;color:#d7dbde;
+  filter:drop-shadow(0 0 7px rgba(220,229,233,.13));
+}
+.factory-page-body .ds-signal-icon + .ds-signal-icon {position:relative;}
+.factory-page-body .ds-signal-icon + .ds-signal-icon::before {
+  content:"";position:absolute;left:-9px;top:7px;height:23px;
+  border-left:1px solid rgba(182,190,195,.3);
+}
+.factory-page-body .ds-signal-icon svg {width:29px;height:29px;}
+.factory-page-body .ds-signal-heading {
+  font:650 clamp(10.5px,1.25vw,14px)/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:clamp(.025em,.12vw,.11em);color:#e7ebed;
+  text-wrap:balance;
+}
+.factory-page-body .ds-signal-stages {
+  font:500 clamp(9px,1vw,11.5px)/1.5 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:clamp(.04em,.17vw,.16em);color:#adb8be;
+}
+.factory-page-body .ds-signal-stages span {padding-inline:2px;color:#8a969b;}
+.factory-page-body .ds-signal-dots {
+  display:flex;align-items:center;justify-content:center;gap:clamp(6px,1.3vw,11px);
+  margin-top:4px;
+}
+.factory-page-body .ds-signal-dots i {
+  width:5px;height:5px;flex:0 0 5px;border-radius:50%;
+  background:#7e8e96;opacity:.48;
+  animation:ds-pearl-signal 6s ease-in-out infinite;
+  animation-delay:calc(var(--signal-step)*.24s);
+}
+@keyframes ds-pearl-signal {
+  0%,22%,100% {opacity:.44;transform:scale(1);box-shadow:none;}
+  9% {opacity:1;transform:scale(1.35);background:#e4ebed;box-shadow:0 0 9px rgba(209,226,234,.68);}
+}
+@media(max-width:460px) {
+  .factory-page-body .control-panel .ds-analytical-signal {gap:9px;padding:18px 9px 21px;}
+  .factory-page-body .ds-signal-icon {width:32px;height:32px;}
+  .factory-page-body .ds-signal-icon svg {width:26px;height:26px;}
+  .factory-page-body .ds-signal-heading {font-size:10px;letter-spacing:.035em;}
+  .factory-page-body .ds-signal-stages {font-size:9px;letter-spacing:.035em;}
+}
+/* A raised, unmistakable destination control without distracting idle loops. */
+.home-page #projects .ds-living-card .ds-card-footer .project-link {
+  position:relative;
+  transform:translateY(-5px);
+  background:linear-gradient(135deg,#272c30,#1b2023);
+  border-color:rgba(213,220,224,.64);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 5px 15px rgba(0,0,0,.16);
+  transition:transform .3s cubic-bezier(.22,.61,.36,1),
+    border-color .3s ease,background .3s ease,box-shadow .3s ease;
+}
+.home-page #projects .ds-living-card .ds-card-footer .project-link svg {
+  transition:transform .3s cubic-bezier(.22,.61,.36,1),translate .3s ease;
+}
+@media(hover:hover) and (pointer:fine) {
+  .home-page #projects .ds-living-card .ds-card-footer .project-link:hover {
+    transform:translateY(-8px);
+    border-color:#e2e7ea;
+    background:linear-gradient(135deg,#33393e,#242a2e);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 10px 22px rgba(0,0,0,.21);
+  }
+  .home-page #projects .ds-living-card .ds-card-footer .project-link:hover svg {
+    transform:translate(2px,-2px) rotate(-90deg)!important;
+  }
+}
+.home-page #projects .ds-living-card .ds-card-footer .project-link:active {transform:translateY(-3px) scale(.99);}
+@media(prefers-reduced-motion:reduce) {
+  .factory-page-body .ds-signal-dots i {animation:none!important;opacity:.65;transform:none;}
+  .home-page #projects .ds-living-card .ds-card-footer .project-link,
+  .home-page #projects .ds-living-card .ds-card-footer .project-link svg {transition:none!important;}
+}
