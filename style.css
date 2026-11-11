@@ -2878,3 +2878,17 @@ body.home-page {
   .home-page #skills .skill.reveal.seen:hover,
   .home-page #skills .skill:not(.reveal):hover {transform:none!important;}
 }
+
+
+/* Shared details motion — JS animates the real box height, not the
+   experimental ::details-content auto-size transition. When JavaScript
+   is disabled the existing native CSS disclosures continue to work. */
+html.ds-smooth-disclosures details.data-dictionary::details-content,
+html.ds-smooth-disclosures details.milestone-story::details-content {
+  block-size:auto!important;
+  opacity:1!important;
+  transition:none!important;
+}
+html.ds-smooth-disclosures .home-page .milestone-story[data-disclosure-motion="closing"] .milestone-story-chevron {
+  transform:rotate(0deg);
+}
