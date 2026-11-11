@@ -513,83 +513,93 @@ function initDarkSignal(canvas){
   function draw(t){
     ctx.clearRect(0,0,w,h);
     const title=hero.querySelector('h1');
-    if(!title)return;
+    const actions=hero.querySelector('.actions');
+    if(!title||!actions)return;
     const hr=hero.getBoundingClientRect();
     const cr=canvas.getBoundingClientRect();
     const tr=title.getBoundingClientRect();
-    // Align the exact same moving field with the title, not a padded box.
-    const cx=(tr.left+tr.width*.53-cr.left);
-    let cy=(tr.top+tr.height*.56-cr.top);
+    const ar=actions.getBoundingClientRect();
     const mob=mobile();
+    const cx=tr.left+tr.width*.53-cr.left;
     const originalSx=mob?Math.min(hr.width*.46,165):Math.min(hr.width*.41,275);
-    // Keep the field entirely inside the viewport, even at tablet widths.
     const sx=Math.max(1,Math.min(originalSx,(cx-4)/1.16,(w-cx-4)/1.16));
-    // The previous mobile field used the entire tall hero for its vertical
-    // radius, hiding the top of the ring off-screen. Derive both axes from
-    // the same responsive width, while leaving desktop's maximum unchanged.
-    const sy=mob?Math.min(sx*1.06,190):Math.min(hr.height*.43,310,sx*1.12);
-    // Keep the full mobile ring below the 72px navigation, without moving
-    // its horizontal axis or altering the wave's speed / sampling equations.
-    if(mob)cy=Math.max(cy,hr.top-cr.top+82+sy*1.15);
-    // Mobile adds invisible headroom above the hero. Offset the sampling
-    // coordinate so each filament keeps its exact original wave phase.
     const yOrigin=cr.top-hr.top;
-    const shape=(y,p)=>Math.sin((y+yOrigin)*.010+p*.83-t*.19)*16+Math.sin((y+yOrigin)*.019-p*.27+t*.13)*8;
-    // Wide, matte luminosity sits behind the name, never in front of it.
-    const halo=ctx.createRadialGradient(cx,cy,13,cx,cy,sx*1.45);
+    // Open Signal Resonance: no circle outline, hard ellipse clip or sharp ends.
+    // Both boundaries follow the actual title/buttons, rather than the hero's
+    // total height, so the fade stays intentional on desktop and on phones.
+    const top=Math.max(hr.top-cr.top+(mob?74:65),tr.top-cr.top-(mob?116:175));
+    const bottom=Math.min(h,ar.top-cr.top+(mob?22:29));
+    const span=Math.max(180,bottom-top);
+    const mid=(top+bottom)*.5;
+    const radius=Math.max(1,Math.min(sx*.99,(cx-28)/1.13,(w-cx-28)/1.13));
+    const count=27;
+    const spacing=radius*2/(count-1);
+    const smooth=(a,b,x)=>{const u=Math.max(0,Math.min(1,(x-a)/Math.max(1,b-a)));return u*u*(3-2*u)};
+    const halo=ctx.createRadialGradient(cx,mid,14,cx,mid,radius*1.52);
     halo.addColorStop(0,'rgba(116,129,135,.085)');
     halo.addColorStop(.5,'rgba(96,106,111,.052)');
     halo.addColorStop(1,'rgba(30,36,40,0)');
-    ctx.fillStyle=halo;ctx.fillRect(cx-sx*1.6,cy-sx*1.6,sx*3.2,sx*3.2);
-    ctx.save();
-    ctx.beginPath();
-    ctx.ellipse(cx,cy,sx*1.16,sy*1.20,0,0,Math.PI*2);
-    ctx.clip();
-    // 27 fine vertical filaments: richer density, identical color and timing.
-    const count=27;
-    const spacing=sx*1.8/(count-1);
+    ctx.fillStyle=halo;
+    ctx.fillRect(cx-radius*1.6,mid-radius*1.6,radius*3.2,radius*3.2);
+    const pointAt=(i,y)=>{
+      const p=i-(count-1)/2;
+      const u=(y-mid)/Math.max(1,span*.50);
+      const wave=Math.sin((y+yOrigin)*.010+p*.83-t*.19)*16
+                +Math.sin((y+yOrigin)*.019-p*.27+t*.13)*8;
+      // Shared sweeping rhythm is the source of the rotation impression.
+      // Small per-strand displacement keeps separation without crossings.
+      const sweep=Math.sin(u*2.4-t*.19)*23+Math.sin(u*4.7+t*.13)*7;
+      const breathing=.94-.08*Math.exp(-u*u*3)+.03*Math.cos(u*2.8-t*.13);
+      const independent=Math.sin(u*3.0+p*.16-t*.19)*2.0;
+      return cx+p*spacing*breathing+wave*.10+sweep+independent;
+    };
     for(let i=0;i<count;i++){
       const p=i-(count-1)/2;
-      const x0=cx+p*spacing;
-      const strength=Math.pow(1-Math.abs(p)/((count+1)/2),1.4);
+      const edge=Math.max(0,1-Math.abs(p)/((count+1)/2));
+      const strength=Math.pow(edge,1.55);
       const phase=i*.58;
-      ctx.beginPath();
-      let first=true;
-      for(let y=cy-sy*1.21;y<=cy+sy*1.21;y+=5){
-        const d=(y-cy)/sy;
-        const ebb=.82+.18*Math.cos(t*.21+phase+d*1.7);
-        const x=x0+shape(y,phase)*ebb;
-        if(first){ctx.moveTo(x,y);first=false}else point(x,y);
-      }
-      ctx.lineWidth=i%4===0?1.15:.75;
       const shimmer=.60+.40*Math.sin(t*.37+i*.5);
-      ctx.strokeStyle='rgba(173,189,196,'+(0.044+strength*.135*shimmer).toFixed(4)+')';
+      // A slight centre lift from the prototype, without brightening edges.
+      const opacity=.029+.335*strength*shimmer;
+      ctx.beginPath();
+      ctx.moveTo(pointAt(i,top),top);
+      for(let y=top+4;y<bottom;y+=4)ctx.lineTo(pointAt(i,y),y);
+      ctx.lineTo(pointAt(i,bottom),bottom);
+      const gradient=ctx.createLinearGradient(0,top,0,bottom);
+      const color=a=>'rgba(173,189,196,'+Math.max(0,a).toFixed(4)+')';
+      gradient.addColorStop(0,color(0));
+      gradient.addColorStop(.13,color(opacity*.50));
+      gradient.addColorStop(.28,color(opacity*.88));
+      gradient.addColorStop(.49,color(opacity));
+      gradient.addColorStop(.69,color(opacity*.63));
+      gradient.addColorStop(.84,color(opacity*.18));
+      gradient.addColorStop(1,color(0));
+      ctx.strokeStyle=gradient;
+      ctx.lineWidth=i%4===0?1.15:.75;
       ctx.stroke();
-      // Signal envelopes slide slowly and reverse smoothly: no discontinuous reset.
+      // Retain the original slow pulse timing and neutral-metal colors.
       if(i%3===0){
-        const yLight=cy+sy*.78*Math.sin(t*.31+phase);
-        ctx.beginPath();
-        let started=false;
-        for(let y=yLight-38;y<=yLight+38;y+=3){
-          const d=(y-cy)/sy;
-          const x=x0+shape(y,phase)*(.82+.18*Math.cos(t*.21+phase+d*1.7));
-          if(!started){ctx.moveTo(x,y);started=true}else point(x,y);
+        const yLight=mid+span*.32*Math.sin(t*.31+phase);
+        const ya=Math.max(top,yLight-38),yb=Math.min(bottom,yLight+38);
+        if(yb>ya){
+          const fade=smooth(top,top+90,yLight)*(1-smooth(bottom-130,bottom,yLight));
+          const glow=fade*strength*(mob?.28:.24);
+          if(glow>.001){
+            ctx.beginPath();
+            ctx.moveTo(pointAt(i,ya),ya);
+            for(let y=ya+3;y<yb;y+=3)ctx.lineTo(pointAt(i,y),y);
+            ctx.lineTo(pointAt(i,yb),yb);
+            const pulse=ctx.createLinearGradient(0,yLight-38,0,yLight+38);
+            pulse.addColorStop(0,'rgba(222,233,238,0)');
+            pulse.addColorStop(.5,'rgba(218,229,233,'+glow.toFixed(4)+')');
+            pulse.addColorStop(1,'rgba(222,233,238,0)');
+            ctx.strokeStyle=pulse;
+            ctx.lineWidth=1.25;
+            ctx.stroke();
+          }
         }
-        const g=ctx.createLinearGradient(0,yLight-38,0,yLight+38);
-        g.addColorStop(0,'rgba(222,233,238,0)');
-        g.addColorStop(.5,'rgba(218,229,233,'+(mob?.31:.25)+')');
-        g.addColorStop(1,'rgba(222,233,238,0)');
-        ctx.strokeStyle=g;ctx.lineWidth=1.35;ctx.stroke();
       }
     }
-    ctx.restore();
-    // A slow breathing perimeter gives the field dimension without a neon glow.
-    const breathe=(Math.sin(t*.27)+1)*.5;
-    ctx.beginPath();
-    ctx.ellipse(cx,cy,sx*(1.12+breathe*.025),sy*(1.12+breathe*.025),0,0,Math.PI*2);
-    ctx.lineWidth=.75;
-    ctx.strokeStyle='rgba(176,189,193,'+(mob?.115:.085)+')';
-    ctx.stroke();
   }
   function frame(now){
     raf=0;
