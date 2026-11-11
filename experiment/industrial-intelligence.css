@@ -1248,3 +1248,16 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   }
   .home-page #projects .ds-entry-split-card .ds-entry-info-heading {padding:17px 12px 14px;}
 }
+
+/* Section-title spacing polish — move the existing title group upward without
+   adding another heading or changing the approved project card. */
+@media(min-width:761px) {
+  .home-page #projects {padding-top:clamp(64px,6vw,88px);}
+  .home-page #projects .ds-project-section-heading {
+    margin-bottom:clamp(18px,2vw,25px);
+  }
+}
+@media(max-width:760px) {
+  .home-page #projects {padding-top:65px;}
+  .home-page #projects .ds-project-section-heading {margin-bottom:17px;}
+}
