@@ -1166,3 +1166,11 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
   }
   .notebook-page-body .notebook-hero .back-link {margin-bottom:28px;}
 }
+
+
+/* Keep the portfolio return link clear of the viewport scrollbar. */
+.factory-page-body .factory-page > .ds-page-back {top:89px;right:18px;}
+.factory-page-body .factory-page > .ds-page-back::before {content:none!important;display:none!important;}
+@media(max-width:760px) {
+  .factory-page-body .factory-page > .ds-page-back {top:89px;right:18px;}
+}
