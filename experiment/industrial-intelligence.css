@@ -1297,3 +1297,36 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     justify-content:center;
   }
 }
+
+/* Evidence-led project synopsis: legible at phone sizes without changing the card layout. */
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-heading {
+  padding:clamp(15px,1.8vw,22px) clamp(13px,2vw,24px) clamp(13px,1.55vw,19px);
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-title {
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  margin:0 0 10px;color:#e0e5e8;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-title > span {
+  margin:0;color:inherit;
+  font:650 15px/1.35 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:.035em;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-icon {
+  display:block;flex:none;width:22px;height:22px;color:#d7dbde;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-heading p {
+  max-width:36ch;margin:0 auto;color:#b6c0c5;
+  font:400 14px/1.62 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  text-wrap:pretty;
+}
+@media(max-width:760px) {
+  .home-page #projects .ds-entry-split-card .ds-entry-evidence-heading {
+    padding:17px 14px 16px;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-evidence-title > span {
+    font-size:14px;letter-spacing:.025em;
+  }
+  .home-page #projects .ds-entry-split-card .ds-entry-evidence-heading p {
+    font-size:13px;line-height:1.6;
+  }
+}
