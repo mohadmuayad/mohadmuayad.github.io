@@ -1405,3 +1405,94 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     white-space:normal;
   }
 }
+
+
+/* 2026-11-12 — Project heading spacing: compare to About/Skills section rhythm.
+   This section deliberately uses one eyebrow, title and summary with no duplicate heading. */
+.home-page #projects {
+  padding-top:clamp(82px,7.2vw,108px);
+}
+.home-page #projects .ds-project-section-heading {
+  gap:0;
+  margin-bottom:clamp(26px,2.7vw,34px);
+}
+.home-page #projects .ds-project-section-heading > .eyebrow {
+  margin:0 0 clamp(18px,2vw,24px);
+}
+.home-page #projects .ds-project-section-heading > h2 {
+  margin:0 0 clamp(13px,1.5vw,18px);
+}
+.home-page #projects .ds-project-section-description {
+  max-width:69ch;
+  line-height:1.72;
+}
+/* Short, content-rich caption with a three-stage visual register.
+   Only text/icon typography and internal spacing change; card geometry stays. */
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-heading {
+  padding:12px 12px 11px;
+  gap:0;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-title {
+  justify-content:center;
+  margin:0 0 7px;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-title > span {
+  font-size:14px;
+  line-height:1.3;
+  font-weight:650;
+  letter-spacing:.025em;
+}
+.home-page #projects .ds-entry-split-card .ds-entry-evidence-heading > p {
+  font-size:12.5px;
+  line-height:1.48;
+  max-width:37ch;
+  text-align:center;
+  margin:0 auto 8px;
+  white-space:normal;
+  overflow:visible;
+}
+.home-page #projects .ds-entry-evidence-steps {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  column-gap:clamp(8px,1.1vw,15px);
+  row-gap:3px;
+  color:#bbc5ca;
+}
+.home-page #projects .ds-entry-evidence-steps > span {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  white-space:nowrap;
+}
+.home-page #projects .ds-entry-evidence-steps svg {
+  width:13px;height:13px;flex:0 0 13px;
+  color:#cbd4d9;
+}
+.home-page #projects .ds-entry-evidence-steps b {
+  font:500 10px/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:.025em;
+  color:#b6bec3;
+}
+/* Factory hero has its return affordance outside the section: no spacer consumed. */
+.factory-page-body .factory-page > .ds-page-back {top:79px;}
+.factory-page-body .factory-hero {padding-top:clamp(84px,7vw,104px);}
+@media(max-width:760px) {
+  .home-page #projects {padding-top:80px;}
+  .home-page #projects .ds-project-section-heading {
+    margin-bottom:27px;
+  }
+  .home-page #projects .ds-project-section-heading > .eyebrow {
+    font-size:11px;
+    letter-spacing:1.45px;
+    margin-bottom:18px;
+  }
+  .home-page #projects .ds-project-section-heading > h2 {
+    margin-bottom:14px;
+  }
+  .home-page #projects .ds-entry-evidence-steps {
+    column-gap:12px;
+  }
+  .factory-page-body .factory-hero {padding-top:125px;}
+}
