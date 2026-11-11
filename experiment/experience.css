@@ -1221,3 +1221,22 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 @media(max-width:760px) {
  .factory-page-body .factory-page > .ds-page-back {left:24px!important;top:96px!important;}
 }
+
+
+/* Keep the mobile menu header and its list on one continuous surface. */
+@media(max-width:760px) {
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open),
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open) .greeting {
+    background:#0a0d0f!important;
+  }
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open)::before,
+  :is(.home-page,.factory-page-body) > .nav.scrolled:has(#navlinks.open)::before {
+    background:#0a0d0f!important;
+    height:72px!important;
+  }
+  :is(.home-page,.factory-page-body) > .nav #navlinks,
+  :is(.home-page,.factory-page-body) > .nav #navlinks.open {
+    background:#0a0d0f!important;
+    box-shadow:none!important;
+  }
+}
