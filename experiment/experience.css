@@ -792,3 +792,77 @@ html.ds-route-incoming main {
     transition:none!important;
   }
 }
+
+
+/* Reader navigation polish — align notebook header with the 90px / 72px
+   site navigation. Preserve both Project and Portfolio even on small phones. */
+.notebook-page-body .notebook-nav {
+  height:90px;
+  padding-inline:max(34px,calc((100vw - 1132px)/2));
+  background:linear-gradient(180deg,rgba(6,9,11,.97),rgba(12,17,20,.91));
+  border-bottom:1px solid rgba(145,163,173,.18);
+  box-shadow:0 15px 30px -29px rgba(0,0,0,.8);
+}
+.notebook-page-body .notebook-nav .greeting {
+  font-size:13px;
+  letter-spacing:.08em;
+  white-space:nowrap;
+  color:#e7edf0;
+  min-height:44px;
+}
+.notebook-page-body .notebook-nav-links {
+  gap:9px;
+  white-space:nowrap;
+}
+.notebook-page-body .notebook-nav-links > a {
+  font-size:12px;
+  letter-spacing:.02em;
+  justify-content:center;
+  min-height:42px;
+  transition:background-color .3s ease,color .3s ease,border-color .3s ease;
+}
+.notebook-page-body .notebook-nav-links .notebook-nav-project {
+  color:#bac8d0;
+  padding:0 12px;
+}
+.notebook-page-body .notebook-nav-links .notebook-nav-portfolio {
+  display:inline-flex;
+  color:#e5ebee;
+  padding:0 16px;
+  border:1px solid rgba(152,171,181,.37);
+  border-radius:4px;
+  background:rgba(150,166,175,.035);
+}
+.notebook-page-body .notebook-nav-links a:hover {color:#fff;}
+.notebook-page-body .notebook-nav-links .notebook-nav-portfolio:hover {
+  border-color:rgba(186,203,212,.68);
+  background:rgba(150,166,175,.085);
+}
+/* Avoid stacking the old notebook hero entrance over a whole-page reveal. */
+html.ds-route-incoming .notebook-page-body .notebook-hero {
+  animation:none!important;
+}
+@media(max-width:760px) {
+  .notebook-page-body .notebook-nav {
+    height:72px;
+    padding-inline:clamp(16px,4vw,22px);
+  }
+  .notebook-page-body .notebook-nav .greeting {
+    font-size:12px;
+    letter-spacing:.06em;
+  }
+  .notebook-page-body .notebook-nav-links {gap:4px;}
+  .notebook-page-body .notebook-nav-links > a {
+    font-size:11.5px;
+    min-height:40px;
+  }
+  .notebook-page-body .notebook-nav-links .notebook-nav-project {padding:0 7px;}
+  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {padding:0 12px;}
+}
+@media(max-width:370px) {
+  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {display:inline-flex;}
+  .notebook-page-body .notebook-nav-links > a {font-size:11px;}
+  .notebook-page-body .notebook-nav-links {gap:2px;}
+  .notebook-page-body .notebook-nav-links .notebook-nav-project {padding:0 5px;}
+  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {padding:0 9px;}
+}
