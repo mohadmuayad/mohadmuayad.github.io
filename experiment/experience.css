@@ -1189,3 +1189,16 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 @media(max-width:760px) {
   .factory-page-body .factory-page > .ds-page-back {top:96px;left:0;right:auto;}
 }
+
+
+/* Notebook return links share the factory link's left alignment and calm hover. */
+.notebook-page-body .notebook-hero .back-link {
+  margin:8px auto 22px 0;
+  transition:color 180ms ease,transform 180ms ease!important;
+}
+@media(hover:hover) and (pointer:fine) {
+  .notebook-page-body .notebook-hero .back-link:hover {
+    color:#eef1f2!important;
+    transform:translateY(-1px);
+  }
+}
