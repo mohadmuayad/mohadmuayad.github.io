@@ -124,6 +124,26 @@ onDoc('keydown',event=>{
   }
 });
 onDoc('click',event=>{if(!event.target.closest?.('.nav'))closeMenu()});
+function onPageScrollCloseMenu(){
+  if(mobileNav.matches&&menu?.classList.contains('open'))closeMenu();
+}
+let menuTouchStart=null;
+function onMenuTouchStart(event){
+  if(!mobileNav.matches||!menu?.classList.contains('open')||event.touches.length!==1){menuTouchStart=null;return;}
+  menuTouchStart={x:event.touches[0].clientX,y:event.touches[0].clientY};
+}
+function onMenuTouchEnd(event){
+  if(!menuTouchStart||!mobileNav.matches||!menu?.classList.contains('open')||event.changedTouches.length!==1){menuTouchStart=null;return;}
+  const touch=event.changedTouches[0];
+  const dx=touch.clientX-menuTouchStart.x;
+  const dy=touch.clientY-menuTouchStart.y;
+  menuTouchStart=null;
+  if(dy<=-48&&Math.abs(dx)<Math.abs(dy)*.8)closeMenu();
+}
+menu?.addEventListener('touchstart',onMenuTouchStart,{passive:true});
+menu?.addEventListener('touchend',onMenuTouchEnd,{passive:true});
+menu?.addEventListener('touchcancel',()=>{menuTouchStart=null;},{passive:true});
+window.addEventListener('scroll',onPageScrollCloseMenu,{passive:true});
 const handleNavResize=()=>{
   if(!mobileNav.matches&&menu?.classList.contains('open'))closeMenu();
   else{syncMenuAccess();syncMenuBackdrop();}
@@ -434,6 +454,9 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
     header?.removeEventListener('pointerdown',onHeaderFocus);
     for(const observer of observers) observer.disconnect();
     for(const [name,callback] of documentListeners)document.removeEventListener(name,callback);
+    window.removeEventListener('scroll',onPageScrollCloseMenu);
+    menu?.removeEventListener('touchstart',onMenuTouchStart);
+    menu?.removeEventListener('touchend',onMenuTouchEnd);
     window.removeEventListener('resize',handleNavResize);
     mobileNav.removeEventListener?.('change',handleNavResize);
     clearTimeout(toastTimer);
