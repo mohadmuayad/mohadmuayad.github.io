@@ -1174,3 +1174,11 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 @media(max-width:760px) {
   .factory-page-body .factory-page > .ds-page-back {top:89px;right:18px;}
 }
+
+
+/* Align notebook return links with the factory portfolio link. */
+.notebook-page-body .notebook-hero .back-link {
+  display:flex; width:max-content; margin:8px 0 22px auto;
+}
+.notebook-page-body .notebook-hero .back-link::before,
+.notebook-page-body .notebook-hero .back-link .link-arrow {display:none!important;content:none!important;}
