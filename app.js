@@ -14,6 +14,8 @@ function initPage(){
   const stopDarkSignal=initDarkSignal(document.querySelector('.dark-signal-canvas'));
   const stopContactSignal=initContactSignal(document.querySelector('.contact-signal-canvas'));
   const documentListeners=[];
+  const notebookMode=document.body.classList.contains('notebook-page-body');
+  const stopNotebookReader=window.dsInitNotebookReader?.() || (()=>{});
   const observeWith=(callback,settings)=>{const observer=new IntersectionObserver(callback,settings);observers.push(observer);return observer};
   const onDoc=(name,callback)=>{document.addEventListener(name,callback);documentListeners.push([name,callback])};
   // Social links retain a gentle hover lift. Opening an external tab must
@@ -106,29 +108,87 @@ window.addEventListener('resize',handleNavResize);
 mobileNav.addEventListener?.('change',handleNavResize);
 syncMenuAccess();
 syncMenuBackdrop();
-// Stage 20.4 — avoid a duplicate floating shortcut over the footer link.
-// Also keep the invisible shortcut out of the keyboard tab order.
-function scrollState(){
-  const y=window.scrollY;
-  const max=document.documentElement.scrollHeight-window.innerHeight;
-  $('.nav')?.classList.toggle('scrolled',y>20);
-  const footer=$('footer');
-  const footerVisible=!!footer&&footer.getBoundingClientRect().top<window.innerHeight-16;
-  document.body.classList.toggle('footer-in-view',footerVisible);
-  const backtop=$('#backtop');
-  const showTopShortcut=y>300;
-  if(backtop){
-    backtop.classList.toggle('visible',showTopShortcut);
-    backtop.tabIndex=showTopShortcut?0:-1;
-    backtop.setAttribute('aria-hidden',String(!showTopShortcut));
-    if(!showTopShortcut&&document.activeElement===backtop)backtop.blur();
+  // Shared smart-header controller for Home, Factory and both notebook readers.
+  // One scroll observer owns BOTH the scrolled state and the hide/reveal state.
+  // Direction thresholds filter tiny touchpad/mobile scroll oscillations.
+  const header=navigationBar;
+  let headerFrame=0;
+  let previousHeaderY=Math.max(0,window.scrollY);
+  let headerDirection=0,headerTravel=0,headerViewportWidth=window.innerWidth;
+  const navPrefersReduced=matchMedia('(prefers-reduced-motion: reduce)');
+  function syncHeaderMotion(forceVisible=false){
+    headerFrame=0;
+    if(!header)return;
+    // One scroll frame updates the header and the page chrome together.
+    // Previously scrollState ran directly for every scroll event, while the
+    // header used requestAnimationFrame. Keeping both in this frame avoids
+    // repeated layout reads and DOM writes during fast wheel/touch scrolling.
+    if(!notebookMode)scrollState();
+    const y=Math.max(0,window.scrollY);
+    const delta=y-previousHeaderY;
+    previousHeaderY=y;
+    header.classList.toggle('scrolled',y>20);
+    const routeSettling=document.documentElement.classList.contains('ds-route-swapping')||
+      document.documentElement.classList.contains('ds-route-incoming');
+    if(navPrefersReduced.matches||forceVisible||y<=110||routeSettling||
+       menu?.classList.contains('open')||header.matches(':focus-within')){
+      headerDirection=0;
+      headerTravel=0;
+      header.classList.remove('ds-nav-hidden');
+      return;
+    }
+    if(Math.abs(delta)<1.5)return;
+    const direction=Math.sign(delta);
+    if(direction!==headerDirection){headerDirection=direction;headerTravel=0;}
+    headerTravel=Math.min(96,headerTravel+Math.abs(delta));
+    if(direction>0&&y>165&&headerTravel>=26)header.classList.add('ds-nav-hidden');
+    if(direction<0&&headerTravel>=16)header.classList.remove('ds-nav-hidden');
   }
-  if($('#progress'))$('#progress').style.width=(max>0?y/max*100:0)+'%';
+  function onHeaderScroll(){if(!headerFrame)headerFrame=requestAnimationFrame(()=>syncHeaderMotion());}
+  function onHeaderFocus(){
+    if(headerFrame)cancelAnimationFrame(headerFrame);
+    syncHeaderMotion(true);
+  }
+  function onHeaderResize(){
+    // On phones, collapsing the browser address bar can change viewport
+    // height while scrolling. Do not spuriously reveal the nav for that.
+    const widthChanged=Math.abs(window.innerWidth-headerViewportWidth)>2;
+    headerViewportWidth=window.innerWidth;
+    if(headerFrame)cancelAnimationFrame(headerFrame);
+    syncHeaderMotion(widthChanged);
+  }
+  window.addEventListener('scroll',onHeaderScroll,{passive:true});
+  window.addEventListener('resize',onHeaderResize);
+  header?.addEventListener('focusin',onHeaderFocus);
+  header?.addEventListener('pointerdown',onHeaderFocus,{passive:true});
+// Page chrome shares the smart header's one-frame scroll scheduler.
+// Cache the stable elements for this page; initPage rebuilds them after each
+// route swap and teardown disconnects the shared listener on navigation.
+const scrollFooter=notebookMode?null:$('footer');
+const scrollBacktop=notebookMode?null:$('#backtop');
+const scrollProgress=notebookMode?null:$('#progress');
+const scrollRoot=document.documentElement;
+let lastBacktopVisible=null,lastFooterVisible=null;
+function scrollState(){
+  const y=Math.max(0,window.scrollY);
+  const max=scrollRoot.scrollHeight-window.innerHeight;
+  const footerVisible=!!scrollFooter&&scrollFooter.getBoundingClientRect().top<window.innerHeight-16;
+  if(footerVisible!==lastFooterVisible){
+    document.body.classList.toggle('footer-in-view',footerVisible);
+    lastFooterVisible=footerVisible;
+  }
+  const showTopShortcut=y>300;
+  if(scrollBacktop&&showTopShortcut!==lastBacktopVisible){
+    scrollBacktop.classList.toggle('visible',showTopShortcut);
+    scrollBacktop.tabIndex=showTopShortcut?0:-1;
+    scrollBacktop.setAttribute('aria-hidden',String(!showTopShortcut));
+    if(!showTopShortcut&&document.activeElement===scrollBacktop)scrollBacktop.blur();
+    lastBacktopVisible=showTopShortcut;
+  }
+  if(scrollProgress)scrollProgress.style.width=(max>0?y/max*100:0)+'%';
 }
-window.addEventListener('scroll',scrollState,{passive:true});
-window.addEventListener('resize',scrollState);
-scrollState();
-if('IntersectionObserver' in window){const obs=observeWith(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('seen');obs.unobserve(e.target)}}),{threshold:.08});document.querySelectorAll('.section-heading,.skill,.home-page #projects .project-card,.timeline article,.finding,.report-section>div,.about-copy,.process-list article,.file-list article,.factory-page-body #findings .findings-heading').forEach(el=>{if(!reduce){el.classList.add('reveal');obs.observe(el)}});const active=observeWith(entries=>entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('#navlinks a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-15% 0px -55% 0px'});document.querySelectorAll('section[id]').forEach(el=>active.observe(el))}
+  syncHeaderMotion(true);
+if(!notebookMode&&'IntersectionObserver' in window){const obs=observeWith(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('seen');obs.unobserve(e.target)}}),{threshold:.08});document.querySelectorAll('.section-heading,.skill,.home-page #projects .project-card,.timeline article,.finding,.report-section>div,.about-copy,.process-list article,.file-list article,.factory-page-body #findings .findings-heading').forEach(el=>{if(!reduce){el.classList.add('reveal');obs.observe(el)}});const active=observeWith(entries=>entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('#navlinks a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-15% 0px -55% 0px'});document.querySelectorAll('section[id]').forEach(el=>active.observe(el))}
 // Experiment 01 / Global Scroll Stability: headings are now one-shot reveal
 // targets under the observer above, not re-animated on later viewport entries.
 // No second IntersectionObserver is needed for heading animation.
@@ -274,7 +334,7 @@ function glideToSection(target){
 // modifier-clicks and the dedicated Back-to-Top control retain their behavior.
 onDoc('click',event=>{
   if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
-  const link=event.target.closest?.('.nav a[href^="#"], .home-page .hero .actions a[href^="#"], .home-page .scroll-cue[href^="#"], .factory-page-body .case-nav a[href^="#"]');
+  const link=event.target.closest?.('.nav a[href^="#"], .home-page .hero .actions a[href^="#"], .home-page .scroll-cue[href^="#"], .factory-page-body .case-nav a[href^="#"], .notebook-page-body .notebook-toc a[href^="#"]');
   if(!link)return;
   const hash=link.getAttribute('href');
   if(!hash||hash==='#')return;
@@ -313,10 +373,14 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
   return function teardownPage(){
     stopDarkSignal();
     stopContactSignal();
+    stopNotebookReader();
+    if(headerFrame)cancelAnimationFrame(headerFrame);
+    window.removeEventListener('scroll',onHeaderScroll);
+    window.removeEventListener('resize',onHeaderResize);
+    header?.removeEventListener('focusin',onHeaderFocus);
+    header?.removeEventListener('pointerdown',onHeaderFocus);
     for(const observer of observers) observer.disconnect();
     for(const [name,callback] of documentListeners)document.removeEventListener(name,callback);
-    window.removeEventListener('scroll',scrollState);
-    window.removeEventListener('resize',scrollState);
     window.removeEventListener('resize',handleNavResize);
     mobileNav.removeEventListener?.('change',handleNavResize);
     clearTimeout(toastTimer);
@@ -332,18 +396,18 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
 let teardownCurrentPage=initPage();
 let navigationController=null;
 let navigationSerial=0;
-let activeDocument=(document.body.classList.contains('factory-page-body')?'factory':'index');
+let activeDocument=pageIdFromPath(location.pathname);
 if('scrollRestoration' in history)history.scrollRestoration='manual';
 
-function localPagePath(url){
-  const path=url.pathname;
-  if(!/\/(?:index|factory)\.html$/i.test(path)&&!path.endsWith('/'))return false;
-  return path.replace(/(?:index\.html)?$/i,'');
+function pageIdFromPath(path){
+  if(/\/notebooks\/01_data_quality_analysis\.html$/i.test(path))return 'notebook-01';
+  if(/\/notebooks\/02_data_cleaning_validation\.html$/i.test(path))return 'notebook-02';
+  if(/\/factory\.html$/i.test(path))return 'factory';
+  if(path==='/'||/\/index\.html$/i.test(path))return 'index';
+  return null;
 }
-function isCurrentDocument(url){
-  const target=/\/factory\.html$/i.test(url.pathname)?'factory':'index';
-  return target===activeDocument;
-}
+function localPagePath(url){return pageIdFromPath(url.pathname)}
+function isCurrentDocument(url){return pageIdFromPath(url.pathname)===activeDocument}
 function updateHead(newDoc){
   document.title=newDoc.title;
   for(const selector of [
@@ -398,7 +462,7 @@ function validProjectOrigin(value){
   if(!value||!Number.isFinite(value.scrollY)||!Number.isFinite(value.cardViewportTop))return null;
   try{
     const url=new URL(value.href,location.href);
-    if(url.origin!==location.origin||!localPagePath(url)||/\/factory\.html$/i.test(url.pathname))return null;
+    if(url.origin!==location.origin||pageIdFromPath(url.pathname)!=='index')return null;
     return {...value,href:url.href};
   }catch{return null}
 }
@@ -414,7 +478,19 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     const response=await fetch(url.href,{signal:controller.signal,credentials:'same-origin'});
     if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw new Error('Document unavailable');
     const nextDoc=new DOMParser().parseFromString(await response.text(),'text/html');
-    if(!nextDoc.body||!nextDoc.querySelector('main')||!nextDoc.querySelector('link[href^="style.css"]'))throw new Error('Invalid document');
+    if(!nextDoc.body||!nextDoc.querySelector('main')||(!nextDoc.querySelector('link[href^="style.css"]')&&!nextDoc.querySelector('link[href^="../style.css"]')))throw new Error('Invalid document');
+    if(controller.signal.aborted||serial!==navigationSerial)return;
+    // Prepare the large Notebook 01 DOM while the current page is still visible.
+    // The user must never see a changed URL with an old body's final frame.
+    const nextBody=document.importNode(nextDoc.body,true);
+    // Images must resolve against the DESTINATION page before the DOM swap.
+    // Otherwise Notebook -> Factory (or Home) can briefly resolve assets
+    // against /notebooks/ and leave valid images broken after navigation.
+    nextBody.querySelectorAll('img[src],source[src]').forEach(image=>{
+      const value=image.getAttribute('src');
+      if(!value||/^(?:data:|blob:|javascript:)/i.test(value))return;
+      try{image.setAttribute('src',new URL(value,url.href).href)}catch{}
+    });
     if(controller.signal.aborted||serial!==navigationSerial)return;
     // Quiet Reveal: subtly soften only the current main, retaining the
     // charcoal page canvas, header and scroll position as steady reference.
@@ -426,19 +502,24 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     root.classList.remove('ds-route-leaving');
     root.classList.add('ds-route-swapping');
     teardownCurrentPage();
-    if(!pop)history.pushState({softNavigation:true,scrollY:0,...(projectOrigin?{factoryOrigin:projectOrigin}:{})},'',url.href);
     const previousBehavior=root.style.scrollBehavior;
     root.style.scrollBehavior='auto';
     window.scrollTo({top:0,left:0,behavior:'instant'});
+    // Replace the prepared body before committing the matching URL.
+    // No stale Factory or Home content can appear under a Notebook address.
+    document.body.replaceWith(nextBody);
+    activeDocument=pageIdFromPath(url.pathname);
+    if(!pop)history.pushState({softNavigation:true,scrollY:0,...(projectOrigin?{factoryOrigin:projectOrigin}:{})},'',url.href);
     updateHead(nextDoc);
-    document.body.replaceWith(document.importNode(nextDoc.body,true));
-    activeDocument=document.body.classList.contains('factory-page-body')?'factory':'index';
     jumpToDestination(url,restored);
     root.style.scrollBehavior=previousBehavior;
     teardownCurrentPage=initPage();
-    // Restoring after a layout frame handles font/image sizing without a
-    // separate visual jump: no full-page opacity animation is active.
+    window.dsReinitExperience?.();
+    // For the unusually large first notebook, give the browser a complete
+    // hidden-layout frame before starting the lightweight entrance. This
+    // avoids competing with first paint of hundreds of analytical tables.
     await waitNavigationFrame();
+    if(activeDocument==='notebook-01'&&!reduce)await waitNavigationFrame();
     if(controller.signal.aborted||serial!==navigationSerial)return;
     if(restored)jumpToDestination(url,restored);
     // Keep the new main invisible through the swap; reveal only after

@@ -12,26 +12,11 @@
 .notebook-page-body #progress {
   height:1px;background:#adb7bd;opacity:.28;
 }
-.notebook-page-body .notebook-nav {
-  height:78px;
-  padding:0 max(24px,calc((100vw - 1020px)/2));
-  background:linear-gradient(180deg,rgba(13,18,22,.93),rgba(13,18,22,.73));
-  border-bottom:1px solid transparent;
-  backdrop-filter:blur(16px);
+/* Reader header geometry/colors now live in experiment/experience.css.
+   Keep only the arrow's notebook-specific pictogram here. */
+.notebook-page-body .notebook-nav-links .link-arrow {
+  width:14px;height:14px;transform:rotate(-90deg);
 }
-.notebook-page-body .notebook-nav.scrolled {border-bottom-color:var(--reader-rule);}
-.notebook-page-body .notebook-nav::before {content:none;}
-.notebook-page-body .notebook-nav-links {display:flex;align-items:center;gap:24px;}
-.notebook-page-body .notebook-nav-links > a {
-  font:500 12px/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
-  color:var(--muted);
-  display:inline-flex;align-items:center;gap:5px;
-  transition:color .25s ease;
-}
-.notebook-page-body .notebook-nav-links > a:hover,
-.notebook-page-body .greeting:hover {color:var(--ink);}
-.notebook-page-body .notebook-nav-links .link-arrow {width:14px;height:14px;transform:rotate(-90deg);}
-.notebook-page-body .greeting {font-size:13px;color:var(--ink);}
 .notebook-page-body .notebook-body {
   box-sizing:border-box;
   max-width:1060px;
@@ -54,12 +39,19 @@
   background:var(--accent);opacity:.45;
 }
 .notebook-page-body .notebook-hero .back-link {
-  display:inline-flex;align-items:center;gap:8px;
-  margin-bottom:35px;padding:7px 0;
-  color:var(--muted);font:500 12px/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
-  transition:color .2s ease;
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  min-height:36px;margin-bottom:35px;padding:6px 12px;
+  border:1px solid #596167;
+  border-radius:3px;
+  color:#dce0e2;
+  font:500 12px/1.3 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  transition:color .3s ease,background-color .3s ease,border-color .3s ease;
 }
-.notebook-page-body .notebook-hero .back-link:hover {color:var(--ink);}
+.notebook-page-body .notebook-hero .back-link:hover {
+  color:#dce0e2;
+  background:rgba(149,170,181,.07);
+  border-color:#8e9ca3;
+}
 .notebook-page-body .notebook-hero .back-link .link-arrow {width:16px;height:16px;transform:rotate(180deg);}
 .notebook-page-body .notebook-hero .eyebrow {
   color:var(--accent);letter-spacing:.13em;margin-bottom:19px;
@@ -122,13 +114,23 @@
   margin-left:20px;
 }
 .notebook-page-body .notebook-index[open] summary::after {content:"−";}
-.notebook-page-body .notebook-index[open] summary {border-bottom:1px solid var(--reader-rule);}
+/* Do not add an open-only border: it flashes ahead of the height animation. */
 .notebook-page-body .notebook-toc {
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:0 28px;
   padding:15px 22px 20px;
   min-width:0;
+}
+/* Notebook 01 has a long contents list. A bounded reader prevents a 3–4k px
+   page-height jump while retaining every original anchor, in the same order. */
+.notebook-page-body.notebook-01 .notebook-index .notebook-toc {
+  max-height:min(52vh,440px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(154,162,167,.65) transparent;
 }
 .notebook-page-body .notebook-toc a {
   display:block;
@@ -231,11 +233,6 @@
 }
 .notebook-page-body .notebook-backtop svg {width:19px;height:19px;transform:rotate(-135deg);}
 @media(max-width:760px) {
-  .notebook-page-body .notebook-nav {height:66px;padding-inline:clamp(15px,4vw,26px);}
-  .notebook-page-body .notebook-nav-links {gap:clamp(10px,2.7vw,18px);}
-  .notebook-page-body .notebook-nav .greeting {font-size:12px;}
-  .notebook-page-body .notebook-nav-links > a {font-size:11px;}
-  .notebook-page-body .notebook-nav-links .link-arrow {display:none;}
   .notebook-page-body .notebook-body {padding:96px clamp(16px,4vw,28px) 66px;}
   .notebook-page-body .notebook-hero {padding-bottom:30px;margin-bottom:25px;}
   .notebook-page-body .notebook-hero .back-link {margin-bottom:22px;}
@@ -254,16 +251,9 @@
   .notebook-page-body .notebook-backtop {right:15px;bottom:16px;}
 }
 @media(max-width:370px) {
-  .notebook-page-body .notebook-nav-links {gap:9px;}
-  .notebook-page-body .notebook-nav-links > a {font-size:10px;}
-  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {display:none;}
   .notebook-page-body .notebook-hero h1 {font-size:33px;}
   .notebook-page-body .notebook-hero .actions .button {padding:12px 11px;}
   .notebook-page-body .notebook-hero .eyebrow {font-size:10px;}
-}
-@media(prefers-reduced-motion:no-preference) {
-  .notebook-page-body .notebook-hero {animation:notebook-enter .55s cubic-bezier(.22,.61,.36,1) both;}
-  @keyframes notebook-enter {from {opacity:0;transform:translateY(12px);}to {opacity:1;transform:none;}}
 }
 @media(prefers-reduced-motion:reduce) {
   .notebook-page-body *, .notebook-page-body *::before, .notebook-page-body *::after {animation-duration:0.01ms!important;transition-duration:0.01ms!important;}

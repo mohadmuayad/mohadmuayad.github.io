@@ -448,3 +448,331 @@
       #000 94%, transparent 100%);
   }
 }
+
+/* APPROVED OBSIDIAN PALETTE — neutral charcoal, graphite & metallic silver.
+   Integrated from Concept 01 without a dependent override stylesheet.
+   Preserve existing geometry, movement, notebook content and industrial data. */
+:root{
+  --ds-obsidian:#08090a;
+  --ds-ground:#0c0e10;
+  --ds-surface:#141618;
+  --ds-elevated:#1a1c1f;
+  --ds-hairline:#3a3d41;
+  --ds-silver:#d5d9dc;
+  --ds-copy:#f0f1f2;
+  --ds-secondary:#aeb3b8;
+}
+body.home-page,body.factory-page-body,body.notebook-page-body{
+  --bg:var(--ds-obsidian);
+  --panel:var(--ds-surface);
+  --line:var(--ds-hairline);
+  --ink:var(--ds-copy);
+  --muted:var(--ds-secondary);
+  --accent:var(--ds-silver);
+  background-color:var(--ds-obsidian);
+  color:var(--ds-copy);
+}
+/* Depth comes from controlled lightness differences, never from new blur layers. */
+.home-page .hero{
+  background:radial-gradient(ellipse 48% 56% at 51% 43%,rgba(90,93,97,.065),transparent 86%),
+    linear-gradient(180deg,#070809 0%,#0a0b0d 69%,#0b0c0e 100%);
+}
+.home-page #about{--section-ambient:linear-gradient(180deg,#0a0b0d 0%,#101214 44%,#0a0b0d 100%);}
+.home-page #projects{--section-ambient:radial-gradient(ellipse 54% 35% at 50% 48%,rgba(119,122,124,.045),transparent 85%),linear-gradient(180deg,#0a0b0d 0%,#090a0c 55%,#101113 100%);}
+.home-page #skills{--section-ambient:linear-gradient(180deg,#101113 0%,#141517 52%,#0c0d0f 100%);}
+.home-page #journey{--section-ambient:radial-gradient(ellipse 65% 60% at 49% 38%,rgba(126,130,134,.04),transparent 87%),linear-gradient(180deg,#0c0d0f 0%,#090a0c 100%);}
+.home-page #education{--section-ambient:linear-gradient(180deg,#090a0c 0%,#101113 50%,#090a0b 100%);}
+.home-page #contact{background:linear-gradient(180deg,#0a0b0d,#070809 65%,#090a0c);}
+.home-page .section h2 em,.factory-page-body .section h2 em {color:#b2b7bb;}
+.home-page .section .eyebrow,.factory-page-body .section .eyebrow{color:#abb1b5;}
+.home-page .section-aside,.home-page .about-copy>p:not(.lead){color:#b0b5ba;}
+.home-page .section .lead{color:#e0e2e4;}
+.home-page #about .identity-role{color:#c4c9cc;}
+.home-page #about .identity-place{color:#a9afb4;}
+.home-page #about .about-signature{border-color:rgba(179,185,190,.19);background:radial-gradient(ellipse 75% 75% at 50% 5%,rgba(112,116,119,.045),transparent 78%);}
+/* Panels use neutral graphite surfaces and a narrow specular rim. */
+.home-page #projects .project-card{
+  background:linear-gradient(135deg,#17191b 0%,#0f1113 59%,#16181a 100%);
+  border-color:#43474b;
+  box-shadow:inset 0 1px 0 rgba(238,241,243,.055),0 22px 56px rgba(0,0,0,.25);
+}
+.home-page #projects .ds-living-card .ds-card-intro,
+.home-page #projects .ds-living-card .ds-card-footer{
+  background:linear-gradient(180deg,#151719,#111315);
+}
+.home-page #projects .project-copy {background:radial-gradient(ellipse at 100% 0%,rgba(145,149,153,.04),transparent 78%);}
+.home-page #skills .skill{
+  background:linear-gradient(148deg,#181a1c,#111315 84%);
+  border-color:#383c40;
+  box-shadow:inset 0 1px 0 rgba(230,235,238,.038);
+}
+.home-page #skills .skill::before{background:linear-gradient(90deg,transparent,rgba(224,229,232,.12),transparent);}
+.home-page #skills .skill h3{color:#ecedef;}
+.home-page #skills .skill p{color:#adb3b8;}
+.home-page #projects .project-numbers strong {color:#ebedef;}
+/* Controls — one silver primary and one restrained ghost secondary. */
+.home-page .hero .button.primary,
+.factory-page-body .button.primary,
+.notebook-page-body .button.primary,
+.factory-page-body .report-edition .button.primary,
+.factory-page-body .case-end .button.primary{
+  background:#d7dbde;
+  border-color:#d7dbde;
+  color:#0b0d0f;
+}
+@media(hover:hover) and (pointer:fine){
+  .home-page .hero .button.primary:hover,
+  .factory-page-body .button.primary:hover,
+  .notebook-page-body .button.primary:hover,
+  .factory-page-body .report-edition .button.primary:hover,
+  .factory-page-body .case-end .button.primary:hover{
+    background:#eef0f1;border-color:#eef0f1;color:#08090a;
+  }
+}
+:is(.home-page,.factory-page-body,.notebook-page-body) .button.outline,
+.home-page .hero .button.text,
+.factory-page-body .back-link{
+  border-color:#596167;color:#dce0e2;
+}
+.home-page .nav .nav-cta,.factory-page-body .nav .nav-cta,
+.notebook-page-body .notebook-nav-portfolio{
+  background:rgba(213,218,221,.025);
+  border-color:rgba(189,195,199,.33);
+}
+/* Chips: the project formerly used teal-blue #19252b.  Neutral on purpose. */
+.home-page #projects .project-copy .tags span,
+.factory-page-body .factory-heading .tags span,
+.home-page #projects .project-focus span,
+.home-page #education .pill,
+.home-page #skills .tags span{
+  background:#17191b;
+  border-color:#555c60;
+  color:#d0d5d8;
+  box-shadow:inset 0 1px 0 rgba(236,239,241,.028);
+}
+/* Interior factory: keep the *artwork* and its semantic amber values intact. */
+.factory-page-body .factory-hero::before{
+  background:radial-gradient(ellipse 46% 50% at 69% 50%,rgba(117,122,125,.075),transparent 85%),
+    radial-gradient(ellipse 48% 65% at 13% 38%,rgba(90,93,97,.06),transparent 81%),
+    linear-gradient(180deg,#070809,#0e1012 72%,#08090a);
+}
+.factory-page-body .control-panel{
+  background:linear-gradient(145deg,#191b1d,#101214);
+  border-color:#494e52;
+  box-shadow:0 24px 64px rgba(0,0,0,.31),inset 0 1px 0 rgba(236,239,241,.04);
+}
+.factory-page-body .case-nav{
+  background:linear-gradient(105deg,#151719,#212326 49%,#151719);
+  border-color:#44494d;
+}
+.factory-page-body .report-edition{
+  background:linear-gradient(150deg,#1b1d1f,#121416);
+  border-color:#3e4347;
+}
+.factory-page-body .pipeline,.factory-page-body .note-panel{
+  background:linear-gradient(140deg,#181a1c,#101214);
+  border-color:#44494d;
+}
+.factory-page-body .data-dictionary{background:rgba(189,196,200,.025);border-color:#44494d;}
+.factory-page-body .metrics-grid article,
+.factory-page-body .process-list article,
+.factory-page-body .finding,
+.factory-page-body .file-list article{border-color:#353a3e;}
+.factory-page-body #backtop{background:#1b1d1fea;border-color:#555d62;color:#d5dbdf;}
+.factory-page-body dialog{background:#191b1d;border-color:#51575b;color:#f0f2f3;}
+/* NOR / RIV / SLT badges: reduce the cyan metal frame, not the orange data. */
+.ds-site-badge{
+  background:rgba(17,19,21,.96);
+  border-color:rgba(177,186,192,.5);
+  box-shadow:inset 0 1px 0 rgba(244,246,247,.065);
+}
+.ds-site-badge__name{color:#f0f1f2;}
+.ds-site-badge__meta{color:#d1d6d9;}
+/* Notebook reading shell: same charcoal as the rest, analytical contents intact. */
+.notebook-page-body{
+  --reader-rule:rgba(166,174,180,.26);
+  --reader-subtle:#191b1d;
+  background:radial-gradient(ellipse 62% 380px at 55% 80px,rgba(129,134,138,.055),transparent 92%),#0b0d0f;
+}
+.notebook-page-body .notebook-index{
+  background:#17191b;border-color:#454b50;
+}
+.notebook-page-body .cell :is(pre,.table-scroll,.output){scrollbar-color:#666d72 transparent;}
+/* Preserve all approved mobile menu geometry, scroll and entrance behavior. */
+
+
+/* ====================================================================
+   OBSIDIAN SIGNATURE — FINISHING PASS / 2026-11-11
+   Three restrained treatments: MATERIAL DEPTH, CONTROL SYSTEM, INDUSTRIAL
+   DETAILS. Static surfaces only; no new blur, animation, JS or layout shift.
+   ==================================================================== */
+:root {
+  --ds-metal-primary:#d7dbde;
+  --ds-metal-hover:#eef0f1;
+  --ds-graphite-control:#1a1c1e;
+  --ds-graphite-control-hover:#24272a;
+  --ds-metal-border:rgba(176,182,187,.36);
+  --ds-metal-border-hover:rgba(211,216,219,.65);
+  --ds-metal-rim:rgba(238,241,243,.07);
+}
+/* 01 — Material depth: coherent neutral elevation, no moving glows. */
+.home-page #projects .project-card {
+  border-color:rgba(166,174,179,.36);
+  box-shadow:inset 0 1px 0 var(--ds-metal-rim),0 14px 36px rgba(0,0,0,.23);
+}
+.home-page #projects .ds-living-card .ds-card-intro,
+.home-page #projects .ds-living-card .ds-card-footer {
+  background:linear-gradient(180deg,#151719,#111315);
+}
+.home-page #skills .skill {
+  border-color:rgba(169,176,181,.24);
+  box-shadow:inset 0 1px 0 rgba(239,241,243,.055);
+}
+.factory-page-body :is(.control-panel,.report-edition,.pipeline,.note-panel) {
+  box-shadow:inset 0 1px 0 rgba(236,239,241,.045),0 9px 22px rgba(0,0,0,.12);
+}
+.factory-page-body .control-panel {
+  border-color:rgba(176,182,187,.30);
+  box-shadow:inset 0 1px 0 var(--ds-metal-rim),0 14px 34px rgba(0,0,0,.22);
+}
+.factory-page-body :is(.report-edition,.pipeline,.note-panel) {
+  border-color:rgba(166,174,179,.28);
+}
+.notebook-page-body .notebook-index {
+  border-color:rgba(171,178,183,.31);
+  box-shadow:inset 0 1px 0 rgba(236,239,241,.045);
+}
+/* 02 — Buttons, links, badges: one typographic and color hierarchy. */
+:is(.home-page,.factory-page-body,.notebook-page-body) .button.primary {
+  color:#0b0d0f;
+  border-color:var(--ds-metal-primary);
+  background:var(--ds-metal-primary);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+}
+:is(.home-page,.factory-page-body,.notebook-page-body) .button.outline,
+.home-page .hero .button.text {
+  color:#dde1e3;
+  border-color:var(--ds-metal-border);
+  background:rgba(205,210,214,.012);
+}
+:is(.home-page,.factory-page-body) .nav .nav-cta,
+.notebook-page-body .notebook-nav-links .notebook-nav-portfolio {
+  color:#e0e3e5;
+  border-color:var(--ds-metal-border);
+  background:rgba(218,222,225,.028);
+}
+.home-page #projects .ds-living-card .ds-card-footer .project-link {
+  color:#e6e8ea;
+  border-color:rgba(181,188,192,.48);
+  background:var(--ds-graphite-control);
+  box-shadow:inset 0 1px 0 rgba(241,242,244,.045);
+}
+.home-page #projects .project-copy .tags span,
+.factory-page-body .factory-heading .tags span,
+.home-page #projects .project-focus span,
+.home-page #education .pill,
+.home-page #skills .tags span {
+  color:#d4d8db;
+  background:#191b1d;
+  border-color:rgba(179,186,191,.38);
+  box-shadow:inset 0 1px 0 rgba(236,239,241,.035);
+}
+@media (hover:hover) and (pointer:fine) {
+  :is(.home-page,.factory-page-body,.notebook-page-body) .button.primary:hover {
+    background:var(--ds-metal-hover);
+    border-color:var(--ds-metal-hover);
+    color:#08090a;
+  }
+  :is(.home-page,.factory-page-body,.notebook-page-body) .button.outline:hover,
+  .home-page .hero .button.text:hover {
+    color:#f5f6f6;
+    background:rgba(212,217,220,.06);
+    border-color:var(--ds-metal-border-hover);
+  }
+  :is(.home-page,.factory-page-body) .nav .nav-cta:hover,
+  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio:hover {
+    background:rgba(217,222,225,.07);
+    border-color:var(--ds-metal-border-hover);
+  }
+  .home-page #projects .ds-living-card .ds-card-footer .project-link:hover {
+    background:var(--ds-graphite-control-hover);
+    border-color:var(--ds-metal-border-hover);
+  }
+}
+/* 03 — Industrial elegance: quiet UI around the original factory art. */
+.ds-site-badge {
+  background:rgba(18,20,22,.97);
+  border-color:rgba(188,196,201,.43);
+  box-shadow:inset 0 1px 0 rgba(247,248,249,.065);
+}
+.factory-page-body .control-panel .panel-bar,
+.factory-page-body .control-panel .panel-stats {
+  border-color:rgba(182,188,193,.25);
+}
+.factory-page-body .control-panel .panel-stats {
+  background:#111416;
+}
+.factory-page-body .case-nav {
+  border-color:rgba(170,178,183,.28);
+}
+.factory-page-body :is(.metrics-grid article,.process-list article,.finding,.file-list article) {
+  border-color:rgba(162,171,176,.27);
+}
+.factory-page-body .data-dictionary,
+.notebook-page-body .data-dictionary {
+  border-color:rgba(167,176,182,.31);
+}
+.notebook-page-body .cell .table-scroll th {
+  color:#d9dde0;
+  background:rgba(217,222,225,.032);
+}
+.notebook-page-body .cell .table-scroll td {
+  border-color:rgba(164,171,176,.19);
+}
+/* Keep the data visualization colors (including amber values, cyan wires and
+   existing chart palettes) untouched: these communicate real distinctions. */
+
+
+/* ====================================================================
+   FINAL PRECISION PASS / 2026-11-11
+   Accessibility and optical clarity only. No new motion, filters, shadows,
+   structural layout, or animation work. The approved Obsidian surfaces stand.
+   ==================================================================== */
+/* One neutral-silver keyboard focus treatment across all four page types. */
+:is(.home-page,.factory-page-body,.notebook-page-body)
+  :is(a[href],button,summary,[role="button"]):focus-visible {
+  outline:2px solid #d7dbde;
+  outline-offset:3px;
+}
+:is(.home-page,.factory-page-body,.notebook-page-body) .nav
+  :is(a[href],button):focus-visible {
+  outline-offset:4px;
+}
+/* Improve readability of Factory document labels and actual link hit areas
+   without changing their words, colors, positions or arrow interactions. */
+.factory-page-body #files .file-list article > div > span {
+  font-size:10.5px;
+  line-height:1.6;
+  letter-spacing:.065em;
+}
+.factory-page-body #files .file-list article > div:last-child a {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:44px;
+  padding-inline:6px;
+}
+/* Keyboard/touch navigation in long reading indexes is easier to hit. */
+.notebook-page-body .notebook-toc a {
+  min-height:44px;
+  display:flex;
+  align-items:center;
+}
+@media (max-width:760px) {
+  /* Mobile microcopy: keep the industrial panel header legible. */
+  .factory-page-body .control-panel .panel-bar {
+    font-size:10px;
+    letter-spacing:.055em;
+  }
+  .notebook-page-body .notebook-hero .eyebrow {font-size:11px;}
+}

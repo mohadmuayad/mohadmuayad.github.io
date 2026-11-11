@@ -698,7 +698,7 @@ main,footer{padding-left:23px;padding-right:23px}.hero{display:flex;flex-directi
   margin-top:26px;
   padding:28px 32px;
   border:1px solid #415769;
-  border-left:2px solid var(--accent);
+  border-left:2px solid rgba(231,235,238,.82);
   border-radius:5px;
   background:linear-gradient(115deg,#19232d,#17232d);
 }
@@ -1437,7 +1437,7 @@ body.home-page {
   box-shadow:none;
   -webkit-backdrop-filter:none;
   backdrop-filter:none;
-  transition:none;
+  /* Motion is owned by the shared header rule in experience.css. */
 }
 .home-page .nav::before,
 .home-page .nav.scrolled::before {
@@ -2336,7 +2336,7 @@ body.home-page {
   margin-top:clamp(25px,3vw,36px);
   padding:clamp(27px,3.8vw,46px) clamp(20px,4.4vw,54px);
   border:1px solid var(--line);
-  border-left:2px solid #93a5ae;
+  border-left:2px solid rgba(231,235,238,.82);
   border-radius:4px;
   background:var(--panel);
   box-shadow:none;

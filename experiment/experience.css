@@ -507,6 +507,8 @@
   .home-page .scroll-cue span {font-size:9.5px;}
 }
 .home-page #contact .footer-statement {
+  /* Review 06: retain the text's original footprint without displaying it. */
+  visibility:hidden;
   font-size:clamp(14px,1.45vw,18px);
   line-height:1.55;
   font-weight:400;
@@ -532,6 +534,8 @@
   padding-top:clamp(40px,5vw,64px);
 }
 .factory-page-body .factory-study-footer-note {
+  /* Review 06: keep the footer spacing and icon alignment unchanged. */
+  visibility:hidden;
   margin:0;
   color:var(--muted);
   font:400 clamp(14px,1.3vw,16px)/1.7 'Nunito Sans','Segoe UI',Arial,sans-serif;
@@ -656,7 +660,7 @@ html.ds-route-leaving main {
   transition:
     opacity 240ms cubic-bezier(.32,0,.64,1),
     transform 240ms cubic-bezier(.32,0,.64,1);
-  opacity:.14;
+  opacity:0;
   transform:translate3d(0,-8px,0);
   pointer-events:none;
 }
@@ -672,6 +676,33 @@ html.ds-route-incoming main {
   from {opacity:0;transform:translate3d(0,12px,0);}
   to {opacity:1;transform:translate3d(0,0,0);}
 }
+/* Review 06 — Notebook 01 entering without a giant page compositor layer.
+   This reader contains ~10k nodes; animate only the first viewport's small
+   sections, rather than translating all 202 analytical cells and 205 tables.
+   The Notebook 02 route and all other transitions remain unchanged. */
+html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body {
+  animation:none!important;
+  opacity:1;
+  transform:none;
+}
+html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-hero,
+html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-index,
+html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cell:nth-of-type(-n+5) {
+  animation:ds-notebook01-light-entrance 520ms cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes ds-notebook01-light-entrance {
+  from {opacity:0;transform:translate3d(0,12px,0);}
+  to {opacity:1;transform:translate3d(0,0,0);}
+}
+@media(prefers-reduced-motion:reduce) {
+  html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-hero,
+  html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-index,
+  html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cell:nth-of-type(-n+5) {
+    animation:none!important;
+  }
+}
+
+
 @media(prefers-reduced-motion:reduce){
   html.ds-route-leaving main,
   html.ds-route-swapping main {
@@ -742,11 +773,12 @@ html.ds-route-incoming main {
 .home-page #projects .milestone-story-content p {
   max-width:67ch;
   margin:0 auto;
-  color:#adbcc4;
+  color:#d0d5d8;
   font-size:clamp(12.5px,1.04vw,14px);
   line-height:1.8;
   text-wrap:pretty;
 }
+.home-page #projects .milestone-story-content p:first-child {color:#e4e7e9;}
 .home-page #projects .milestone-story-content p + p {
   margin-top:13px;
 }
@@ -794,75 +826,224 @@ html.ds-route-incoming main {
 }
 
 
-/* Reader navigation polish — align notebook header with the 90px / 72px
-   site navigation. Preserve both Project and Portfolio even on small phones. */
-.notebook-page-body .notebook-nav {
+
+/* Interface Review 05 — one navigation design language for all pages.
+   Consolidates Review 04 marker lines, mobile gradients and notebook-specific
+   header geometry in ONE scoped source. No decorative border / end marker. */
+:root {
+  --ds-header-ink:#e7ecef;
+  --ds-header-secondary:#bdc8ce;
+  --ds-header-surface:var(--ds-obsidian,#08090a);
+  --ds-header-ease:cubic-bezier(.22,.61,.36,1);
+}
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav {
   height:90px;
+  min-height:90px;
   padding-inline:max(34px,calc((100vw - 1132px)/2));
-  background:linear-gradient(180deg,rgba(6,9,11,.97),rgba(12,17,20,.91));
-  border-bottom:1px solid rgba(145,163,173,.18);
-  box-shadow:0 15px 30px -29px rgba(0,0,0,.8);
+  position:fixed;
+  inset-block-start:0;
+  inset-inline:0;
+  z-index:20;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  isolation:isolate;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  transform:translate3d(0,0,0);
+  opacity:1;
+  /* Matching duration and easing in both directions, on every device. */
+  transition:transform 520ms var(--ds-header-ease),
+             opacity 520ms var(--ds-header-ease);
 }
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav.scrolled {
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+}
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav,
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav.scrolled,
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav.ds-nav-hidden {
+  transition:transform 520ms var(--ds-header-ease),
+             opacity 520ms var(--ds-header-ease);
+}
+/* One compact fading surface on mobile AND desktop.
+   The short tail ends before the first page control, including Factory Back. */
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav::before,
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav.scrolled::before {
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  width:100%;
+  height:calc(100% + 20px);
+  z-index:-1;
+  pointer-events:none;
+  border:0;
+  /* Solid through the navigation controls; fade only BELOW the bar. */
+  background:linear-gradient(180deg,
+    var(--ds-header-surface) 0%,
+    var(--ds-header-surface) calc(100% - 20px),
+    rgba(8,9,10,0) 100%);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  -webkit-mask-image:none;
+  mask-image:none;
+  clip-path:none;
+  transition:height .5s var(--ds-header-ease);
+}
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav::after,
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav.scrolled::after,
+:is(.home-page,.factory-page-body) #navlinks::after,
+.notebook-page-body .notebook-nav-links::after {
+  content:none;
+  display:none;
+}
+:is(.home-page,.factory-page-body,.notebook-page-body) > .nav.ds-nav-hidden {
+  opacity:0;
+  transform:translate3d(0,calc(-100% - 28px),0);
+  pointer-events:none;
+}
+:is(.home-page,.factory-page-body) .nav .greeting,
 .notebook-page-body .notebook-nav .greeting {
+  color:var(--ds-header-ink);
   font-size:13px;
-  letter-spacing:.08em;
+  letter-spacing:.075em;
   white-space:nowrap;
-  color:#e7edf0;
-  min-height:44px;
 }
+:is(.home-page,.factory-page-body) .nav #navlinks a,
+.notebook-page-body .notebook-nav-links > a {
+  color:var(--ds-header-secondary);
+}
+:is(.home-page,.factory-page-body) .nav #navlinks a:is(:hover,:focus-visible),
+.notebook-page-body .notebook-nav-links > a:is(:hover,:focus-visible) {color:#f2f5f6;}
 .notebook-page-body .notebook-nav-links {
-  gap:9px;
+  display:flex;
+  align-items:center;
+  gap:10px;
   white-space:nowrap;
 }
 .notebook-page-body .notebook-nav-links > a {
-  font-size:12px;
-  letter-spacing:.02em;
-  justify-content:center;
-  min-height:42px;
-  transition:background-color .3s ease,color .3s ease,border-color .3s ease;
-}
-.notebook-page-body .notebook-nav-links .notebook-nav-project {
-  color:#bac8d0;
-  padding:0 12px;
-}
-.notebook-page-body .notebook-nav-links .notebook-nav-portfolio {
   display:inline-flex;
-  color:#e5ebee;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font:500 12px/1.35 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  min-height:42px;
+  letter-spacing:.01em;
+  transition:color .25s ease,background .25s ease,border-color .25s ease;
+}
+.notebook-page-body .notebook-nav-links .notebook-nav-project {padding:0 12px;}
+.notebook-page-body .notebook-nav-links .notebook-nav-portfolio {
   padding:0 16px;
-  border:1px solid rgba(152,171,181,.37);
+  color:#e4ebee;
   border-radius:4px;
-  background:rgba(150,166,175,.035);
+  background:rgba(170,186,196,.045);
+  border:1px solid rgba(157,175,187,.32);
 }
-.notebook-page-body .notebook-nav-links a:hover {color:#fff;}
 .notebook-page-body .notebook-nav-links .notebook-nav-portfolio:hover {
-  border-color:rgba(186,203,212,.68);
-  background:rgba(150,166,175,.085);
+  background:rgba(170,186,196,.085);
+  border-color:rgba(191,205,213,.6);
 }
-/* Avoid stacking the old notebook hero entrance over a whole-page reveal. */
-html.ds-route-incoming .notebook-page-body .notebook-hero {
-  animation:none!important;
+/* All notebook heroes rest naturally in place: no second entry animation.
+   Only the existing main route transition may animate the page. */
+.notebook-page-body .notebook-hero {animation:none;}
+.notebook-page-body .notebook-hero > .eyebrow,
+.notebook-page-body .notebook-hero > h1,
+.notebook-page-body .notebook-hero > p:not(.eyebrow) {
+  margin-inline:auto;
+  text-align:center;
+}
+.notebook-page-body .notebook-hero > h1 {max-width:850px;text-wrap:balance;}
+.notebook-page-body .notebook-hero > p:not(.eyebrow) {max-width:64ch;}
+.notebook-page-body .notebook-hero .actions {
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.notebook-page-body .notebook-hero .back-link {
+  margin-bottom:clamp(30px,5vw,48px);
 }
 @media(max-width:760px) {
-  .notebook-page-body .notebook-nav {
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav {
     height:72px;
+    min-height:72px;
     padding-inline:clamp(16px,4vw,22px);
   }
-  .notebook-page-body .notebook-nav .greeting {
-    font-size:12px;
-    letter-spacing:.06em;
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav::before,
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav.scrolled::before {
+    inset:0 0 auto;
+    /* Closed header: 72px controls + 10px tail, clear of Factory Back at 82px.
+       The expanded mobile drawer below keeps its own existing 48px fade. */
+    height:calc(72px + 10px);
+    background:linear-gradient(180deg,
+      var(--ds-header-surface) 0%,
+      var(--ds-header-surface) calc(100% - 10px),
+      rgba(8,9,10,0) 100%);
   }
-  .notebook-page-body .notebook-nav-links {gap:4px;}
-  .notebook-page-body .notebook-nav-links > a {
-    font-size:11.5px;
-    min-height:40px;
+  :is(.home-page,.factory-page-body) .nav #navlinks,
+  :is(.home-page,.factory-page-body) .nav #navlinks.open {
+    position:absolute;
+    top:72px;
+    inset-inline:0;
+    flex-direction:column;
+    align-items:stretch;
+    gap:0;
+    background:transparent;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
   }
-  .notebook-page-body .notebook-nav-links .notebook-nav-project {padding:0 7px;}
-  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {padding:0 12px;}
+  /* Identical drawer item rhythm, not page-specific 9px vs 11px rows. */
+  :is(.home-page,.factory-page-body) .nav #navlinks > a:not(.nav-cta),
+  :is(.home-page,.factory-page-body) .nav #navlinks.open > a:not(.nav-cta) {
+    padding:11px 2px;
+    min-height:43px;
+  }
+  /* Explicitly outrank legacy page-specific drawer layers: the same
+     height and dark-to-clear fade are used for Home and Factory. */
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open)::before,
+  :is(.home-page,.factory-page-body) > .nav.scrolled:has(#navlinks.open)::before {
+    inset:0 0 auto;
+    height:calc(72px + var(--ds-drawer-height,0px) + 48px);
+    /* The dark surface ends AFTER Let’s Connect, never across its lower half. */
+    background:linear-gradient(180deg,
+      var(--ds-header-surface) 0%,
+      var(--ds-header-surface) calc(100% - 48px),
+      rgba(8,9,10,0) 100%);
+    -webkit-mask-image:none;
+    mask-image:none;
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+  :is(.home-page,.factory-page-body) .nav .greeting,
+  .notebook-page-body .notebook-nav .greeting {font-size:12px;letter-spacing:.055em;}
+  .notebook-page-body .notebook-nav-links {gap:5px;}
+  .notebook-page-body .notebook-nav-links > a {font-size:11.5px;min-height:40px;}
+  .notebook-page-body .notebook-nav-links .notebook-nav-project {padding:0 6px;}
+  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {padding:0 11px;}
+  .notebook-page-body .notebook-hero {padding-bottom:34px;}
+  .notebook-page-body .notebook-hero .back-link {margin-bottom:32px;}
+  .notebook-page-body .notebook-hero > h1 {font-size:clamp(33px,8.4vw,47px);}
+  .notebook-page-body .notebook-hero .actions {gap:10px;}
 }
 @media(max-width:370px) {
-  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {display:inline-flex;}
+  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {display:inline-flex;padding:0 9px;}
   .notebook-page-body .notebook-nav-links > a {font-size:11px;}
   .notebook-page-body .notebook-nav-links {gap:2px;}
   .notebook-page-body .notebook-nav-links .notebook-nav-project {padding:0 5px;}
-  .notebook-page-body .notebook-nav-links .notebook-nav-portfolio {padding:0 9px;}
 }
+@media(prefers-reduced-motion:reduce) {
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav {
+    transition:none!important;
+    transform:none!important;
+    opacity:1!important;
+  }
+  .notebook-page-body .notebook-hero {animation:none!important;}
+}
+
+
