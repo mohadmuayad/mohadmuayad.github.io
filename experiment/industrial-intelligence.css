@@ -1330,3 +1330,13 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     font-size:13px;line-height:1.6;
   }
 }
+
+/* Match the label-to-title breathing room used by other section headings. */
+.home-page #projects .ds-project-section-heading > .eyebrow {
+  margin-bottom:22px;
+}
+@media(max-width:760px) {
+  .home-page #projects .ds-project-section-heading > .eyebrow {
+    margin-bottom:19px;
+  }
+}
