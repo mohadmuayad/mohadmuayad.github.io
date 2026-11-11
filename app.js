@@ -414,7 +414,7 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     const response=await fetch(url.href,{signal:controller.signal,credentials:'same-origin'});
     if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw new Error('Document unavailable');
     const nextDoc=new DOMParser().parseFromString(await response.text(),'text/html');
-    if(!nextDoc.body||!nextDoc.querySelector('main')||!nextDoc.querySelector('link[href="style.css"]'))throw new Error('Invalid document');
+    if(!nextDoc.body||!nextDoc.querySelector('main')||!nextDoc.querySelector('link[href^="style.css"]'))throw new Error('Invalid document');
     if(controller.signal.aborted||serial!==navigationSerial)return;
     // Quiet Reveal: subtly soften only the current main, retaining the
     // charcoal page canvas, header and scroll position as steady reference.
