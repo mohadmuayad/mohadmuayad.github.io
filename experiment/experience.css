@@ -1182,3 +1182,10 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 }
 .notebook-page-body .notebook-hero .back-link::before,
 .notebook-page-body .notebook-hero .back-link .link-arrow {display:none!important;content:none!important;}
+
+
+/* Move the factory portfolio return link away from the right-side scrollbar. */
+.factory-page-body .factory-page > .ds-page-back {top:96px;left:0;right:auto;}
+@media(max-width:760px) {
+  .factory-page-body .factory-page > .ds-page-back {top:96px;left:0;right:auto;}
+}
