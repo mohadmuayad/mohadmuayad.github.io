@@ -420,7 +420,7 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     // charcoal page canvas, header and scroll position as steady reference.
     if(!reduce){
       root.classList.add('ds-route-leaving');
-      await waitNavigationTime(110);
+      await waitNavigationTime(240);
       if(controller.signal.aborted||serial!==navigationSerial)return;
     }
     root.classList.remove('ds-route-leaving');
@@ -441,11 +441,13 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     await waitNavigationFrame();
     if(controller.signal.aborted||serial!==navigationSerial)return;
     if(restored)jumpToDestination(url,restored);
-    root.classList.remove('ds-route-swapping');
+    // Keep the new main invisible through the swap; reveal only after
+    // the correct scroll position and page layout are ready.
     if(!reduce){
       root.classList.add('ds-route-incoming');
-      await waitNavigationTime(285);
-    }
+      root.classList.remove('ds-route-swapping');
+      await waitNavigationTime(540);
+    }else root.classList.remove('ds-route-swapping');
   }catch(error){
     if(error.name==='AbortError')return;
     clearMotion();
