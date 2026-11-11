@@ -1505,6 +1505,8 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   }
 }
 .home-page #projects .ds-entry-evidence-steps {
+  position:relative;
+  top:4px;
   column-gap:clamp(10px,1.2vw,15px);
   row-gap:5px;
 }
@@ -1512,12 +1514,13 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   gap:5px;
 }
 .home-page #projects .ds-entry-evidence-steps svg {
-  width:15px;
-  height:15px;
-  flex-basis:15px;
+  width:18px;
+  height:18px;
+  flex-basis:18px;
+  stroke-width:1.75;
 }
 .home-page #projects .ds-entry-evidence-steps b {
-  font-size:12px;
+  font-size:13px;
   line-height:1.35;
 }
 @media(max-width:760px) {
@@ -1528,18 +1531,16 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
 }
 @media(min-width:961px) {
   .home-page #projects .ds-entry-split-card .ds-entry-evidence-steps {
-    position:relative;
-    top:5px;
+    top:7px;
     column-gap:clamp(12px,1.2vw,16px);
   }
   .home-page #projects .ds-entry-split-card .ds-entry-evidence-steps svg {
-    width:18px;
-    height:18px;
-    flex-basis:18px;
-    stroke-width:1.75;
+    width:20px;
+    height:20px;
+    flex-basis:20px;
   }
   .home-page #projects .ds-entry-split-card .ds-entry-evidence-steps b {
-    font-size:13px;
+    font-size:14px;
     line-height:1.3;
   }
   .home-page #projects .ds-entry-split-card .ds-entry-information .ds-card-footer .project-link {
