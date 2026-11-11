@@ -1268,3 +1268,21 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
     transition:top 430ms cubic-bezier(.22,.61,.36,1),opacity 220ms ease!important;
   }
 }
+
+
+/* Keep the closed mobile header on the same solid surface as its open drawer. */
+@media(max-width:760px) {
+  :is(.home-page,.factory-page-body) > .nav,
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open),
+  :is(.home-page,.factory-page-body) > .nav .greeting {
+    background:#0a0d0f!important;
+    background-image:none!important;
+  }
+  :is(.home-page,.factory-page-body) > .nav::before,
+  :is(.home-page,.factory-page-body) > .nav.scrolled::before,
+  :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open)::before,
+  :is(.home-page,.factory-page-body) > .nav.scrolled:has(#navlinks.open)::before {
+    background:#0a0d0f!important;
+    height:calc(72px + var(--ds-drawer-height, 0px))!important;
+  }
+}
