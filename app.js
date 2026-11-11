@@ -115,6 +115,7 @@ syncMenuBackdrop();
   let headerFrame=0;
   let previousHeaderY=Math.max(0,window.scrollY);
   let headerDirection=0,headerTravel=0,headerViewportWidth=window.innerWidth;
+  let lastTouchY=null,pendingTouchDelta=0;
   function syncHeaderMotion(forceVisible=false){
     headerFrame=0;
     if(!header)return;
@@ -124,7 +125,11 @@ syncMenuBackdrop();
     // repeated layout reads and DOM writes during fast wheel/touch scrolling.
     if(!notebookMode)scrollState();
     const y=Math.max(0,window.scrollY);
-    const delta=y-previousHeaderY;
+    const scrollDelta=y-previousHeaderY;
+    // iOS Safari may defer scroll events during a finger-driven gesture.
+    // Use the touch direction only when the document did not advance this frame.
+    const delta=Math.abs(scrollDelta)>=1.5?scrollDelta:pendingTouchDelta;
+    pendingTouchDelta=0;
     previousHeaderY=y;
     header.classList.toggle('scrolled',y>20);
     const routeSettling=document.documentElement.classList.contains('ds-route-swapping')||
@@ -147,6 +152,20 @@ syncMenuBackdrop();
     if(direction<0&&headerTravel>=16)header.classList.remove('ds-nav-hidden');
   }
   function onHeaderScroll(){if(!headerFrame)headerFrame=requestAnimationFrame(()=>syncHeaderMotion());}
+  function onHeaderTouchStart(event){
+    lastTouchY=event.touches.length===1?event.touches[0].clientY:null;
+    pendingTouchDelta=0;
+  }
+  function onHeaderTouchMove(event){
+    if(lastTouchY===null||event.touches.length!==1)return;
+    const nextY=event.touches[0].clientY;
+    const movement=lastTouchY-nextY;
+    lastTouchY=nextY;
+    if(Math.abs(movement)<0.5)return;
+    pendingTouchDelta=Math.max(-96,Math.min(96,pendingTouchDelta+movement));
+    onHeaderScroll();
+  }
+  function onHeaderTouchEnd(){lastTouchY=null;pendingTouchDelta=0;}
   function onHeaderFocus(){
     if(headerFrame)cancelAnimationFrame(headerFrame);
     syncHeaderMotion(true);
@@ -160,6 +179,10 @@ syncMenuBackdrop();
     syncHeaderMotion(widthChanged);
   }
   window.addEventListener('scroll',onHeaderScroll,{passive:true});
+  window.addEventListener('touchstart',onHeaderTouchStart,{passive:true});
+  window.addEventListener('touchmove',onHeaderTouchMove,{passive:true});
+  window.addEventListener('touchend',onHeaderTouchEnd,{passive:true});
+  window.addEventListener('touchcancel',onHeaderTouchEnd,{passive:true});
   window.addEventListener('resize',onHeaderResize);
   header?.addEventListener('focusin',onHeaderFocus);
   header?.addEventListener('pointerdown',onHeaderFocus,{passive:true});
@@ -378,6 +401,10 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
     stopNotebookReader();
     if(headerFrame)cancelAnimationFrame(headerFrame);
     window.removeEventListener('scroll',onHeaderScroll);
+    window.removeEventListener('touchstart',onHeaderTouchStart);
+    window.removeEventListener('touchmove',onHeaderTouchMove);
+    window.removeEventListener('touchend',onHeaderTouchEnd);
+    window.removeEventListener('touchcancel',onHeaderTouchEnd);
     window.removeEventListener('resize',onHeaderResize);
     header?.removeEventListener('focusin',onHeaderFocus);
     header?.removeEventListener('pointerdown',onHeaderFocus);
