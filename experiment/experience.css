@@ -667,3 +667,110 @@ html.ds-route-incoming main {
   html.ds-route-leaving main {opacity:1!important;transition:none!important;}
   html.ds-route-incoming main {animation:none!important;}
 }
+
+
+/* Experience 1.1 — academic milestone disclosure.
+   Native <details> remains fully functional without JavaScript.
+   Modern browsers gently animate intrinsic height in BOTH directions. */
+.home-page #projects .milestone-story {
+  max-width:730px;
+  margin:clamp(17px,2.5vw,23px) auto 0;
+  border-top:1px solid rgba(148,169,182,.24);
+  font-family:'Nunito Sans','Segoe UI',Arial,sans-serif;
+  text-align:center;
+}
+.home-page #projects .milestone-story > summary {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:44px;
+  margin:7px auto 0;
+  padding:7px 14px;
+  width:fit-content;
+  max-width:100%;
+  cursor:pointer;
+  border-radius:4px;
+  list-style:none;
+  color:#bfccd3;
+  font-size:clamp(12.5px,1vw,13.5px);
+  font-weight:500;
+  letter-spacing:.02em;
+  line-height:1.5;
+  transition:color .28s ease,background-color .28s ease;
+}
+.home-page #projects .milestone-story > summary::-webkit-details-marker {display:none;}
+.home-page #projects .milestone-story > summary::marker {content:"";}
+.home-page #projects .milestone-story > summary:hover,
+.home-page #projects .milestone-story[open] > summary {
+  color:#e1e9ec;
+}
+.home-page #projects .milestone-story > summary:hover {
+  background-color:rgba(154,181,193,.055);
+}
+.home-page #projects .milestone-story > summary:focus-visible {
+  outline:2px solid #a9c9dc;
+  outline-offset:3px;
+}
+.home-page #projects .milestone-story-chevron {
+  flex:none;
+  width:15px;
+  height:15px;
+  color:#a9c9dc;
+  transition:transform .5s cubic-bezier(.22,.61,.36,1);
+}
+.home-page #projects .milestone-story[open] .milestone-story-chevron {
+  transform:rotate(180deg);
+}
+.home-page #projects .milestone-story-content {
+  padding:8px clamp(0px,1.4vw,13px) 6px;
+}
+.home-page #projects .milestone-story-content p {
+  max-width:67ch;
+  margin:0 auto;
+  color:#adbcc4;
+  font-size:clamp(12.5px,1.04vw,14px);
+  line-height:1.8;
+  text-wrap:pretty;
+}
+.home-page #projects .milestone-story-content p + p {
+  margin-top:13px;
+}
+@supports (interpolate-size:allow-keywords) and selector(details::details-content) {
+  .home-page #projects .milestone-story {
+    interpolate-size:allow-keywords;
+  }
+  .home-page #projects .milestone-story::details-content {
+    display:flow-root;
+    overflow:clip;
+    block-size:0;
+    opacity:0;
+    transition:block-size .7s cubic-bezier(.22,.61,.36,1),
+               opacity .45s ease,
+               content-visibility .7s allow-discrete;
+  }
+  .home-page #projects .milestone-story[open]::details-content {
+    block-size:auto;
+    opacity:1;
+  }
+}
+@media (max-width:760px) {
+  .home-page #projects .milestone-story {margin-top:18px;}
+  .home-page #projects .milestone-story > summary {
+    min-height:44px;
+    padding:10px 12px;
+    font-size:13px;
+  }
+  .home-page #projects .milestone-story-content {padding:8px 3px 4px;}
+  .home-page #projects .milestone-story-content p {
+    font-size:13px;
+    line-height:1.76;
+    text-wrap:pretty;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .home-page #projects .milestone-story::details-content,
+  .home-page #projects .milestone-story-chevron {
+    transition:none!important;
+  }
+}
