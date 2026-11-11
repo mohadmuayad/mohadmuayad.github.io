@@ -115,7 +115,6 @@ syncMenuBackdrop();
   let headerFrame=0;
   let previousHeaderY=Math.max(0,window.scrollY);
   let headerDirection=0,headerTravel=0,headerViewportWidth=window.innerWidth;
-  const navPrefersReduced=matchMedia('(prefers-reduced-motion: reduce)');
   function syncHeaderMotion(forceVisible=false){
     headerFrame=0;
     if(!header)return;
@@ -130,8 +129,11 @@ syncMenuBackdrop();
     header.classList.toggle('scrolled',y>20);
     const routeSettling=document.documentElement.classList.contains('ds-route-swapping')||
       document.documentElement.classList.contains('ds-route-incoming');
-    if(navPrefersReduced.matches||forceVisible||y<=110||routeSettling||
-       menu?.classList.contains('open')||header.matches(':focus-within')){
+    // On iOS Safari, a tapped header link can retain :focus-within after scrolling.
+    // Keep keyboard focus protection on desktop, but do not lock the mobile header open.
+    // Reduced-motion users still receive hide/reveal state changes (without animation).
+    if(forceVisible||y<=110||routeSettling||
+       menu?.classList.contains('open')||(!mobileNav.matches&&header.matches(':focus-within'))){
       headerDirection=0;
       headerTravel=0;
       header.classList.remove('ds-nav-hidden');
