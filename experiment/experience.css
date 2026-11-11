@@ -1242,7 +1242,7 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 }
 
 
-/* Mobile nav edge cue: a quiet warm line that follows the drawer as it opens/closes. */
+/* Mobile nav edge cue: a quiet pearl-silver line that follows the drawer as it opens/closes. */
 @media(max-width:760px) {
   :is(.home-page,.factory-page-body) > .nav::after,
   :is(.home-page,.factory-page-body) > .nav:has(#navlinks.open)::after {
@@ -1259,11 +1259,11 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
     z-index:5!important;
     background:linear-gradient(90deg,
       transparent 0%,
-      rgba(235,174,97,.28) 12%,
-      rgba(235,174,97,.48) 50%,
-      rgba(235,174,97,.28) 88%,
+      rgba(211,220,224,.27) 12%,
+      rgba(211,220,224,.43) 50%,
+      rgba(211,220,224,.27) 88%,
       transparent 100%)!important;
-    box-shadow:0 0 7px rgba(235,174,97,.13)!important;
+    box-shadow:0 0 7px rgba(211,220,224,.12)!important;
     opacity:1!important;
     transition:top 430ms cubic-bezier(.22,.61,.36,1),opacity 220ms ease!important;
   }
