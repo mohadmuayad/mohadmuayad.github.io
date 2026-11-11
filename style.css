@@ -859,15 +859,6 @@ main,footer{padding-left:23px;padding-right:23px}.hero{display:flex;flex-directi
   pointer-events:none;
   display:block;
 }
-@media (max-width:760px) {
-  /* Allow the unchanged tall wave to extend above the hero without a
-     horizontal cutoff in the visible viewport or beneath the mobile nav. */
-  .home-page .hero .dark-signal-canvas {
-    top:-140px;
-    bottom:auto;
-    height:calc(100% + 140px);
-  }
-}
 .home-page .hero-copy,.home-page .portrait-wrap {z-index:2;}
 .home-page .hero h1 {color:#f0f1f2;text-shadow:0 2px 38px rgba(0,0,0,.18);}
 .home-page .hero h1 em {color:#a6b1b8;font-weight:300;}

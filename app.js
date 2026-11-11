@@ -519,13 +519,18 @@ function initDarkSignal(canvas){
     const tr=title.getBoundingClientRect();
     // Align the exact same moving field with the title, not a padded box.
     const cx=(tr.left+tr.width*.53-cr.left);
-    const cy=(tr.top+tr.height*.56-cr.top);
+    let cy=(tr.top+tr.height*.56-cr.top);
     const mob=mobile();
     const originalSx=mob?Math.min(hr.width*.46,165):Math.min(hr.width*.41,275);
-    // Only shrink the field where its outer ellipse would be hard-clipped.
-    // Preserve the original scale everywhere else (notably desktop).
+    // Keep the field entirely inside the viewport, even at tablet widths.
     const sx=Math.max(1,Math.min(originalSx,(cx-4)/1.16,(w-cx-4)/1.16));
-    const sy=mob?Math.min(hr.height*.30,265):Math.min(hr.height*.43,310);
+    // The previous mobile field used the entire tall hero for its vertical
+    // radius, hiding the top of the ring off-screen. Derive both axes from
+    // the same responsive width, while leaving desktop's maximum unchanged.
+    const sy=mob?Math.min(sx*1.06,190):Math.min(hr.height*.43,310,sx*1.12);
+    // Keep the full mobile ring below the 72px navigation, without moving
+    // its horizontal axis or altering the wave's speed / sampling equations.
+    if(mob)cy=Math.max(cy,hr.top-cr.top+82+sy*1.15);
     // Mobile adds invisible headroom above the hero. Offset the sampling
     // coordinate so each filament keeps its exact original wave phase.
     const yOrigin=cr.top-hr.top;
@@ -540,8 +545,8 @@ function initDarkSignal(canvas){
     ctx.beginPath();
     ctx.ellipse(cx,cy,sx*1.16,sy*1.20,0,0,Math.PI*2);
     ctx.clip();
-    // 19 fine vertical filaments: neutral graphite, never stars/orbits.
-    const count=19;
+    // 27 fine vertical filaments: richer density, identical color and timing.
+    const count=27;
     const spacing=sx*1.8/(count-1);
     for(let i=0;i<count;i++){
       const p=i-(count-1)/2;
@@ -581,7 +586,7 @@ function initDarkSignal(canvas){
     // A slow breathing perimeter gives the field dimension without a neon glow.
     const breathe=(Math.sin(t*.27)+1)*.5;
     ctx.beginPath();
-    ctx.ellipse(cx,cy,sx*(1.02+breathe*.045),sy*(1.05+breathe*.025),0,0,Math.PI*2);
+    ctx.ellipse(cx,cy,sx*(1.12+breathe*.025),sy*(1.12+breathe*.025),0,0,Math.PI*2);
     ctx.lineWidth=.75;
     ctx.strokeStyle='rgba(176,189,193,'+(mob?.115:.085)+')';
     ctx.stroke();
