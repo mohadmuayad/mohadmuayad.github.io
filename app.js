@@ -90,6 +90,7 @@ function syncMenuAccess(){
   if(menu)menu.inert=mobileNav.matches&&!menu.classList.contains('open');
 }
 function closeMenu(restoreFocus=false){
+  resetMenuDrag();
   menu?.classList.remove('open');
   toggle?.setAttribute('aria-expanded','false');
   toggle?.setAttribute('aria-label','Open navigation');
@@ -101,6 +102,7 @@ toggle?.addEventListener('click',()=>{
   if(!mobileNav.matches)return;
   const opening=!menu.classList.contains('open');
   if(opening){
+    resetMenuDrag();
     // Measure the content before toggling the open class. A committed closed
     // frame gives CSS a real 0px start state instead of a one-frame jump.
     const available=Math.max(0,window.innerHeight-72);
@@ -109,6 +111,7 @@ toggle?.addEventListener('click',()=>{
     void menu.offsetHeight;
     menu.classList.add('open');
   }else{
+    resetMenuDrag();
     menu.classList.remove('open');
   }
   toggle.setAttribute('aria-expanded',String(opening));
@@ -128,21 +131,39 @@ function onPageScrollCloseMenu(){
   if(mobileNav.matches&&menu?.classList.contains('open'))closeMenu();
 }
 let menuTouchStart=null;
-function onMenuTouchStart(event){
-  if(!mobileNav.matches||!menu?.classList.contains('open')||event.touches.length!==1){menuTouchStart=null;return;}
-  menuTouchStart={x:event.touches[0].clientX,y:event.touches[0].clientY};
-}
-function onMenuTouchEnd(event){
-  if(!menuTouchStart||!mobileNav.matches||!menu?.classList.contains('open')||event.changedTouches.length!==1){menuTouchStart=null;return;}
-  const touch=event.changedTouches[0];
-  const dx=touch.clientX-menuTouchStart.x;
-  const dy=touch.clientY-menuTouchStart.y;
+function resetMenuDrag(){
   menuTouchStart=null;
-  if(dy<=-48&&Math.abs(dx)<Math.abs(dy)*.8)closeMenu();
+  menu?.classList.remove('ds-menu-dragging');
+  menu?.style.removeProperty('--ds-menu-drag-y');
+}
+function onMenuTouchStart(event){
+  if(!mobileNav.matches||!menu?.classList.contains('open')||event.touches.length!==1){resetMenuDrag();return;}
+  menuTouchStart={x:event.touches[0].clientX,y:event.touches[0].clientY,dragging:false,offset:0};
+}
+function onMenuTouchMove(event){
+  if(!menuTouchStart||!mobileNav.matches||!menu?.classList.contains('open')||event.touches.length!==1)return;
+  const touch=event.touches[0];
+  const dx=touch.clientX-menuTouchStart.x,dy=touch.clientY-menuTouchStart.y;
+  // Preserve normal scrolling inside a long menu; a vertical swipe from its
+  // top edge is a separate, deliberate gesture to dismiss the drawer.
+  if(menu.scrollTop>1||dy>=0||Math.abs(dx)>Math.abs(dy)*.65)return;
+  if(dy>=-9&&!menuTouchStart.dragging)return;
+  menuTouchStart.dragging=true;
+  menuTouchStart.offset=Math.max(-menu.offsetHeight,dy);
+  menu.classList.add('ds-menu-dragging');
+  menu.style.setProperty('--ds-menu-drag-y',`${menuTouchStart.offset}px`);
+  if(event.cancelable)event.preventDefault();
+}
+function onMenuTouchEnd(){
+  if(!menuTouchStart)return;
+  const shouldClose=menuTouchStart.dragging&&menuTouchStart.offset<=-54;
+  resetMenuDrag();
+  if(shouldClose)closeMenu();
 }
 menu?.addEventListener('touchstart',onMenuTouchStart,{passive:true});
+menu?.addEventListener('touchmove',onMenuTouchMove,{passive:false});
 menu?.addEventListener('touchend',onMenuTouchEnd,{passive:true});
-menu?.addEventListener('touchcancel',()=>{menuTouchStart=null;},{passive:true});
+menu?.addEventListener('touchcancel',resetMenuDrag,{passive:true});
 window.addEventListener('scroll',onPageScrollCloseMenu,{passive:true});
 const handleNavResize=()=>{
   if(!mobileNav.matches&&menu?.classList.contains('open'))closeMenu();
@@ -456,7 +477,9 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
     for(const [name,callback] of documentListeners)document.removeEventListener(name,callback);
     window.removeEventListener('scroll',onPageScrollCloseMenu);
     menu?.removeEventListener('touchstart',onMenuTouchStart);
+    menu?.removeEventListener('touchmove',onMenuTouchMove);
     menu?.removeEventListener('touchend',onMenuTouchEnd);
+    menu?.removeEventListener('touchcancel',resetMenuDrag);
     window.removeEventListener('resize',handleNavResize);
     mobileNav.removeEventListener?.('change',handleNavResize);
     clearTimeout(toastTimer);
