@@ -7,10 +7,10 @@
   function bind(header){
     var button=header.querySelector('[data-ds-nav-toggle]');
     var panel=header.querySelector('[data-ds-nav-panel]');
-    var backdrop=header.querySelector('[data-ds-nav-backdrop]');
+    var grip=header.querySelector('[data-ds-nav-grip]');
     if(!button||!panel)return function(){};
     var opened=false,drag=null,topY=Math.max(0,window.pageYOffset||0);
-    var travel=0,direction=0,raf=0,touchY=null,hidden=false;
+    var direction=0,anchorY=topY,raf=0,hidden=false,lastChange=0;
     function setHidden(state){
       if(hidden===state)return;
       hidden=state;
@@ -30,7 +30,7 @@
         var rect=node.getBoundingClientRect();
         intrinsic+=Math.max(45,Math.ceil(rect.height||node.offsetHeight||0));
       }
-      intrinsic+=Math.max(0,links.length-1)*2+31;
+      intrinsic+=Math.max(0,links.length-1)*2+31+(grip?42:0);
       return Math.min(Math.max(80,intrinsic),space);
     }
     function resetGesture(){
@@ -54,66 +54,71 @@
       if(state)setHidden(false);
       if(focus)button.focus();
     }
-    function decide(delta,y){
-      if(opened||y<110){direction=0;travel=0;setHidden(false);return;}
-      if(Math.abs(delta)<1.5)return;
-      var d=delta>0?1:-1;
-      if(d!==direction){direction=d;travel=0;}
-      travel+=Math.abs(delta);
-      if(d>0&&y>145&&travel>22)setHidden(true);
-      else if(d<0&&travel>13)setHidden(false);
+    function decide(y){
+      // The document's actual scroll position is the only motion input.
+      // iOS overscroll and finger tremors must not compete with touchmove.
+      if(opened||y<105){
+        direction=0;anchorY=y;setHidden(false);return;
+      }
+      var delta=y-topY;
+      if(Math.abs(delta)<3)return;
+      var next=delta>0?1:-1;
+      if(next!==direction){direction=next;anchorY=topY;}
+      // Directional hysteresis + a short settling window prevent jitter
+      // when an iPhone's rubber-band scrolling changes direction briefly.
+      var threshold=next>0?62:36;
+      if(Math.abs(y-anchorY)<threshold)return;
+      var now=Date.now();
+      if(now-lastChange<260)return;
+      var shouldHide=next>0&&y>170;
+      if(shouldHide!==hidden){
+        setHidden(shouldHide);
+        lastChange=now;
+      }
+      anchorY=y;
     }
     function runScroll(){
       raf=0;
       var y=Math.max(0,window.pageYOffset||document.documentElement.scrollTop||0);
-      decide(y-topY,y);topY=y;
+      decide(y);topY=y;
     }
     function onScroll(){if(!raf)raf=window.requestAnimationFrame(runScroll);}
-    function onTouchStart(e){touchY=e.touches.length===1?e.touches[0].clientY:null;}
-    function onTouchMove(e){
-      if(touchY===null||e.touches.length!==1)return;
-      var next=e.touches[0].clientY,delta=touchY-next;touchY=next;
-      if(Math.abs(delta)>=1.5)decide(delta,Math.max(0,window.pageYOffset||0));
-    }
-    function onTouchEnd(){touchY=null;}
     function onToggle(){openMenu(!opened,false);}
     function onOutside(e){
       if(opened&&!header.contains(e.target))openMenu(false,false);
     }
     function onKeyboard(e){if(e.key==='Escape'&&opened)openMenu(false,true);}
-    function onPanelStart(e){
+    function onGripStart(e){
       if(!opened||e.touches.length!==1)return;
       var t=e.touches[0];
       drag={x:t.clientX,y:t.clientY,dy:0,tracking:false,base:sheetHeight()};
     }
-    function onPanelMove(e){
+    function onGripMove(e){
       if(!drag||!opened||e.touches.length!==1)return;
       var t=e.touches[0];
       var dx=t.clientX-drag.x,dy=t.clientY-drag.y;
       if(!drag.tracking){
-        // A scrollable menu should scroll normally. We only capture a clear
-        // vertical gesture begun when the menu is already at its top.
-        if(panel.scrollTop>1||Math.abs(dx)>Math.abs(dy)*.68)return;
-        if(Math.abs(dy)<13)return;
+        if(Math.abs(dy)<8||Math.abs(dx)>Math.abs(dy)*.75)return;
         drag.tracking=true;
       }
       drag.dy=dy;
-      var height=dy<0?Math.max(65,drag.base+dy):drag.base+Math.min(28,dy*.18);
+      var amount=dy<0?dy:Math.min(22,dy*.16);
+      var height=Math.max(78,drag.base+amount);
       panel.setAttribute('data-dragging','true');
       panel.style.setProperty('--ds-drag-height',height+'px');
       if(e.cancelable)e.preventDefault();
     }
-    function onPanelEnd(cancelled){
+    function onGripEnd(cancelled){
       if(!drag)return;
-      var close=!cancelled&&drag.tracking&&drag.dy<0&&
-        -drag.dy>=Math.max(110,Math.min(165,drag.base*.48));
-      // Resetting the height target does not reset a transform: the browser
-      // interpolates from the actual finger-controlled height to the target.
-      if(close){
-        openMenu(false,false);
-      }else{
-        resetGesture();
-      }
+      var close=!cancelled&&drag.tracking&&drag.dy<=-Math.max(125,drag.base*.43);
+      // Let the sheet return from the live height using its CSS transition;
+      // never abruptly move the entire panel by a translate transform.
+      if(close)openMenu(false,false);
+      else resetGesture();
+    }
+    function onGripClick(e){
+      // A tap on the grip is only a cue, not an accidental dismissal.
+      if(drag&&drag.tracking)e.preventDefault();
     }
     function onPanelClick(e){
       if(e.target.closest('a[href]'))openMenu(false,false);
@@ -121,7 +126,7 @@
     function onResize(){
       if(!mobile.matches)openMenu(false,false);
       else if(opened)openMenu(true,false);
-      setHidden(false);topY=Math.max(0,window.pageYOffset||0);
+      setHidden(false);topY=Math.max(0,window.pageYOffset||0);anchorY=topY;direction=0;
     }
     header.setAttribute('data-hidden','false');
     header.setAttribute('data-open','false');
@@ -129,17 +134,14 @@
     button.addEventListener('click',onToggle);
     // No full-screen touch-blocking backdrop: outside pointerdown handles dismiss.
     panel.addEventListener('click',onPanelClick);
-    panel.addEventListener('touchstart',onPanelStart,{passive:true});
-    panel.addEventListener('touchmove',onPanelMove,{passive:false});
-    function onPanelTouchEnd(){onPanelEnd(false);}
-    function onPanelTouchCancel(){onPanelEnd(true);}
-    panel.addEventListener('touchend',onPanelTouchEnd,{passive:true});
-    panel.addEventListener('touchcancel',onPanelTouchCancel,{passive:true});
+    function onGripTouchEnd(){onGripEnd(false);}
+    function onGripTouchCancel(){onGripEnd(true);}
+    grip?.addEventListener('touchstart',onGripStart,{passive:true});
+    grip?.addEventListener('touchmove',onGripMove,{passive:false});
+    grip?.addEventListener('touchend',onGripTouchEnd,{passive:true});
+    grip?.addEventListener('touchcancel',onGripTouchCancel,{passive:true});
+    grip?.addEventListener('click',onGripClick);
     window.addEventListener('scroll',onScroll,{passive:true});
-    window.addEventListener('touchstart',onTouchStart,{passive:true});
-    window.addEventListener('touchmove',onTouchMove,{passive:true});
-    window.addEventListener('touchend',onTouchEnd,{passive:true});
-    window.addEventListener('touchcancel',onTouchEnd,{passive:true});
     window.addEventListener('resize',onResize,{passive:true});
     document.addEventListener('pointerdown',onOutside);
     document.addEventListener('keydown',onKeyboard);
@@ -149,15 +151,12 @@
       if(raf)window.cancelAnimationFrame(raf);
       button.removeEventListener('click',onToggle);
       panel.removeEventListener('click',onPanelClick);
-      panel.removeEventListener('touchstart',onPanelStart);
-      panel.removeEventListener('touchmove',onPanelMove);
-      panel.removeEventListener('touchend',onPanelTouchEnd);
-      panel.removeEventListener('touchcancel',onPanelTouchCancel);
+      grip?.removeEventListener('touchstart',onGripStart);
+      grip?.removeEventListener('touchmove',onGripMove);
+      grip?.removeEventListener('touchend',onGripTouchEnd);
+      grip?.removeEventListener('touchcancel',onGripTouchCancel);
+      grip?.removeEventListener('click',onGripClick);
       window.removeEventListener('scroll',onScroll);
-      window.removeEventListener('touchstart',onTouchStart);
-      window.removeEventListener('touchmove',onTouchMove);
-      window.removeEventListener('touchend',onTouchEnd);
-      window.removeEventListener('touchcancel',onTouchEnd);
       window.removeEventListener('resize',onResize);
       document.removeEventListener('pointerdown',onOutside);
       document.removeEventListener('keydown',onKeyboard);
