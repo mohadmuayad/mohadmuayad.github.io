@@ -212,8 +212,10 @@ syncMenuBackdrop();
   }
   function syncHeaderMotion(forceVisible=false){
     headerFrame=0;
-    if(!header)return;
+    // Page chrome (progress and Back to top) must remain operational when
+    // the independent navigation shell replaces the legacy .nav element.
     if(!notebookMode)scrollState();
+    if(!header)return;
     const y=readHeaderY(),delta=y-previousHeaderY;
     previousHeaderY=y;
     header.classList.toggle('scrolled',y>20);
@@ -430,7 +432,7 @@ function glideToSection(target){
 // modifier-clicks and the dedicated Back-to-Top control retain their behavior.
 onDoc('click',event=>{
   if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
-  const link=event.target.closest?.('.nav a[href^="#"], .home-page .hero .actions a[href^="#"], .home-page .scroll-cue[href^="#"], .factory-page-body .case-nav a[href^="#"], .notebook-page-body .notebook-toc a[href^="#"]');
+  const link=event.target.closest?.('.ds-shell-nav a[href^="#"], .nav a[href^="#"], .home-page .hero .actions a[href^="#"], .home-page .scroll-cue[href^="#"], .factory-page-body .case-nav a[href^="#"], .notebook-page-body .notebook-toc a[href^="#"]');
   if(!link)return;
   const hash=link.getAttribute('href');
   if(!hash||hash==='#')return;
