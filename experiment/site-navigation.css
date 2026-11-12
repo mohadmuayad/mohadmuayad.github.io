@@ -106,8 +106,10 @@
    transition:height .48s var(--ds-n-ease),padding .48s var(--ds-n-ease),
      opacity .32s ease,visibility 0s linear .48s;
    touch-action:pan-y;
+   -webkit-overflow-scrolling:touch;
  }
  .ds-shell-nav[data-open="true"] .ds-shell-nav__links{
+   height:310px; /* safe fallback for old WebKit */
    height:var(--ds-sheet-height,310px);
    padding:10px 20px 19px;
    opacity:1;visibility:visible;pointer-events:auto;
@@ -135,17 +137,15 @@
    justify-content:space-between;
    min-height:47px;
  }
- .ds-shell-nav__backdrop{
-   position:fixed;inset:68px 0 0;
-   display:block;z-index:1;
-   background:rgba(3,6,8,.15);
-   opacity:0;visibility:hidden;pointer-events:none;
-   transition:opacity .3s ease,visibility 0s linear .3s;
+ /* No full-screen overlay: it previously captured touches and prevented
+    page scrolling if the sheet height failed to paint on Mobile Safari. */
+ .ds-shell-nav__backdrop,
+ .ds-shell-nav[data-open="true"] .ds-shell-nav__backdrop {
+   display:none!important;
+   visibility:hidden!important;
+   pointer-events:none!important;
  }
- .ds-shell-nav[data-open="true"] .ds-shell-nav__backdrop{
-   opacity:1;visibility:visible;pointer-events:auto;
-   transition:opacity .3s ease,visibility 0s;
- }
+
 }
 @media(prefers-reduced-motion:reduce){
  .ds-shell-nav,.ds-shell-nav *, .ds-shell-nav *::before{
