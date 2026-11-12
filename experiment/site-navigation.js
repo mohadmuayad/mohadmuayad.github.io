@@ -16,16 +16,32 @@
       hidden=state;
       header.setAttribute('data-hidden',state?'true':'false');
     }
+    function sheetHeight(){
+      // All links remain in the DOM while closed, so scrollHeight measures
+      // their natural height without flashing them on screen.
+      var viewport=window.innerHeight||document.documentElement.clientHeight||700;
+      var space=Math.max(110,viewport-82);
+      var intrinsic=panel.scrollHeight;
+      return Math.min(Math.max(0,intrinsic),space);
+    }
+    function resetGesture(){
+      drag=null;
+      panel.removeAttribute('data-dragging');
+      panel.style.removeProperty('--ds-drag-height');
+    }
     function openMenu(state,focus){
       if(!mobile.matches)state=false;
+      resetGesture();
+      if(state){
+        // Assign the final measured height while still closed. CSS animates
+        // height from 0 to this value using the same curve as closing.
+        panel.style.setProperty('--ds-sheet-height',sheetHeight()+'px');
+      }
       opened=state;
       header.setAttribute('data-open',state?'true':'false');
       button.setAttribute('aria-expanded',state?'true':'false');
       button.setAttribute('aria-label',state?'Close navigation':'Open navigation');
       panel.inert=!state&&mobile.matches;
-      panel.removeAttribute('data-dragging');
-      panel.style.removeProperty('--ds-drag');
-      drag=null;
       if(state)setHidden(false);
       if(focus)button.focus();
     }
@@ -56,26 +72,37 @@
     function onKeyboard(e){if(e.key==='Escape'&&opened)openMenu(false,true);}
     function onPanelStart(e){
       if(!opened||e.touches.length!==1)return;
-      drag={x:e.touches[0].clientX,y:e.touches[0].clientY,dy:0};
+      var t=e.touches[0];
+      drag={x:t.clientX,y:t.clientY,dy:0,tracking:false,base:sheetHeight()};
     }
     function onPanelMove(e){
-      if(!drag||e.touches.length!==1)return;
-      var dx=e.touches[0].clientX-drag.x,dy=e.touches[0].clientY-drag.y;
-      if(panel.scrollTop>1||Math.abs(dx)>Math.abs(dy)*.75)return;
-      // Upward follows the finger to dismiss. A gentle downward pull has
-      // elastic resistance and springs back on release, like a native sheet.
-      drag.dy=dy<0?Math.max(-panel.offsetHeight,dy):Math.min(32,dy*.24);
-      if(Math.abs(drag.dy)<8)return;
+      if(!drag||!opened||e.touches.length!==1)return;
+      var t=e.touches[0];
+      var dx=t.clientX-drag.x,dy=t.clientY-drag.y;
+      if(!drag.tracking){
+        // A scrollable menu should scroll normally. We only capture a clear
+        // vertical gesture begun when the menu is already at its top.
+        if(panel.scrollTop>1||Math.abs(dx)>Math.abs(dy)*.68)return;
+        if(Math.abs(dy)<13)return;
+        drag.tracking=true;
+      }
+      drag.dy=dy;
+      var height=dy<0?Math.max(65,drag.base+dy):drag.base+Math.min(28,dy*.18);
       panel.setAttribute('data-dragging','true');
-      panel.style.setProperty('--ds-drag',drag.dy+'px');
+      panel.style.setProperty('--ds-drag-height',height+'px');
       if(e.cancelable)e.preventDefault();
     }
-    function onPanelEnd(){
-      var close=drag&&drag.dy<-54;
-      panel.removeAttribute('data-dragging');
-      panel.style.removeProperty('--ds-drag');
-      drag=null;
-      if(close)openMenu(false,false);
+    function onPanelEnd(cancelled){
+      if(!drag)return;
+      var close=!cancelled&&drag.tracking&&drag.dy<0&&
+        -drag.dy>=Math.max(110,Math.min(165,drag.base*.48));
+      // Resetting the height target does not reset a transform: the browser
+      // interpolates from the actual finger-controlled height to the target.
+      if(close){
+        openMenu(false,false);
+      }else{
+        resetGesture();
+      }
     }
     function onPanelClick(e){
       if(e.target.closest('a[href]'))openMenu(false,false);
@@ -93,8 +120,10 @@
     panel.addEventListener('click',onPanelClick);
     panel.addEventListener('touchstart',onPanelStart,{passive:true});
     panel.addEventListener('touchmove',onPanelMove,{passive:false});
-    panel.addEventListener('touchend',onPanelEnd,{passive:true});
-    panel.addEventListener('touchcancel',onPanelEnd,{passive:true});
+    function onPanelTouchEnd(){onPanelEnd(false);}
+    function onPanelTouchCancel(){onPanelEnd(true);}
+    panel.addEventListener('touchend',onPanelTouchEnd,{passive:true});
+    panel.addEventListener('touchcancel',onPanelTouchCancel,{passive:true});
     window.addEventListener('scroll',onScroll,{passive:true});
     window.addEventListener('touchstart',onTouchStart,{passive:true});
     window.addEventListener('touchmove',onTouchMove,{passive:true});
@@ -111,8 +140,8 @@
       panel.removeEventListener('click',onPanelClick);
       panel.removeEventListener('touchstart',onPanelStart);
       panel.removeEventListener('touchmove',onPanelMove);
-      panel.removeEventListener('touchend',onPanelEnd);
-      panel.removeEventListener('touchcancel',onPanelEnd);
+      panel.removeEventListener('touchend',onPanelTouchEnd);
+      panel.removeEventListener('touchcancel',onPanelTouchCancel);
       window.removeEventListener('scroll',onScroll);
       window.removeEventListener('touchstart',onTouchStart);
       window.removeEventListener('touchmove',onTouchMove);
