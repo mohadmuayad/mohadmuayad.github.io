@@ -173,6 +173,78 @@
       panel.inert=false;
     };
   }
+
+  // Desktop-only wheel refinement. Native touchpad momentum is never intercepted.
+  // No scroll smoothing runs for touch, keyboard, forms, modals or nested scrollers.
+  function installDesktopWheelPolish(){
+    var desktop=window.matchMedia('(min-width:761px) and (pointer:fine)');
+    var reduce=window.matchMedia('(prefers-reduced-motion:reduce)');
+    var frame=0,goal=0,last=0,scrolling=false,previousInline='';
+    var root=document.documentElement;
+    function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
+    function restore(){
+      if(frame)window.cancelAnimationFrame(frame);
+      frame=0;
+      if(scrolling){root.style.scrollBehavior=previousInline;scrolling=false;}
+    }
+    function nestedScrollable(node){
+      while(node&&node!==document.body&&node!==document.documentElement){
+        if(node.nodeType===1){
+          var style=window.getComputedStyle(node);
+          if(/auto|scroll/.test(style.overflowY)&&node.scrollHeight>node.clientHeight+2)return true;
+        }
+        node=node.parentElement;
+      }
+      return false;
+    }
+    function animate(now){
+      frame=0;
+      var current=window.pageYOffset||root.scrollTop||0;
+      var seconds=Math.min(.048,Math.max(.001,(now-last)/1000||.016));
+      last=now;
+      var diff=goal-current;
+      if(Math.abs(diff)<.9){window.scrollTo(0,goal);restore();return;}
+      // Exponential decay is frame-rate independent; no abrupt wheel steps.
+      var next=current+diff*(1-Math.exp(-seconds/0.105));
+      window.scrollTo(0,next);
+      frame=window.requestAnimationFrame(animate);
+    }
+    function wheel(e){
+      if(!desktop.matches||reduce.matches||!e.cancelable||e.defaultPrevented||
+         e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||
+         Math.abs(e.deltaX)>Math.abs(e.deltaY)*.6||
+         document.querySelector('.ds-shell-nav[data-open="true"]')||
+         nestedScrollable(e.target))return;
+      // Standard mechanical mouse wheels emit line steps or large discrete
+      // pixel deltas. Preserve high-resolution trackpad gestures natively.
+      var coarse=e.deltaMode===1||
+        (e.deltaMode===0&&Math.abs(e.deltaY)>=90&&
+         Math.abs(e.deltaY-Math.round(e.deltaY/20)*20)<1);
+      if(!coarse||!e.deltaY)return;
+      var max=Math.max(0,root.scrollHeight-window.innerHeight);
+      if(max<=0)return;
+      var actual=window.pageYOffset||root.scrollTop||0;
+      var distance=e.deltaMode===1?e.deltaY*28:e.deltaY;
+      distance=clamp(distance,-420,420);
+      goal=clamp((scrolling?goal:actual)+distance,0,max);
+      if(Math.abs(goal-actual)<.5)return;
+      e.preventDefault();
+      if(!scrolling){
+        previousInline=root.style.scrollBehavior;
+        root.style.scrollBehavior='auto';
+        scrolling=true;
+        last=window.performance.now();
+      }
+      if(!frame)frame=window.requestAnimationFrame(animate);
+    }
+    window.addEventListener('wheel',wheel,{passive:false});
+    ['pointerdown','touchstart','keydown'].forEach(function(type){
+      window.addEventListener(type,restore,{passive:true});
+    });
+    document.addEventListener('visibilitychange',function(){
+      if(document.hidden)restore();
+    });
+  }
   function mount(){
     var target=document.querySelector('.ds-shell-nav');
     if(target===current)return;
@@ -182,6 +254,7 @@
   }
   function start(){
     mount();
+    installDesktopWheelPolish();
     observer=new MutationObserver(function(){mount();});
     observer.observe(document.documentElement,{childList:true,subtree:false});
   }
