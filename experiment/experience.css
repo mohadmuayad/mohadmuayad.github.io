@@ -1286,3 +1286,33 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
     height:calc(72px + var(--ds-drawer-height, 0px))!important;
   }
 }
+
+
+/* 2026-11-12 — Mobile smart-header motion recovery and touch-drag drawer.
+   Keep the hide/show position active even when Reduce Motion is enabled;
+   that preference disables animation, not the navigation behavior. */
+@media(max-width:760px) {
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav {
+    opacity:1!important;
+    transform:translate3d(0,0,0)!important;
+    transition:transform 440ms cubic-bezier(.22,.61,.36,1),opacity 440ms cubic-bezier(.22,.61,.36,1)!important;
+    will-change:transform,opacity;
+  }
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav.ds-nav-hidden {
+    opacity:0!important;
+    transform:translate3d(0,calc(-100% - 28px),0)!important;
+    pointer-events:none;
+  }
+  :is(.home-page,.factory-page-body) > .nav #navlinks.open.ds-menu-dragging {
+    transform:translate3d(0,var(--ds-menu-drag-y,0px),0)!important;
+    transition:none!important;
+    touch-action:pan-y;
+  }
+}
+@media(max-width:760px) and (prefers-reduced-motion:reduce) {
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav,
+  :is(.home-page,.factory-page-body,.notebook-page-body) > .nav.ds-nav-hidden {
+    transition:none!important;
+    will-change:auto;
+  }
+}
