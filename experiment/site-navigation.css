@@ -18,7 +18,7 @@
   backdrop-filter:blur(18px) saturate(125%);
   transform:translate3d(0,0,0);
   opacity:1;
-  transition:transform .46s var(--ds-n-ease),opacity .35s var(--ds-n-ease),box-shadow .25s ease;
+  transition:transform .5s var(--ds-n-ease),opacity .4s var(--ds-n-ease),box-shadow .25s ease;
 }
 .ds-shell-nav,.ds-shell-nav *{box-sizing:border-box}
 .ds-shell-nav[data-hidden="true"]{
@@ -57,6 +57,7 @@
   color:#e5ecef;
 }
 .ds-shell-nav__cta svg{width:14px;height:14px;flex:0 0 14px}
+.ds-shell-nav__grip{display:none}
 .ds-shell-nav__toggle{display:none}
 .ds-shell-nav__backdrop{display:none}
 @media(max-width:760px){
@@ -124,6 +125,22 @@
    transition:none!important;
    overflow:hidden;
  }
+ /* The only touch-dismiss zone. Links and the page retain natural scrolling. */
+ .ds-shell-nav__grip{
+   display:flex;align-items:center;justify-content:center;
+   width:100%;height:40px;min-height:40px;flex:0 0 40px;
+   margin:0;padding:0;
+   border:0;background:transparent;color:inherit;
+   cursor:grab;touch-action:none;
+   -webkit-tap-highlight-color:transparent;
+ }
+ .ds-shell-nav__grip span{
+   display:block;width:35px;height:4px;border-radius:99px;
+   background:rgba(195,207,214,.39);
+   box-shadow:0 1px 5px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.07);
+   transition:background .2s ease;
+ }
+ .ds-shell-nav__grip:active span{background:rgba(215,225,232,.7)}
  .ds-shell-nav__links>a{
    min-height:45px;
    width:100%;
