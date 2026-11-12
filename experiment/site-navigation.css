@@ -106,7 +106,7 @@
    -webkit-backdrop-filter:blur(18px);
    backdrop-filter:blur(18px);
    transition:max-height .42s var(--ds-n-ease),padding .42s var(--ds-n-ease),
-     opacity .24s ease,visibility 0s linear .42s;
+     opacity .24s ease,visibility 0s linear .42s,transform .28s var(--ds-n-ease);
    touch-action:pan-y;
  }
  .ds-shell-nav[data-open="true"] .ds-shell-nav__links{
@@ -117,7 +117,7 @@
    overflow-y:auto;
    border-color:rgba(190,203,211,.15);
    transition:max-height .42s var(--ds-n-ease),padding .42s var(--ds-n-ease),
-     opacity .24s ease,visibility 0s;
+     opacity .24s ease,visibility 0s,transform .28s var(--ds-n-ease);
    overscroll-behavior:contain;
  }
  .ds-shell-nav__links>a{
