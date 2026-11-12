@@ -61,9 +61,11 @@
     function onPanelMove(e){
       if(!drag||e.touches.length!==1)return;
       var dx=e.touches[0].clientX-drag.x,dy=e.touches[0].clientY-drag.y;
-      if(panel.scrollTop>1||dy>=0||Math.abs(dx)>Math.abs(dy)*.75)return;
-      drag.dy=Math.max(-panel.offsetHeight,dy);
-      if(drag.dy>-8)return;
+      if(panel.scrollTop>1||Math.abs(dx)>Math.abs(dy)*.75)return;
+      // Upward follows the finger to dismiss. A gentle downward pull has
+      // elastic resistance and springs back on release, like a native sheet.
+      drag.dy=dy<0?Math.max(-panel.offsetHeight,dy):Math.min(32,dy*.24);
+      if(Math.abs(drag.dy)<8)return;
       panel.setAttribute('data-dragging','true');
       panel.style.setProperty('--ds-drag',drag.dy+'px');
       if(e.cancelable)e.preventDefault();
