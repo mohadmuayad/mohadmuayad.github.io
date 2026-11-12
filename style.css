@@ -2894,3 +2894,32 @@ html.ds-smooth-disclosures details.milestone-story::details-content {
 html.ds-smooth-disclosures .home-page .milestone-story[data-disclosure-motion="closing"] .milestone-story-chevron {
   transform:rotate(0deg);
 }
+
+
+/* 2026-11-12 — Homepage hero copy refinement only.
+   Removing the redundant eyebrow frees the space for a more informative note
+   without expanding the section or changing its existing action buttons. */
+@media(min-width:761px) {
+  .home-page .hero .hero-copy {
+    transform:translateY(-12px);
+  }
+}
+.home-page .hero .hero-copy > .hero-note {
+  max-width:465px;
+  white-space:normal;
+  text-wrap:pretty;
+  overflow-wrap:normal;
+  line-height:1.6;
+  margin-bottom:0;
+}
+@media(max-width:760px) {
+  .home-page .hero .hero-copy {
+    transform:none;
+  }
+  .home-page .hero .hero-copy > .hero-note {
+    max-width:40ch;
+    margin-inline:auto;
+    line-height:1.6;
+    font-size:13px;
+  }
+}
