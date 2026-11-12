@@ -1,0 +1,160 @@
+/* Dark Signal — independent site navigation v1.
+   Deliberately does not use legacy .nav, #navlinks or .menu-toggle selectors. */
+.ds-shell-nav {
+  --ds-n-bg:rgba(13,17,21,.94);
+  --ds-n-line:rgba(209,220,226,.13);
+  --ds-n-ease:cubic-bezier(.22,.61,.36,1);
+  position:fixed;top:0;left:0;right:0;z-index:120;
+  height:76px;
+  padding:0 clamp(20px,4.4vw,60px);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:22px;
+  color:#eaf0f2;
+  isolation:isolate;
+  background:linear-gradient(145deg,rgba(23,29,34,.97),var(--ds-n-bg) 75%);
+  border-bottom:1px solid var(--ds-n-line);
+  box-shadow:0 12px 32px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.035);
+  -webkit-backdrop-filter:blur(18px) saturate(125%);
+  backdrop-filter:blur(18px) saturate(125%);
+  transform:translate3d(0,0,0);
+  opacity:1;
+  transition:transform .46s var(--ds-n-ease),opacity .35s var(--ds-n-ease),box-shadow .25s ease;
+}
+.ds-shell-nav,.ds-shell-nav *{box-sizing:border-box}
+.ds-shell-nav[data-hidden="true"]{
+  transform:translate3d(0,-110%,0);
+  opacity:0;
+  pointer-events:none;
+}
+.ds-shell-nav__brand{
+  display:inline-flex;align-items:center;gap:9px;flex-shrink:0;
+  padding:8px 0;
+  color:#e5ecef;
+  font:500 13px/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  letter-spacing:.065em;
+  white-space:nowrap;
+}
+.ds-shell-nav__brand::before{
+  content:"";width:5px;height:5px;border-radius:50%;
+  background:#bdcbd2;box-shadow:0 0 12px rgba(190,204,212,.32);
+}
+.ds-shell-nav__links{
+  display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,2.25vw,30px);
+  min-width:0;
+}
+.ds-shell-nav__links>a{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:38px;flex-shrink:0;padding:8px 0;
+  font:500 12px/1.35 'Nunito Sans','Segoe UI',Arial,sans-serif;
+  color:#aab5bc;
+  text-decoration:none;
+  transition:color .2s ease;
+}
+.ds-shell-nav__links>a:is(:hover,:focus-visible),
+.ds-shell-nav__links>a[aria-current="location"]{color:#f0f3f5}
+.ds-shell-nav__links>a.ds-shell-nav__cta{
+  min-height:38px;
+  gap:9px;padding:8px 14px;
+  background:linear-gradient(150deg,rgba(198,210,216,.09),rgba(198,210,216,.025));
+  border:1px solid rgba(185,197,203,.29);
+  border-radius:9px;
+  color:#e5ecef;
+}
+.ds-shell-nav__cta svg{width:14px;height:14px;flex:0 0 14px}
+.ds-shell-nav__toggle{display:none}
+.ds-shell-nav__backdrop{display:none}
+@media(max-width:760px){
+ .ds-shell-nav{height:68px;padding:0 19px;gap:12px;overflow:visible}
+ .ds-shell-nav__brand{font-size:12.5px}
+ .ds-shell-nav__toggle{
+   display:grid;place-content:center;gap:5px;
+   width:42px;height:42px;flex:0 0 42px;
+   margin:0 0 0 auto;padding:0;
+   border:1px solid rgba(191,204,211,.18);
+   border-radius:12px;
+   color:#dce5ea;
+   background:rgba(189,201,208,.055);
+   cursor:pointer;
+   -webkit-tap-highlight-color:transparent;
+ }
+ .ds-shell-nav__toggle>span{
+   width:18px;height:1.5px;border-radius:2px;
+   background:currentColor;
+   transform-origin:center;
+   transition:transform .3s var(--ds-n-ease);
+ }
+ .ds-shell-nav[data-open="true"] .ds-shell-nav__toggle>span:first-child{transform:translateY(3.25px) rotate(45deg)}
+ .ds-shell-nav[data-open="true"] .ds-shell-nav__toggle>span:last-child{transform:translateY(-3.25px) rotate(-45deg)}
+ .ds-shell-nav__links{
+   position:absolute;
+   z-index:2;
+   top:68px;left:0;right:0;
+   display:flex;flex-direction:column;align-items:stretch;
+   gap:2px;
+   max-height:0;padding:0 20px;
+   margin:0;
+   opacity:0;
+   visibility:hidden;
+   pointer-events:none;
+   overflow:hidden;
+   transform:translate3d(0,0,0);
+   border-radius:0 0 17px 17px;
+   border:1px solid transparent;
+   border-top:0;
+   background:linear-gradient(165deg,#171d22 0%,#0d1115 60%,#0a0e11 100%);
+   box-shadow:0 18px 28px rgba(0,0,0,.32);
+   -webkit-backdrop-filter:blur(18px);
+   backdrop-filter:blur(18px);
+   transition:max-height .42s var(--ds-n-ease),padding .42s var(--ds-n-ease),
+     opacity .24s ease,visibility 0s linear .42s;
+   touch-action:pan-y;
+ }
+ .ds-shell-nav[data-open="true"] .ds-shell-nav__links{
+   max-height:min(calc(100dvh - 82px),380px);
+   padding:10px 20px 19px;
+   opacity:1;visibility:visible;pointer-events:auto;
+   overflow-y:auto;
+   border-color:rgba(190,203,211,.15);
+   transition:max-height .42s var(--ds-n-ease),padding .42s var(--ds-n-ease),
+     opacity .24s ease,visibility 0s;
+   overscroll-behavior:contain;
+ }
+ .ds-shell-nav__links>a{
+   min-height:45px;
+   width:100%;
+   padding:10px 12px;
+   justify-content:flex-start;
+   font-size:13px;
+   border-radius:8px;
+ }
+ .ds-shell-nav__links>a.ds-shell-nav__cta{
+   margin-top:8px;
+   justify-content:space-between;
+   min-height:47px;
+ }
+ .ds-shell-nav__backdrop{
+   position:fixed;inset:68px 0 0;
+   display:block;z-index:1;
+   background:rgba(3,6,8,.15);
+   opacity:0;visibility:hidden;pointer-events:none;
+   transition:opacity .3s ease,visibility 0s linear .3s;
+ }
+ .ds-shell-nav[data-open="true"] .ds-shell-nav__backdrop{
+   opacity:1;visibility:visible;pointer-events:auto;
+   transition:opacity .3s ease,visibility 0s;
+ }
+ .ds-shell-nav__links[data-dragging="true"]{
+   transform:translate3d(0,var(--ds-drag,0px),0);
+   transition:none!important;
+ }
+}
+@media(max-width:760px) and (max-height:460px){
+ .ds-shell-nav[data-open="true"] .ds-shell-nav__links{
+   max-height:calc(100vh - 75px);
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .ds-shell-nav,.ds-shell-nav *, .ds-shell-nav *::before{
+   transition-duration:0s!important;animation:none!important;
+ }
+}
