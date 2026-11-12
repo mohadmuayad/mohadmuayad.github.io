@@ -11,6 +11,7 @@
     if(!button||!panel)return function(){};
     var opened=false,drag=null,topY=Math.max(0,window.pageYOffset||0);
     var direction=0,anchorY=topY,raf=0,hidden=false,lastChange=0;
+    var lastViewportWidth=window.innerWidth;
     function setHidden(state){
       if(hidden===state)return;
       hidden=state;
@@ -124,9 +125,17 @@
       if(e.target.closest('a[href]'))openMenu(false,false);
     }
     function onResize(){
+      // Safari changes viewport HEIGHT when its address bar retracts.
+      // Never flip the header on height-only changes.
+      var widthChanged=Math.abs(window.innerWidth-lastViewportWidth)>2;
+      lastViewportWidth=window.innerWidth;
       if(!mobile.matches)openMenu(false,false);
-      else if(opened)openMenu(true,false);
-      setHidden(false);topY=Math.max(0,window.pageYOffset||0);anchorY=topY;direction=0;
+      else if(opened)panel.style.setProperty('--ds-sheet-height',sheetHeight()+'px');
+      if(widthChanged){
+        setHidden(false);
+        topY=Math.max(0,window.pageYOffset||0);
+        anchorY=topY;direction=0;
+      }
     }
     header.setAttribute('data-hidden','false');
     header.setAttribute('data-open','false');
