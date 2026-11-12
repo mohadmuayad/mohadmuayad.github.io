@@ -1,7 +1,7 @@
 /* Dark Signal — independent site navigation v1.
    Deliberately does not use legacy .nav, #navlinks or .menu-toggle selectors. */
 .ds-shell-nav {
-  --ds-n-bg:rgba(13,17,21,.94);
+  --ds-n-bg:rgba(5,7,9,.985);
   --ds-n-line:rgba(209,220,226,.13);
   --ds-n-ease:cubic-bezier(.22,.61,.36,1);
   position:fixed;top:0;left:0;right:0;z-index:120;
@@ -11,9 +11,9 @@
   gap:22px;
   color:#eaf0f2;
   isolation:isolate;
-  background:linear-gradient(145deg,rgba(23,29,34,.97),var(--ds-n-bg) 75%);
+  background:linear-gradient(152deg,rgba(10,12,15,.99),var(--ds-n-bg) 76%);
   border-bottom:1px solid var(--ds-n-line);
-  box-shadow:0 12px 32px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.035);
+  box-shadow:0 12px 30px rgba(0,0,0,.29),inset 0 1px 0 rgba(255,255,255,.02);
   -webkit-backdrop-filter:blur(18px) saturate(125%);
   backdrop-filter:blur(18px) saturate(125%);
   transform:translate3d(0,0,0);
@@ -33,10 +33,6 @@
   font:500 13px/1.4 'Nunito Sans','Segoe UI',Arial,sans-serif;
   letter-spacing:.065em;
   white-space:nowrap;
-}
-.ds-shell-nav__brand::before{
-  content:"";width:5px;height:5px;border-radius:50%;
-  background:#bdcbd2;box-shadow:0 0 12px rgba(190,204,212,.32);
 }
 .ds-shell-nav__links{
   display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,2.25vw,30px);
@@ -91,34 +87,40 @@
    top:68px;left:0;right:0;
    display:flex;flex-direction:column;align-items:stretch;
    gap:2px;
-   max-height:0;padding:0 20px;
+   height:0;
+   max-height:calc(100vh - 82px);
+   max-height:calc(100dvh - 82px);
+   padding:0 20px;
    margin:0;
    opacity:0;
    visibility:hidden;
    pointer-events:none;
    overflow:hidden;
-   transform:translate3d(0,0,0);
    border-radius:0 0 17px 17px;
    border:1px solid transparent;
    border-top:0;
-   background:linear-gradient(165deg,#171d22 0%,#0d1115 60%,#0a0e11 100%);
-   box-shadow:0 18px 28px rgba(0,0,0,.32);
-   -webkit-backdrop-filter:blur(18px);
-   backdrop-filter:blur(18px);
-   transition:max-height .42s var(--ds-n-ease),padding .42s var(--ds-n-ease),
-     opacity .24s ease,visibility 0s linear .42s,transform .28s var(--ds-n-ease);
+   background:linear-gradient(165deg,#101317 0%,#080a0d 58%,#06080a 100%);
+   box-shadow:0 18px 30px rgba(0,0,0,.38);
+   -webkit-backdrop-filter:blur(16px);
+   backdrop-filter:blur(16px);
+   transition:height .48s var(--ds-n-ease),padding .48s var(--ds-n-ease),
+     opacity .32s ease,visibility 0s linear .48s;
    touch-action:pan-y;
  }
  .ds-shell-nav[data-open="true"] .ds-shell-nav__links{
-   max-height:380px; /* Safari fallback before dynamic viewport units */
-   max-height:min(calc(100dvh - 82px),380px);
+   height:var(--ds-sheet-height,310px);
    padding:10px 20px 19px;
    opacity:1;visibility:visible;pointer-events:auto;
    overflow-y:auto;
-   border-color:rgba(190,203,211,.15);
-   transition:max-height .42s var(--ds-n-ease),padding .42s var(--ds-n-ease),
-     opacity .24s ease,visibility 0s,transform .28s var(--ds-n-ease);
+   border-color:rgba(190,203,211,.13);
+   transition:height .48s var(--ds-n-ease),padding .48s var(--ds-n-ease),
+     opacity .32s ease,visibility 0s;
    overscroll-behavior:contain;
+ }
+ .ds-shell-nav[data-open="true"] .ds-shell-nav__links[data-dragging="true"]{
+   height:var(--ds-drag-height,var(--ds-sheet-height,310px));
+   transition:none!important;
+   overflow:hidden;
  }
  .ds-shell-nav__links>a{
    min-height:45px;
@@ -143,15 +145,6 @@
  .ds-shell-nav[data-open="true"] .ds-shell-nav__backdrop{
    opacity:1;visibility:visible;pointer-events:auto;
    transition:opacity .3s ease,visibility 0s;
- }
- .ds-shell-nav__links[data-dragging="true"]{
-   transform:translate3d(0,var(--ds-drag,0px),0);
-   transition:none!important;
- }
-}
-@media(max-width:760px) and (max-height:460px){
- .ds-shell-nav[data-open="true"] .ds-shell-nav__links{
-   max-height:calc(100vh - 75px);
  }
 }
 @media(prefers-reduced-motion:reduce){
