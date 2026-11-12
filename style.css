@@ -953,7 +953,9 @@ main,footer{padding-left:23px;padding-right:23px}.hero{display:flex;flex-directi
   .home-page .nav .menu-toggle span {background:#ccd3d7;}
 }
 @media (prefers-reduced-motion:reduce) {
-  .home-page .nav,
+  /* Reduce motion, not navigation functionality. The header must still move
+     offscreen when its hidden state is active. */
+  .home-page .nav {transition:none!important;}
   .home-page .nav .greeting,
   .home-page .nav #navlinks a,
   .home-page .nav .nav-cta span .link-arrow {
