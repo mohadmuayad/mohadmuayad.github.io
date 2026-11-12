@@ -173,85 +173,77 @@ window.addEventListener('resize',handleNavResize);
 mobileNav.addEventListener?.('change',handleNavResize);
 syncMenuAccess();
 syncMenuBackdrop();
-  // Shared smart-header controller for Home, Factory and both notebook readers.
-  // One scroll observer owns BOTH the scrolled state and the hide/reveal state.
-  // Direction thresholds filter tiny touchpad/mobile scroll oscillations.
+  // Single smart-header controller. Scroll and touch share one direction state.
+  // The transform is applied directly so older Mobile Safari cannot lose it
+  // to competing navigation styles; CSS owns only the easing.
   const header=navigationBar;
   let headerFrame=0;
-  let previousHeaderY=Math.max(0,window.scrollY);
+  const readHeaderY=()=>Math.max(0,window.scrollY||document.scrollingElement?.scrollTop||0);
+  let previousHeaderY=readHeaderY();
   let headerDirection=0,headerTravel=0,headerViewportWidth=window.innerWidth;
-  let lastTouchY=null,pendingTouchDelta=0;
-  // Explicit transform state: older Mobile Safari may ignore the class-only
-  // transition when a fixed header shares a composited mobile drawer.
-  // Keep the class for semantics, but set the visual transform authoritatively.
-  let displayedHeaderHidden=null;
+  let lastTouchY=null,displayedHeaderHidden=null;
+
   function setHeaderHidden(hidden){
     if(!header)return;
     header.classList.toggle('ds-nav-hidden',hidden);
     if(displayedHeaderHidden===hidden)return;
     displayedHeaderHidden=hidden;
+    header.setAttribute('data-ds-nav-state',hidden?'hidden':'visible');
     const distance=Math.ceil(header.getBoundingClientRect().height||72)+28;
-    header.style.setProperty('transform',hidden?`translate3d(0,-${distance}px,0)`:'translate3d(0,0,0)','important');
+    header.style.setProperty('transform',hidden?'translate3d(0,-'+distance+'px,0)':'translate3d(0,0,0)','important');
     header.style.setProperty('opacity',hidden?'0':'1','important');
     header.style.setProperty('pointer-events',hidden?'none':'auto','important');
+  }
+  function updateHeaderDirection(delta,y){
+    const routeBusy=document.documentElement.classList.contains('ds-route-swapping')||
+      document.documentElement.classList.contains('ds-route-incoming');
+    if(y<=110||routeBusy||menu?.classList.contains('open')||
+       (!mobileNav.matches&&header?.matches(':focus-within'))){
+      headerDirection=0;headerTravel=0;
+      setHeaderHidden(false);
+      return;
+    }
+    if(Math.abs(delta)<1.2)return;
+    const direction=Math.sign(delta);
+    if(direction!==headerDirection){headerDirection=direction;headerTravel=0;}
+    headerTravel=Math.min(110,headerTravel+Math.abs(delta));
+    if(direction>0&&y>145&&headerTravel>=22)setHeaderHidden(true);
+    else if(direction<0&&headerTravel>=13)setHeaderHidden(false);
   }
   function syncHeaderMotion(forceVisible=false){
     headerFrame=0;
     if(!header)return;
-    // One scroll frame updates the header and the page chrome together.
-    // Previously scrollState ran directly for every scroll event, while the
-    // header used requestAnimationFrame. Keeping both in this frame avoids
-    // repeated layout reads and DOM writes during fast wheel/touch scrolling.
     if(!notebookMode)scrollState();
-    const y=Math.max(0,window.scrollY);
-    const scrollDelta=y-previousHeaderY;
-    // iOS Safari may defer scroll events during a finger-driven gesture.
-    // Use the touch direction only when the document did not advance this frame.
-    const delta=Math.abs(scrollDelta)>=1.5?scrollDelta:pendingTouchDelta;
-    pendingTouchDelta=0;
+    const y=readHeaderY(),delta=y-previousHeaderY;
     previousHeaderY=y;
     header.classList.toggle('scrolled',y>20);
-    const routeSettling=document.documentElement.classList.contains('ds-route-swapping')||
-      document.documentElement.classList.contains('ds-route-incoming');
-    // On iOS Safari, a tapped header link can retain :focus-within after scrolling.
-    // Keep keyboard focus protection on desktop, but do not lock the mobile header open.
-    // Reduced-motion users still receive hide/reveal state changes (without animation).
-    if(forceVisible||y<=110||routeSettling||
-       menu?.classList.contains('open')||(!mobileNav.matches&&header.matches(':focus-within'))){
-      headerDirection=0;
-      headerTravel=0;
+    if(forceVisible){
+      headerDirection=0;headerTravel=0;
       setHeaderHidden(false);
-      return;
-    }
-    if(Math.abs(delta)<1.5)return;
-    const direction=Math.sign(delta);
-    if(direction!==headerDirection){headerDirection=direction;headerTravel=0;}
-    headerTravel=Math.min(96,headerTravel+Math.abs(delta));
-    if(direction>0&&y>145&&headerTravel>=22)setHeaderHidden(true);
-    if(direction<0&&headerTravel>=13)setHeaderHidden(false);
+    }else updateHeaderDirection(delta,y);
   }
-  function onHeaderScroll(){if(!headerFrame)headerFrame=requestAnimationFrame(()=>syncHeaderMotion());}
+  function onHeaderScroll(){
+    if(!headerFrame)headerFrame=requestAnimationFrame(()=>syncHeaderMotion());
+  }
   function onHeaderTouchStart(event){
     lastTouchY=event.touches.length===1?event.touches[0].clientY:null;
-    pendingTouchDelta=0;
   }
   function onHeaderTouchMove(event){
     if(lastTouchY===null||event.touches.length!==1)return;
     const nextY=event.touches[0].clientY;
     const movement=lastTouchY-nextY;
     lastTouchY=nextY;
-    if(Math.abs(movement)<0.5)return;
-    pendingTouchDelta=Math.max(-96,Math.min(96,pendingTouchDelta+movement));
+    if(Math.abs(movement)>=1.2)updateHeaderDirection(movement,readHeaderY());
+    // Scroll events can be deferred while the finger is down on iOS Safari.
+    // Touch movement updates visibility directly rather than waiting for them.
     onHeaderScroll();
   }
-  function onHeaderTouchEnd(){lastTouchY=null;pendingTouchDelta=0;}
+  function onHeaderTouchEnd(){lastTouchY=null;}
   function onHeaderFocus(){
     if(headerFrame)cancelAnimationFrame(headerFrame);
     syncHeaderMotion(true);
   }
   function onHeaderResize(){
-    // On phones, collapsing the browser address bar can change viewport
-    // height while scrolling. Do not spuriously reveal the nav for that.
     const widthChanged=Math.abs(window.innerWidth-headerViewportWidth)>2;
     headerViewportWidth=window.innerWidth;
     if(headerFrame)cancelAnimationFrame(headerFrame);
