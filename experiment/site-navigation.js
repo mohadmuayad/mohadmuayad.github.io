@@ -21,8 +21,17 @@
       // their natural height without flashing them on screen.
       var viewport=window.innerHeight||document.documentElement.clientHeight||700;
       var space=Math.max(110,viewport-82);
-      var intrinsic=panel.scrollHeight;
-      return Math.min(Math.max(0,intrinsic),space);
+      var links=panel.querySelectorAll('a[href]');
+      // On Safari, an overflow-hidden element at height:0 can report a
+      // misleading scrollHeight. Measure its children and keep a safe floor.
+      var intrinsic=0;
+      for(var i=0;i<links.length;i++){
+        var node=links[i];
+        var rect=node.getBoundingClientRect();
+        intrinsic+=Math.max(45,Math.ceil(rect.height||node.offsetHeight||0));
+      }
+      intrinsic+=Math.max(0,links.length-1)*2+31;
+      return Math.min(Math.max(80,intrinsic),space);
     }
     function resetGesture(){
       drag=null;
@@ -68,7 +77,9 @@
     }
     function onTouchEnd(){touchY=null;}
     function onToggle(){openMenu(!opened,false);}
-    function onOutside(e){if(opened&&!header.contains(e.target))openMenu(false,false);}
+    function onOutside(e){
+      if(opened&&!header.contains(e.target))openMenu(false,false);
+    }
     function onKeyboard(e){if(e.key==='Escape'&&opened)openMenu(false,true);}
     function onPanelStart(e){
       if(!opened||e.touches.length!==1)return;
@@ -116,7 +127,7 @@
     header.setAttribute('data-open','false');
     panel.inert=mobile.matches;
     button.addEventListener('click',onToggle);
-    backdrop&&backdrop.addEventListener('click',function(){openMenu(false,false)});
+    // No full-screen touch-blocking backdrop: outside pointerdown handles dismiss.
     panel.addEventListener('click',onPanelClick);
     panel.addEventListener('touchstart',onPanelStart,{passive:true});
     panel.addEventListener('touchmove',onPanelMove,{passive:false});
