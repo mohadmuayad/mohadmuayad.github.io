@@ -76,189 +76,17 @@ if($('.project-milestone')&&!document.getElementById('milestone-fonts')){
 }
 
 if($('#year'))$('#year').textContent=new Date().getFullYear();
-// One accessible, dark-only mobile navigation drawer.
-const toggle=$('.menu-toggle'), menu=$('#navlinks'), navigationBar=$('.nav');
-const mobileNav=matchMedia('(max-width:760px)');
-function syncMenuBackdrop(){
-  if(!navigationBar||!menu)return;
-  const open=mobileNav.matches&&menu.classList.contains('open');
-  const available=Math.max(0,window.innerHeight-72);
-  const menuHeight=open?Math.min(menu.scrollHeight,available):0;
-  navigationBar.style.setProperty('--ds-drawer-height',`${Math.ceil(menuHeight)}px`);
-}
-function syncMenuAccess(){
-  if(menu)menu.inert=mobileNav.matches&&!menu.classList.contains('open');
-}
-function closeMenu(restoreFocus=false){
-  resetMenuDrag();
-  menu?.classList.remove('open');
-  toggle?.setAttribute('aria-expanded','false');
-  toggle?.setAttribute('aria-label','Open navigation');
-  syncMenuAccess();
-  syncMenuBackdrop();
-  if(restoreFocus)toggle?.focus();
-}
-toggle?.addEventListener('click',()=>{
-  if(!mobileNav.matches)return;
-  const opening=!menu.classList.contains('open');
-  if(opening){
-    resetMenuDrag();
-    // Measure the content before toggling the open class. A committed closed
-    // frame gives CSS a real 0px start state instead of a one-frame jump.
-    const available=Math.max(0,window.innerHeight-72);
-    const desired=Math.min(menu.scrollHeight+12,available);
-    navigationBar?.style.setProperty('--ds-drawer-height',`${Math.ceil(desired)}px`);
-    void menu.offsetHeight;
-    menu.classList.add('open');
-  }else{
-    resetMenuDrag();
-    menu.classList.remove('open');
-  }
-  toggle.setAttribute('aria-expanded',String(opening));
-  toggle.setAttribute('aria-label',opening?'Close navigation':'Open navigation');
-  syncMenuAccess();
-  if(!opening)syncMenuBackdrop();
-});
-menu?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>closeMenu()));
-onDoc('keydown',event=>{
-  if(event.key==='Escape'&&menu?.classList.contains('open')){
-    event.preventDefault();
-    closeMenu(true);
-  }
-});
-onDoc('click',event=>{if(!event.target.closest?.('.nav'))closeMenu()});
-function onPageScrollCloseMenu(){
-  if(mobileNav.matches&&menu?.classList.contains('open'))closeMenu();
-}
-let menuTouchStart=null;
-function resetMenuDrag(){
-  menuTouchStart=null;
-  menu?.classList.remove('ds-menu-dragging');
-  menu?.style.removeProperty('--ds-menu-drag-y');
-}
-function onMenuTouchStart(event){
-  if(!mobileNav.matches||!menu?.classList.contains('open')||event.touches.length!==1){resetMenuDrag();return;}
-  menuTouchStart={x:event.touches[0].clientX,y:event.touches[0].clientY,dragging:false,offset:0};
-}
-function onMenuTouchMove(event){
-  if(!menuTouchStart||!mobileNav.matches||!menu?.classList.contains('open')||event.touches.length!==1)return;
-  const touch=event.touches[0];
-  const dx=touch.clientX-menuTouchStart.x,dy=touch.clientY-menuTouchStart.y;
-  // Preserve normal scrolling inside a long menu; a vertical swipe from its
-  // top edge is a separate, deliberate gesture to dismiss the drawer.
-  if(menu.scrollTop>1||dy>=0||Math.abs(dx)>Math.abs(dy)*.65)return;
-  if(dy>=-9&&!menuTouchStart.dragging)return;
-  menuTouchStart.dragging=true;
-  menuTouchStart.offset=Math.max(-menu.offsetHeight,dy);
-  menu.classList.add('ds-menu-dragging');
-  menu.style.setProperty('--ds-menu-drag-y',`${menuTouchStart.offset}px`);
-  if(event.cancelable)event.preventDefault();
-}
-function onMenuTouchEnd(){
-  if(!menuTouchStart)return;
-  const shouldClose=menuTouchStart.dragging&&menuTouchStart.offset<=-54;
-  resetMenuDrag();
-  if(shouldClose)closeMenu();
-}
-menu?.addEventListener('touchstart',onMenuTouchStart,{passive:true});
-menu?.addEventListener('touchmove',onMenuTouchMove,{passive:false});
-menu?.addEventListener('touchend',onMenuTouchEnd,{passive:true});
-menu?.addEventListener('touchcancel',resetMenuDrag,{passive:true});
-window.addEventListener('scroll',onPageScrollCloseMenu,{passive:true});
-const handleNavResize=()=>{
-  if(!mobileNav.matches&&menu?.classList.contains('open'))closeMenu();
-  else{syncMenuAccess();syncMenuBackdrop();}
-};
-window.addEventListener('resize',handleNavResize);
-mobileNav.addEventListener?.('change',handleNavResize);
-syncMenuAccess();
-syncMenuBackdrop();
-  // Single smart-header controller. Scroll and touch share one direction state.
-  // The transform is applied directly so older Mobile Safari cannot lose it
-  // to competing navigation styles; CSS owns only the easing.
-  const header=navigationBar;
-  let headerFrame=0;
-  const readHeaderY=()=>Math.max(0,window.scrollY||document.scrollingElement?.scrollTop||0);
-  let previousHeaderY=readHeaderY();
-  let headerDirection=0,headerTravel=0,headerViewportWidth=window.innerWidth;
-  let lastTouchY=null,displayedHeaderHidden=null;
-
-  function setHeaderHidden(hidden){
-    if(!header)return;
-    header.classList.toggle('ds-nav-hidden',hidden);
-    if(displayedHeaderHidden===hidden)return;
-    displayedHeaderHidden=hidden;
-    header.setAttribute('data-ds-nav-state',hidden?'hidden':'visible');
-    const distance=Math.ceil(header.getBoundingClientRect().height||72)+28;
-    header.style.setProperty('transform',hidden?'translate3d(0,-'+distance+'px,0)':'translate3d(0,0,0)','important');
-    header.style.setProperty('opacity',hidden?'0':'1','important');
-    header.style.setProperty('pointer-events',hidden?'none':'auto','important');
-  }
-  function updateHeaderDirection(delta,y){
-    const routeBusy=document.documentElement.classList.contains('ds-route-swapping')||
-      document.documentElement.classList.contains('ds-route-incoming');
-    if(y<=110||routeBusy||menu?.classList.contains('open')||
-       (!mobileNav.matches&&header?.matches(':focus-within'))){
-      headerDirection=0;headerTravel=0;
-      setHeaderHidden(false);
-      return;
-    }
-    if(Math.abs(delta)<1.2)return;
-    const direction=Math.sign(delta);
-    if(direction!==headerDirection){headerDirection=direction;headerTravel=0;}
-    headerTravel=Math.min(110,headerTravel+Math.abs(delta));
-    if(direction>0&&y>145&&headerTravel>=22)setHeaderHidden(true);
-    else if(direction<0&&headerTravel>=13)setHeaderHidden(false);
-  }
-  function syncHeaderMotion(forceVisible=false){
+// Site navigation has its own isolated controller in experiment/site-navigation.js.
+// Preserve the shared scroll-chrome scheduler used by progress and back-to-top.
+let headerFrame=0;
+function onHeaderScroll(){
+  if(headerFrame)return;
+  headerFrame=requestAnimationFrame(()=>{
     headerFrame=0;
-    // Page chrome (progress and Back to top) must remain operational when
-    // the independent navigation shell replaces the legacy .nav element.
     if(!notebookMode)scrollState();
-    if(!header)return;
-    const y=readHeaderY(),delta=y-previousHeaderY;
-    previousHeaderY=y;
-    header.classList.toggle('scrolled',y>20);
-    if(forceVisible){
-      headerDirection=0;headerTravel=0;
-      setHeaderHidden(false);
-    }else updateHeaderDirection(delta,y);
-  }
-  function onHeaderScroll(){
-    if(!headerFrame)headerFrame=requestAnimationFrame(()=>syncHeaderMotion());
-  }
-  function onHeaderTouchStart(event){
-    lastTouchY=event.touches.length===1?event.touches[0].clientY:null;
-  }
-  function onHeaderTouchMove(event){
-    if(lastTouchY===null||event.touches.length!==1)return;
-    const nextY=event.touches[0].clientY;
-    const movement=lastTouchY-nextY;
-    lastTouchY=nextY;
-    if(Math.abs(movement)>=1.2)updateHeaderDirection(movement,readHeaderY());
-    // Scroll events can be deferred while the finger is down on iOS Safari.
-    // Touch movement updates visibility directly rather than waiting for them.
-    onHeaderScroll();
-  }
-  function onHeaderTouchEnd(){lastTouchY=null;}
-  function onHeaderFocus(){
-    if(headerFrame)cancelAnimationFrame(headerFrame);
-    syncHeaderMotion(true);
-  }
-  function onHeaderResize(){
-    const widthChanged=Math.abs(window.innerWidth-headerViewportWidth)>2;
-    headerViewportWidth=window.innerWidth;
-    if(headerFrame)cancelAnimationFrame(headerFrame);
-    syncHeaderMotion(widthChanged);
-  }
-  window.addEventListener('scroll',onHeaderScroll,{passive:true});
-  window.addEventListener('touchstart',onHeaderTouchStart,{passive:true});
-  window.addEventListener('touchmove',onHeaderTouchMove,{passive:true});
-  window.addEventListener('touchend',onHeaderTouchEnd,{passive:true});
-  window.addEventListener('touchcancel',onHeaderTouchEnd,{passive:true});
-  window.addEventListener('resize',onHeaderResize);
-  header?.addEventListener('focusin',onHeaderFocus);
-  header?.addEventListener('pointerdown',onHeaderFocus,{passive:true});
+  });
+}
+window.addEventListener('scroll',onHeaderScroll,{passive:true});
 // Page chrome shares the smart header's one-frame scroll scheduler.
 // Cache the stable elements for this page; initPage rebuilds them after each
 // route swap and teardown disconnects the shared listener on navigation.
@@ -285,7 +113,7 @@ function scrollState(){
   }
   if(scrollProgress)scrollProgress.style.width=(max>0?y/max*100:0)+'%';
 }
-  syncHeaderMotion(true);
+  if(!notebookMode)scrollState();
 if(!notebookMode&&'IntersectionObserver' in window){const obs=observeWith(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('seen');obs.unobserve(e.target)}}),{threshold:.08});document.querySelectorAll('.section-heading,.skill,.home-page #projects .project-card,.timeline article,.finding,.report-section>div,.about-copy,.process-list article,.file-list article,.factory-page-body #findings .findings-heading').forEach(el=>{if(!reduce){el.classList.add('reveal');obs.observe(el)}});const active=observeWith(entries=>entries.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('#navlinks a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}}),{rootMargin:'-15% 0px -55% 0px'});document.querySelectorAll('section[id]').forEach(el=>active.observe(el))}
 // Experiment 01 / Global Scroll Stability: headings are now one-shot reveal
 // targets under the observer above, not re-animated on later viewport entries.
@@ -474,22 +302,8 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
     stopNotebookReader();
     if(headerFrame)cancelAnimationFrame(headerFrame);
     window.removeEventListener('scroll',onHeaderScroll);
-    window.removeEventListener('touchstart',onHeaderTouchStart);
-    window.removeEventListener('touchmove',onHeaderTouchMove);
-    window.removeEventListener('touchend',onHeaderTouchEnd);
-    window.removeEventListener('touchcancel',onHeaderTouchEnd);
-    window.removeEventListener('resize',onHeaderResize);
-    header?.removeEventListener('focusin',onHeaderFocus);
-    header?.removeEventListener('pointerdown',onHeaderFocus);
-    for(const observer of observers) observer.disconnect();
+    for(const observer of observers)observer.disconnect();
     for(const [name,callback] of documentListeners)document.removeEventListener(name,callback);
-    window.removeEventListener('scroll',onPageScrollCloseMenu);
-    menu?.removeEventListener('touchstart',onMenuTouchStart);
-    menu?.removeEventListener('touchmove',onMenuTouchMove);
-    menu?.removeEventListener('touchend',onMenuTouchEnd);
-    menu?.removeEventListener('touchcancel',resetMenuDrag);
-    window.removeEventListener('resize',handleNavResize);
-    mobileNav.removeEventListener?.('change',handleNavResize);
     clearTimeout(toastTimer);
     clearTimeout(copyResetTimer);
     if(stopTopGlide)stopTopGlide();
