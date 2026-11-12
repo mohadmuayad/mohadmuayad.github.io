@@ -181,6 +181,20 @@ syncMenuBackdrop();
   let previousHeaderY=Math.max(0,window.scrollY);
   let headerDirection=0,headerTravel=0,headerViewportWidth=window.innerWidth;
   let lastTouchY=null,pendingTouchDelta=0;
+  // Explicit transform state: older Mobile Safari may ignore the class-only
+  // transition when a fixed header shares a composited mobile drawer.
+  // Keep the class for semantics, but set the visual transform authoritatively.
+  let displayedHeaderHidden=null;
+  function setHeaderHidden(hidden){
+    if(!header)return;
+    header.classList.toggle('ds-nav-hidden',hidden);
+    if(displayedHeaderHidden===hidden)return;
+    displayedHeaderHidden=hidden;
+    const distance=Math.ceil(header.getBoundingClientRect().height||72)+28;
+    header.style.setProperty('transform',hidden?`translate3d(0,-${distance}px,0)`:'translate3d(0,0,0)','important');
+    header.style.setProperty('opacity',hidden?'0':'1','important');
+    header.style.setProperty('pointer-events',hidden?'none':'auto','important');
+  }
   function syncHeaderMotion(forceVisible=false){
     headerFrame=0;
     if(!header)return;
@@ -206,15 +220,15 @@ syncMenuBackdrop();
        menu?.classList.contains('open')||(!mobileNav.matches&&header.matches(':focus-within'))){
       headerDirection=0;
       headerTravel=0;
-      header.classList.remove('ds-nav-hidden');
+      setHeaderHidden(false);
       return;
     }
     if(Math.abs(delta)<1.5)return;
     const direction=Math.sign(delta);
     if(direction!==headerDirection){headerDirection=direction;headerTravel=0;}
     headerTravel=Math.min(96,headerTravel+Math.abs(delta));
-    if(direction>0&&y>165&&headerTravel>=26)header.classList.add('ds-nav-hidden');
-    if(direction<0&&headerTravel>=16)header.classList.remove('ds-nav-hidden');
+    if(direction>0&&y>145&&headerTravel>=22)setHeaderHidden(true);
+    if(direction<0&&headerTravel>=13)setHeaderHidden(false);
   }
   function onHeaderScroll(){if(!headerFrame)headerFrame=requestAnimationFrame(()=>syncHeaderMotion());}
   function onHeaderTouchStart(event){
