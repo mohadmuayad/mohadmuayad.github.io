@@ -133,7 +133,7 @@
   function start(){
     mount();
     observer=new MutationObserver(function(){mount();});
-    observer.observe(document.body,{childList:true,subtree:false});
+    observer.observe(document.documentElement,{childList:true,subtree:false});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
