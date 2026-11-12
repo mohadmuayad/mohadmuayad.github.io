@@ -174,75 +174,99 @@
     };
   }
 
-  // Desktop-only wheel refinement. Native touchpad momentum is never intercepted.
-  // No scroll smoothing runs for touch, keyboard, forms, modals or nested scrollers.
+  // Desktop mechanical-wheel motion: short, bounded inertial easing.
+  // Touchpads, nested panes, keyboard navigation and mobile remain native.
   function installDesktopWheelPolish(){
     var desktop=window.matchMedia('(min-width:761px) and (pointer:fine)');
     var reduce=window.matchMedia('(prefers-reduced-motion:reduce)');
-    var frame=0,goal=0,last=0,scrolling=false,previousInline='';
     var root=document.documentElement;
-    function clamp(v,min,max){return Math.min(max,Math.max(min,v));}
-    function restore(){
+    var frame=0,goal=0,lastTime=0,active=false,previousInline='';
+    var lastDirection=0,expected=0;
+    function clamp(value,low,high){return Math.max(low,Math.min(high,value));}
+    function actualY(){return Math.max(0,window.pageYOffset||root.scrollTop||0);}
+    function finish(){
       if(frame)window.cancelAnimationFrame(frame);
-      frame=0;
-      if(scrolling){root.style.scrollBehavior=previousInline;scrolling=false;}
+      frame=0;lastDirection=0;
+      if(active){
+        root.style.scrollBehavior=previousInline;
+        active=false;
+      }
     }
-    function nestedScrollable(node){
-      while(node&&node!==document.body&&node!==document.documentElement){
-        if(node.nodeType===1){
-          var style=window.getComputedStyle(node);
-          if(/auto|scroll/.test(style.overflowY)&&node.scrollHeight>node.clientHeight+2)return true;
-        }
+    function nestedScrollable(target){
+      var node=target&&target.nodeType===1?target:target?.parentElement;
+      while(node&&node!==document.body&&node!==root){
+        var style=window.getComputedStyle(node);
+        if(/auto|scroll/.test(style.overflowY)&&node.scrollHeight>node.clientHeight+2)return true;
         node=node.parentElement;
       }
       return false;
     }
-    function animate(now){
+    function step(now){
       frame=0;
-      var current=window.pageYOffset||root.scrollTop||0;
-      var seconds=Math.min(.048,Math.max(.001,(now-last)/1000||.016));
-      last=now;
-      var diff=goal-current;
-      if(Math.abs(diff)<.9){window.scrollTo(0,goal);restore();return;}
-      // Exponential decay is frame-rate independent; no abrupt wheel steps.
-      var next=current+diff*(1-Math.exp(-seconds/0.105));
+      if(!active)return;
+      var current=actualY();
+      // Abort if another controller (anchor links, manual scrollbar) has
+      // moved the page independently since our last animation frame.
+      if(Math.abs(current-expected)>7){finish();return;}
+      var elapsed=clamp((now-lastTime)||16,4,48);
+      lastTime=now;
+      var difference=goal-current;
+      if(Math.abs(difference)<.7){
+        window.scrollTo(0,goal);
+        finish();
+        return;
+      }
+      // Time-correct smoothing: ~150 ms settling constant on 60/120 Hz.
+      var ratio=1-Math.exp(-elapsed/150);
+      var next=current+difference*ratio;
+      expected=next;
       window.scrollTo(0,next);
-      frame=window.requestAnimationFrame(animate);
+      frame=window.requestAnimationFrame(step);
     }
-    function wheel(e){
-      if(!desktop.matches||reduce.matches||!e.cancelable||e.defaultPrevented||
-         e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||
-         Math.abs(e.deltaX)>Math.abs(e.deltaY)*.6||
-         document.querySelector('.ds-shell-nav[data-open="true"]')||
-         nestedScrollable(e.target))return;
-      // Standard mechanical mouse wheels emit line steps or large discrete
-      // pixel deltas. Preserve high-resolution trackpad gestures natively.
-      var coarse=e.deltaMode===1||
-        (e.deltaMode===0&&Math.abs(e.deltaY)>=90&&
-         Math.abs(e.deltaY-Math.round(e.deltaY/20)*20)<1);
-      if(!coarse||!e.deltaY)return;
-      var max=Math.max(0,root.scrollHeight-window.innerHeight);
-      if(max<=0)return;
-      var actual=window.pageYOffset||root.scrollTop||0;
-      var distance=e.deltaMode===1?e.deltaY*28:e.deltaY;
-      distance=clamp(distance,-420,420);
-      goal=clamp((scrolling?goal:actual)+distance,0,max);
-      if(Math.abs(goal-actual)<.5)return;
-      e.preventDefault();
-      if(!scrolling){
+    function wheel(event){
+      if(!desktop.matches||reduce.matches||!event.cancelable||event.defaultPrevented||
+        event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||
+        Math.abs(event.deltaX)>Math.abs(event.deltaY)*.6||
+        document.querySelector('.ds-shell-nav[data-open="true"]')||
+        nestedScrollable(event.target))return;
+      var delta=event.deltaY;
+      if(!delta)return;
+      // Intercept only identifiable, discrete mouse-wheel ticks.
+      // Fine pixel movement and fractional events belong to the trackpad.
+      var discrete=event.deltaMode===1||
+        (event.deltaMode===0&&Math.abs(delta)>=90&&
+          Math.abs(delta-Math.round(delta/20)*20)<.7);
+      if(!discrete)return;
+      var limit=Math.max(0,root.scrollHeight-window.innerHeight);
+      if(!limit)return;
+      var current=actualY();
+      var sign=delta>0?1:-1;
+      var amount=event.deltaMode===1?delta*26:delta;
+      amount=clamp(amount,-240,240);
+      // Crucial: reset pending momentum on direction reversal.
+      // Without this, the page continues in the old direction after a turn.
+      if(active&&sign!==lastDirection)goal=current;
+      else if(!active)goal=current;
+      var nextGoal=clamp(goal+amount,0,limit);
+      if(Math.abs(nextGoal-current)<.5)return;
+      event.preventDefault();
+      goal=nextGoal;
+      lastDirection=sign;
+      if(!active){
         previousInline=root.style.scrollBehavior;
         root.style.scrollBehavior='auto';
-        scrolling=true;
-        last=window.performance.now();
+        active=true;
+        expected=current;
+        lastTime=window.performance.now();
       }
-      if(!frame)frame=window.requestAnimationFrame(animate);
+      if(!frame)frame=window.requestAnimationFrame(step);
     }
     window.addEventListener('wheel',wheel,{passive:false});
     ['pointerdown','touchstart','keydown'].forEach(function(type){
-      window.addEventListener(type,restore,{passive:true});
+      window.addEventListener(type,finish,{passive:true});
     });
     document.addEventListener('visibilitychange',function(){
-      if(document.hidden)restore();
+      if(document.hidden)finish();
     });
   }
   function mount(){
