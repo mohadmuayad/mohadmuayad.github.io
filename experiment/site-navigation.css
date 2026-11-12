@@ -110,6 +110,7 @@
    touch-action:pan-y;
  }
  .ds-shell-nav[data-open="true"] .ds-shell-nav__links{
+   max-height:380px; /* Safari fallback before dynamic viewport units */
    max-height:min(calc(100dvh - 82px),380px);
    padding:10px 20px 19px;
    opacity:1;visibility:visible;pointer-events:auto;
