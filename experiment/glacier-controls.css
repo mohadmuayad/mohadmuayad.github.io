@@ -70,16 +70,102 @@
 /* A Back action is secondary graphite even where older markup uses .primary. */
 :is(.home-page,.factory-page-body,.notebook-page-body) a.button[data-history-back]{background:var(--ds-ui-night)!important;color:var(--ds-ui-light)!important;}
 
-/* 2026-11-14 — Bring upper notebook Back actions toward the Welcome navigation. */
-/* Moving the first link upward while restoring its consumed flow space keeps
-   the notebook title, copy and subsequent content at their approved positions. */
-.notebook-page-body .notebook-hero > a.back-link {
-  margin-top:-12px;
-  margin-bottom:42px;
+/* 2026-11-14 — Shared upper Back lane: separate navigation from all hero content.
+   Fixed Welcome header: 76px desktop / 68px mobile. The row stays in normal flow,
+   aligned to the nav brand, with no absolute positioning or heading overlap. */
+:is(.factory-page-body,.notebook-page-body) > .ds-page-back-row {
+  position:relative;
+  z-index:2;
+  box-sizing:border-box;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  width:100%;
+  min-height:40px;
+  margin:92px 0 0;
+  padding:0 clamp(20px,4.4vw,60px);
+}
+:is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  width:max-content;
+  max-width:100%;
+  min-height:40px;
+  margin:0!important;
+  padding:0 16px!important;
+  position:static!important;
+  inset:auto!important;
+  border:0!important;
+  border-radius:13px!important;
+  background:var(--ds-ui-night)!important;
+  color:var(--ds-ui-light)!important;
+  box-shadow:0 3px 10px rgba(0,0,0,.15)!important;
+  font:650 12px/1.25 system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  text-decoration:none;
+  white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .22s ease,transform .24s var(--ds-ui-ease)!important;
+}
+:is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link > .back-chevron {
+  display:none!important;
+}
+:is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link::before {
+  content:none!important;
+  display:none!important;
+}
+:is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link::after {
+  content:"";
+  display:block;
+  order:-1;
+  flex:0 0 17px;
+  width:17px;
+  height:17px;
+  background:currentColor;
+  -webkit-mask:var(--ds-ui-back) center/contain no-repeat;
+  mask:var(--ds-ui-back) center/contain no-repeat;
+  transform:translateX(0);
+  transition:transform .3s var(--ds-ui-ease);
+  pointer-events:none;
+}
+:is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link:focus-visible {
+  outline:2px solid #d2e3d8!important;
+  outline-offset:4px!important;
+}
+/* These are top-of-content gaps, not extra Back offsets.
+   Do not disturb horizontal padding, section typography, or footer spacing. */
+.factory-page-body .factory-page > .factory-hero {
+  padding-top:clamp(26px,2.4vw,34px)!important;
+}
+.notebook-page-body .notebook-body {
+  padding-top:clamp(25px,2.4vw,34px)!important;
+}
+@media(hover:hover) and (pointer:fine) {
+  :is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link:hover {
+    background:var(--ds-ui-night-h)!important;
+    transform:translateY(-1px);
+  }
+  :is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link:hover::after {
+    transform:translateX(-2px);
+  }
 }
 @media(max-width:760px) {
-  .notebook-page-body .notebook-hero > a.back-link {
-    margin-top:-5px;
-    margin-bottom:35px;
+  :is(.factory-page-body,.notebook-page-body) > .ds-page-back-row {
+    margin-top:82px;
+    padding-inline:19px;
+  }
+  .factory-page-body .factory-page > .factory-hero {
+    padding-top:28px!important;
+  }
+  .notebook-page-body .notebook-body {
+    padding-top:26px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  :is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link,
+  :is(.factory-page-body,.notebook-page-body) > .ds-page-back-row > a.back-link::after {
+    transition:none!important;
+    transform:none!important;
   }
 }
