@@ -1760,3 +1760,21 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
 @media(max-width:760px){
   .factory-page-body .factory-page > .factory-hero {padding-top:150px;}
 }
+
+/* 2026-11-14 — About signature subtitle legibility.
+   Subheading remains smaller than top-level section labels. */
+.home-page #about .about-signature .signature-label {
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  font-size:15px;
+  font-weight:600;
+  line-height:1.45;
+  letter-spacing:.10em;
+  color:#e2ebef;
+  text-shadow:0 0 10px rgba(229,242,248,.14);
+}
+@media(max-width:760px) {
+  .home-page #about .about-signature .signature-label {
+    font-size:14px;
+    letter-spacing:.09em;
+  }
+}
