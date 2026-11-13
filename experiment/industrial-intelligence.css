@@ -1824,3 +1824,12 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     text-align:center;
   }
 }
+
+/* 2026-11-14 — About signature bottom rhythm: remove obsolete fixed height.
+   The About section's shared bottom padding supplies the divider spacing. */
+.home-page #about .about-signature {
+  min-height:0;
+  justify-content:flex-start;
+  padding:clamp(26px,2.25vw,34px) clamp(12px,2vw,22px) 0;
+  margin-bottom:0;
+}
