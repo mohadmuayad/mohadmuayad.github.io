@@ -1689,3 +1689,42 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     letter-spacing: 1.45px;
   }
 }
+
+/* 2026-11-14 — Home section boundaries and eyebrow legibility.
+   Scoped to top-level sections. Keep existing typography, artwork, and animation. */
+.home-page {
+  --ds-section-edge:clamp(70px,6vw,88px);
+}
+/* The divider belongs to the following section's ::after at top: balance both sides. */
+.home-page :is(#about,#projects,#skills,#journey,#education,#contact) {
+  padding-top:var(--ds-section-edge);
+  padding-bottom:var(--ds-section-edge);
+}
+/* Section labels only: never touch labels inside cards, milestones or timeline. */
+.home-page #about .section-heading > .eyebrow,
+.home-page #projects .ds-project-section-heading > .eyebrow,
+.home-page #skills .section-heading > div > .eyebrow,
+.home-page #journey > div:first-child > .eyebrow,
+.home-page #education > .eyebrow,
+.home-page #contact > .eyebrow {
+  font-size:clamp(13px,1.06vw,14px);
+  line-height:1.65;
+  letter-spacing:.12em;
+  font-weight:500;
+  color:#d2dbe0;
+  text-shadow:0 0 10px rgba(226,236,241,.085);
+}
+@media(max-width:760px) {
+  .home-page {
+    --ds-section-edge:70px;
+  }
+  .home-page #about .section-heading > .eyebrow,
+  .home-page #projects .ds-project-section-heading > .eyebrow,
+  .home-page #skills .section-heading > div > .eyebrow,
+  .home-page #journey > div:first-child > .eyebrow,
+  .home-page #education > .eyebrow,
+  .home-page #contact > .eyebrow {
+    font-size:12px;
+    letter-spacing:.12em;
+  }
+}
