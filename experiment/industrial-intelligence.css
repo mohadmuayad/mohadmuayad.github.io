@@ -1592,3 +1592,100 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     letter-spacing:.07em;
   }
 }
+
+/* 2026-11-14 | Homepage section rhythm, spacing only.
+   Do not change hero, project card geometry, page transitions or section artwork. */
+.home-page {
+  --ds-heading-label-gap: clamp(17px, 1.6vw, 21px);
+  --ds-heading-copy-gap: clamp(14px, 1.4vw, 18px);
+  --ds-heading-content-gap: clamp(28px, 2.9vw, 36px);
+}
+
+/* One label-to-headline rhythm on all top-level homepage sections. */
+.home-page #about .section-heading > .eyebrow,
+.home-page #skills .section-heading > div > .eyebrow,
+.home-page #journey > div:first-child > .eyebrow,
+.home-page #contact > .eyebrow {
+  margin: 0 0 var(--ds-heading-label-gap);
+}
+.home-page #about .section-heading > h2,
+.home-page #skills .section-heading > div > h2 {
+  margin: 0;
+}
+.home-page #about .section-heading,
+.home-page #skills .section-heading,
+.home-page #projects .ds-project-section-heading {
+  margin-bottom: var(--ds-heading-content-gap);
+}
+
+/* Description follows the main title at a consistent distance. */
+.home-page #skills .section-heading > .section-aside {
+  margin: var(--ds-heading-copy-gap) auto 0;
+}
+.home-page #journey > div:first-child > h2,
+.home-page #contact > h2 {
+  margin: 0 0 var(--ds-heading-copy-gap);
+}
+.home-page #journey > div:first-child > .section-aside,
+.home-page #contact > p:not(.eyebrow) {
+  margin: 0 auto;
+}
+.home-page #journey .timeline {
+  margin-top: var(--ds-heading-content-gap);
+}
+
+/* Projects has one extra subject label; preserve it without double margins. */
+.home-page #projects .ds-project-section-heading > .eyebrow {
+  margin: 0 0 9px;
+  font-size: 12px;
+  line-height: 1.7;
+  letter-spacing: 1.7px;
+}
+.home-page #projects .ds-project-section-heading > .ds-project-discipline {
+  margin: 0 0 var(--ds-heading-label-gap);
+}
+.home-page #projects .ds-project-section-heading > h2 {
+  margin: 0 0 var(--ds-heading-copy-gap);
+}
+.home-page #projects .ds-project-section-heading > .ds-project-section-description {
+  margin: 0 auto;
+}
+
+/* Align the Journey and Education labels to the same section type scale. */
+.home-page #journey > div:first-child > .eyebrow {
+  font-size: 12px;
+  letter-spacing: 1.7px;
+}
+.home-page #education {
+  row-gap: var(--ds-heading-label-gap);
+}
+.home-page #education > .eyebrow {
+  margin: 0;
+}
+/* Prevent tall right-column text from vertically shifting the degree title. */
+.home-page #education > div:first-of-type {
+  align-self: start;
+}
+.home-page #education > div:first-of-type > h2 {
+  margin: 0 0 var(--ds-heading-copy-gap);
+}
+.home-page #education > div:first-of-type > p {
+  margin: 0 auto;
+}
+
+@media (max-width: 760px) {
+  .home-page {
+    --ds-heading-label-gap: 18px;
+    --ds-heading-copy-gap: 15px;
+    --ds-heading-content-gap: 30px;
+  }
+  .home-page #projects .ds-project-section-heading > .eyebrow {
+    margin-bottom: 8px;
+    font-size: 11px;
+    letter-spacing: 1.45px;
+  }
+  .home-page #journey > div:first-child > .eyebrow {
+    font-size: 11px;
+    letter-spacing: 1.45px;
+  }
+}
