@@ -69,3 +69,17 @@
 
 /* A Back action is secondary graphite even where older markup uses .primary. */
 :is(.home-page,.factory-page-body,.notebook-page-body) a.button[data-history-back]{background:var(--ds-ui-night)!important;color:var(--ds-ui-light)!important;}
+
+/* 2026-11-14 — Bring upper notebook Back actions toward the Welcome navigation. */
+/* Moving the first link upward while restoring its consumed flow space keeps
+   the notebook title, copy and subsequent content at their approved positions. */
+.notebook-page-body .notebook-hero > a.back-link {
+  margin-top:-12px;
+  margin-bottom:42px;
+}
+@media(max-width:760px) {
+  .notebook-page-body .notebook-hero > a.back-link {
+    margin-top:-5px;
+    margin-bottom:35px;
+  }
+}
