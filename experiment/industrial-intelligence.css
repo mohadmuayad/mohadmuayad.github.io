@@ -1636,7 +1636,7 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
 
 /* Projects has one extra subject label; preserve it without double margins. */
 .home-page #projects .ds-project-section-heading > .eyebrow {
-  margin: 0 0 9px;
+  margin: 0 0 clamp(18px, 1.8vw, 20px);
   font-size: 12px;
   line-height: 1.7;
   letter-spacing: 1.7px;
@@ -1680,7 +1680,7 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     --ds-heading-content-gap: 30px;
   }
   .home-page #projects .ds-project-section-heading > .eyebrow {
-    margin-bottom: 8px;
+    margin-bottom: 18px;
     font-size: 11px;
     letter-spacing: 1.45px;
   }
