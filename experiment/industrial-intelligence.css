@@ -1833,3 +1833,26 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
   padding:clamp(26px,2.25vw,34px) clamp(12px,2vw,22px) 0;
   margin-bottom:0;
 }
+
+/* 2026-11-14 — Footer social links match the homepage hero icons.
+   Preserve icon glyphs, link order, touch targets, and no-frame presentation. */
+.home-page #contact .contact-footer .socials {
+  gap:clamp(10px,1.15vw,14px);
+}
+.home-page #contact .contact-footer .social {
+  color:#d7e1e6;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+}
+@media(hover:hover) and (pointer:fine) {
+  .home-page #contact .contact-footer .social[href]:hover {
+    color:#f5f9fb;
+    background:transparent;
+    box-shadow:none;
+  }
+}
+@media(max-width:760px) {
+  .home-page #contact .contact-footer .socials {gap:12px;}
+}
