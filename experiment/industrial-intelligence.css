@@ -1728,3 +1728,35 @@ body.home-page,body.factory-page-body,body.notebook-page-body{
     letter-spacing:.12em;
   }
 }
+
+/* 2026-11-14: Homepage top-level label legibility, no card label changes. */
+.home-page #about .section-heading > .eyebrow,
+.home-page #projects .ds-project-section-heading > .eyebrow,
+.home-page #skills .section-heading > div > .eyebrow,
+.home-page #journey > div:first-child > .eyebrow,
+.home-page #education > .eyebrow,
+.home-page #contact > .eyebrow {
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  font-size:clamp(16px,1.22vw,17px);
+  font-weight:600;
+  line-height:1.45;
+  letter-spacing:.105em;
+  color:#e7eff3;
+  text-shadow:0 0 13px rgba(229,242,248,.20);
+}
+@media(max-width:760px){
+  .home-page #about .section-heading > .eyebrow,
+  .home-page #projects .ds-project-section-heading > .eyebrow,
+  .home-page #skills .section-heading > div > .eyebrow,
+  .home-page #journey > div:first-child > .eyebrow,
+  .home-page #education > .eyebrow,
+  .home-page #contact > .eyebrow {
+    font-size:16px;
+    letter-spacing:.09em;
+  }
+}
+/* Factory: leave Back fixed at 96px; position title below it after removing eyebrow. */
+.factory-page-body .factory-page > .factory-hero {padding-top:144px;}
+@media(max-width:760px){
+  .factory-page-body .factory-page > .factory-hero {padding-top:150px;}
+}
