@@ -66,3 +66,6 @@
 :is(.home-page,.factory-page-body,.notebook-page-body) :where(a.button,.ds-shell-nav__links>a.ds-shell-nav__cta,.contact-email-primary,a.project-link,#files .file-list article>div:last-child>a,.factory-page>a.ds-page-back,.notebook-hero>a.back-link)::after,.factory-page-body :is(.report-cover,.chart-open)>span::after,:is(.home-page,.factory-page-body,.notebook-page-body) #backtop::after{transition:none!important;transform:none!important;}
 :is(.home-page,.factory-page-body,.notebook-page-body) :where(a.button,.ds-shell-nav__links>a.ds-shell-nav__cta,.contact-email-primary,a.project-link,#files .file-list article>div:last-child>a,.factory-page>a.ds-page-back,.notebook-hero>a.back-link):hover{transform:none!important;}
 }
+
+/* A Back action is secondary graphite even where older markup uses .primary. */
+:is(.home-page,.factory-page-body,.notebook-page-body) a.button[data-history-back]{background:var(--ds-ui-night)!important;color:var(--ds-ui-light)!important;}
