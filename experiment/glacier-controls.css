@@ -169,3 +169,26 @@
     transform:none!important;
   }
 }
+
+/* Factory iOS Safari — remove obsolete top-of-hero / Back lane rules.
+   The opening hero and independent return row are not section dividers.
+   Remove potential line/border/shadow rendering seams in mobile WebKit.
+   Do not alter the header divider or data/report section separators. */
+.factory-page-body > nav.ds-page-back-row {
+  border:0!important;
+  border-block:0!important;
+  outline:0;
+  box-shadow:none!important;
+  background:transparent;
+}
+.factory-page-body > nav.ds-page-back-row::before,
+.factory-page-body > nav.ds-page-back-row::after {
+  content:none!important;
+  display:none!important;
+}
+.factory-page-body main.factory-page > section.factory-hero.section {
+  border:0!important;
+  border-block:0!important;
+  outline:0;
+  box-shadow:none!important;
+}
