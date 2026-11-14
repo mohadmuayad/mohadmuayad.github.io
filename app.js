@@ -2,6 +2,9 @@
 document.addEventListener('click',event=>{
   const link=event.target.closest('a[data-history-back]');
   if(!link)return;
+  // Factory Back is handled by the route navigator below. Native history.back()
+  // can bypass its card-origin state and land at the top of the home page.
+  if(document.body.classList.contains('factory-page-body'))return;
   const referrer=document.referrer;
   let sameSitePrevious=false;
   try{
@@ -402,6 +405,19 @@ function updateHead(newDoc){
     }
   }
 }
+// Prefer the project card's own CTA over a fixed scroll offset. It is a
+// stable visual anchor even when images, fonts or mobile viewport sizes differ.
+function alignProjectCardReturn(restored){
+  if(!restored||!Number.isFinite(restored.actionViewportTop)&&!restored.returnToProjectCard)return false;
+  const action=document.querySelector('#projects .project-card a.project-link[href$="factory.html"]');
+  if(!action)return false;
+  const wanted=Number.isFinite(restored.actionViewportTop)
+    ?Math.max(106,Math.min(window.innerHeight-80,restored.actionViewportTop))
+    :Math.max(120,Math.min(window.innerHeight*.56,460));
+  const delta=action.getBoundingClientRect().top-wanted;
+  if(Math.abs(delta)>1)window.scrollBy({top:delta,left:0,behavior:'instant'});
+  return true;
+}
 function jumpToDestination(url,restored){
   const root=document.documentElement;
   const previousBehavior=root.style.scrollBehavior;
@@ -410,10 +426,13 @@ function jumpToDestination(url,restored){
     window.scrollTo({top:restored.scrollY,left:0,behavior:'instant'});
     // If fonts or viewport dimensions change, preserve the clicked card's
     // original visual position rather than merely restoring a stale pixel Y.
-    if(Number.isFinite(restored.cardViewportTop)){
+    if(!alignProjectCardReturn(restored)&&Number.isFinite(restored.cardViewportTop)){
       const card=document.querySelector('#projects .project-card');
       if(card)window.scrollBy({top:card.getBoundingClientRect().top-restored.cardViewportTop,left:0,behavior:'instant'});
     }
+  }
+  else if(restored?.returnToProjectCard&&alignProjectCardReturn(restored)){
+    // Direct visits have no saved origin; return beside the project's CTA.
   }
   else if(url.hash){
     let target;
@@ -434,7 +453,8 @@ const waitNavigationTime=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function projectOriginFromCurrentClick(anchor){
   if(!document.body.classList.contains('home-page')||!anchor.closest('#projects .project-card'))return null;
   return {href:location.href,scrollY:window.scrollY,
-    cardViewportTop:anchor.closest('.project-card').getBoundingClientRect().top};
+    cardViewportTop:anchor.closest('.project-card').getBoundingClientRect().top,
+    actionViewportTop:anchor.getBoundingClientRect().top};
 }
 function validProjectOrigin(value){
   if(!value||!Number.isFinite(value.scrollY)||!Number.isFinite(value.cardViewportTop))return null;
@@ -453,7 +473,13 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
   const clearMotion=()=>root.classList.remove('ds-route-swapping','ds-route-incoming','ds-route-leaving');
   clearMotion();
   try{
-    if(!pop)history.replaceState({...history.state,softNavigation:true,scrollY:window.scrollY},'',location.href);
+    if(!pop)history.replaceState({
+      ...history.state,softNavigation:true,scrollY:window.scrollY,
+      ...(projectOrigin?{
+        cardViewportTop:projectOrigin.cardViewportTop,
+        actionViewportTop:projectOrigin.actionViewportTop
+      }:{})
+    },'',location.href);
     const response=await fetch(url.href,{signal:controller.signal,credentials:'same-origin'});
     if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw new Error('Document unavailable');
     const nextDoc=new DOMParser().parseFromString(await response.text(),'text/html');
@@ -536,9 +562,9 @@ document.addEventListener('click',event=>{
   const isProjectReturn=document.body.classList.contains('factory-page-body') &&
     (anchor.matches('.back-link')||anchor.closest('.case-end .button.outline'));
   const origin=isProjectReturn?validProjectOrigin(history.state?.factoryOrigin):null;
-  if(origin){
-    const originUrl=new URL(origin.href);
-    navigateInternally(originUrl,{restored:origin});
+  if(isProjectReturn){
+    const originUrl=origin?new URL(origin.href):url;
+    navigateInternally(originUrl,{restored:origin||{returnToProjectCard:true}});
   }else{
     navigateInternally(url,{projectOrigin:projectOriginFromCurrentClick(anchor)});
   }
