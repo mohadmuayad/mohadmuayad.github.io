@@ -329,6 +329,63 @@ function pageIdFromPath(path){
 }
 function localPagePath(url){return pageIdFromPath(url.pathname)}
 function isCurrentDocument(url){return pageIdFromPath(url.pathname)===activeDocument}
+/* Keep route-specific CSS correct during content-only navigation.
+ * Stage changed styles with a nonmatching media query before the DOM swap;
+ * switch them on atomically with the new body, then remove stale versions.
+ * If loading fails, native full-page navigation remains the fallback. */
+async function stageRouteStylesheets(nextDoc,destination,signal){
+  const current=[...document.head.querySelectorAll('link[rel="stylesheet"][href]')];
+  const desired=[...nextDoc.head.querySelectorAll('link[rel="stylesheet"][href]')];
+  const currentByPath=new Map(current.map(link=>[new URL(link.href).pathname,link]));
+  const desiredPaths=new Set(desired.map(link=>new URL(link.getAttribute('href'),destination.href).pathname));
+  // Every supported page currently has the same six stylesheet families.
+  // Unknown sheet structures should use a safe native navigation instead.
+  if(current.length!==desired.length||current.some(link=>!desiredPaths.has(new URL(link.href).pathname)))
+    throw new Error('Route stylesheet mismatch');
+  const staged=[],pending=[];
+  for(const source of desired){
+    const href=new URL(source.getAttribute('href'),destination.href).href;
+    const old=currentByPath.get(new URL(href).pathname);
+    if(old?.href===href)continue;
+    const link=source.cloneNode(true);
+    link.href=href;
+    link.media='not all';
+    pending.push(new Promise((resolve,reject)=>{
+      link.addEventListener('load',resolve,{once:true});
+      link.addEventListener('error',()=>reject(new Error('Route CSS load failed: '+href)),{once:true});
+    }));
+    old?old.before(link):document.head.append(link);
+    staged.push({link,old,media:source.getAttribute('media')});
+  }
+  let committed=false,abortHandler,timer;
+  const discard=()=>{if(!committed)for(const {link} of staged)link.remove()};
+  try{
+    const aborted=new Promise((_,reject)=>{
+      abortHandler=()=>reject(new DOMException('Navigation interrupted','AbortError'));
+      if(signal.aborted)abortHandler();
+      else signal.addEventListener('abort',abortHandler,{once:true});
+    });
+    const timedOut=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Route CSS timeout')),6000)});
+    await Promise.race([Promise.all(pending),aborted,timedOut]);
+    if(signal.aborted)throw new DOMException('Navigation interrupted','AbortError');
+    return {
+      commit(){
+        for(const {link,old,media} of staged){
+          if(media===null)link.removeAttribute('media');
+          else link.media=media;
+          old?.remove();
+        }
+        committed=true;
+      },
+      discard
+    };
+  }catch(error){discard();throw error}
+  finally{
+    if(timer)clearTimeout(timer);
+    if(abortHandler)signal.removeEventListener('abort',abortHandler);
+  }
+}
+
 function updateHead(newDoc){
   document.title=newDoc.title;
   for(const selector of [
@@ -391,6 +448,7 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
   if(navigationController)navigationController.abort();
   const controller=new AbortController();navigationController=controller;
   const serial=++navigationSerial;
+  let stagedStyles=null;
   const root=document.documentElement;
   const clearMotion=()=>root.classList.remove('ds-route-swapping','ds-route-incoming','ds-route-leaving');
   clearMotion();
@@ -400,6 +458,8 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw new Error('Document unavailable');
     const nextDoc=new DOMParser().parseFromString(await response.text(),'text/html');
     if(!nextDoc.body||!nextDoc.querySelector('main')||(!nextDoc.querySelector('link[href^="style.css"]')&&!nextDoc.querySelector('link[href^="../style.css"]')))throw new Error('Invalid document');
+    if(controller.signal.aborted||serial!==navigationSerial)return;
+    stagedStyles=await stageRouteStylesheets(nextDoc,url,controller.signal);
     if(controller.signal.aborted||serial!==navigationSerial)return;
     // Prepare the large Notebook 01 DOM while the current page is still visible.
     // The user must never see a changed URL with an old body's final frame.
@@ -429,6 +489,7 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     // Replace the prepared body before committing the matching URL.
     // No stale Factory or Home content can appear under a Notebook address.
     document.body.replaceWith(nextBody);
+    stagedStyles.commit();
     activeDocument=pageIdFromPath(url.pathname);
     if(!pop)history.pushState({softNavigation:true,scrollY:0,...(projectOrigin?{factoryOrigin:projectOrigin}:{})},'',url.href);
     updateHead(nextDoc);
@@ -455,6 +516,7 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     clearMotion();
     location.assign(url.href);
   }finally{
+    stagedStyles?.discard();
     if(serial===navigationSerial)clearMotion();
     if(navigationController===controller)navigationController=null;
   }
