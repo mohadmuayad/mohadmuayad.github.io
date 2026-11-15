@@ -1321,14 +1321,16 @@ body.home-page {
 .home-page #journey .timeline {
   margin-top:58px;
   gap:22px;
+  text-align:center;
 }
 .home-page #journey .timeline article {
   padding:34px 15px 0 15px;
   border-top:1px solid #465159;
   background:linear-gradient(180deg,rgba(126,142,153,.045),transparent 75%);
+  text-align:center;
 }
 .home-page #journey .timeline-dot {
-  top:-5px;left:15px;
+  top:-5px;left:calc(50% - 4.5px);
   background:#b0bdc4;
   border:1px solid #65757c;
   box-shadow:0 0 0 5px #090d10;
@@ -1337,6 +1339,12 @@ body.home-page {
 .home-page #journey .timeline h3 {color:#e2e7ea;}
 .home-page #journey .timeline p {color:#aab6bc;}
 .home-page #journey .timeline .eyebrow {color:#a8b6be;}
+.home-page #journey .timeline .journey-date {
+  color:#eaf1f5;
+  font-weight:600;
+  text-shadow:0 0 10px rgba(205,225,238,.20);
+  white-space:nowrap;
+}
 .home-page #education {
   border-radius:0;
   column-gap:clamp(34px,5vw,64px);
