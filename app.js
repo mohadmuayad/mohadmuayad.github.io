@@ -484,6 +484,21 @@ function jumpToDestination(url,restored){
  * and softly settle only <main> without obscuring the viewport. */
 const waitNavigationFrame=()=>new Promise(resolve=>requestAnimationFrame(resolve));
 const waitNavigationTime=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+// Explicit entry animation prevents the incoming page from appearing fully
+// before its motion becomes visible. Cancel when navigation is superseded.
+let activeRouteAnimations=[];
+function cancelRouteEntrance(){
+  const running=activeRouteAnimations;
+  activeRouteAnimations=[];
+  for(const animation of running)animation.cancel();
+}
+const routeEntryFrames=[
+  {offset:0,opacity:0,transform:'translate3d(0,8px,0)'},
+  {offset:.15,opacity:.1,transform:'translate3d(0,7px,0)'},
+  {offset:.47,opacity:.36,transform:'translate3d(0,4px,0)'},
+  {offset:.78,opacity:.74,transform:'translate3d(0,1px,0)'},
+  {offset:1,opacity:1,transform:'translate3d(0,0,0)'}
+];
 function projectOriginFromCurrentClick(anchor){
   if(!document.body.classList.contains('home-page')||!anchor.closest('#projects .project-card'))return null;
   return {href:location.href,scrollY:window.scrollY,
@@ -500,11 +515,12 @@ function validProjectOrigin(value){
 }
 async function navigateInternally(url,{pop=false,restored=null,projectOrigin=null}={}){
   if(navigationController)navigationController.abort();
+  cancelRouteEntrance();
   const controller=new AbortController();navigationController=controller;
   const serial=++navigationSerial;
   let stagedStyles=null;
   const root=document.documentElement;
-  const clearMotion=()=>root.classList.remove('ds-route-swapping','ds-route-incoming','ds-route-leaving');
+  const clearMotion=()=>root.classList.remove('ds-route-swapping','ds-route-incoming','ds-route-leaving','ds-route-controlled');
   clearMotion();
   try{
     if(!pop)history.replaceState({
@@ -567,9 +583,27 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     // Keep the new main invisible through the swap; reveal only after
     // the correct scroll position and page layout are ready.
     if(!reduce){
+      const main=document.querySelector('main');
+      // Notebook 01 is very large: animate only its small first-viewport
+      // sections, not the entire analytical document.
+      const targets=activeDocument==='notebook-01'
+        ?[main?.querySelector('.notebook-hero'),main?.querySelector('.notebook-index'),
+          ...Array.from(main?.querySelectorAll('.cell:nth-of-type(-n+5)')||[])].filter(Boolean)
+        :(main?[main]:[]);
+      const controlled=targets.length>0&&targets.every(el=>typeof el.animate==='function');
+      if(controlled)root.classList.add('ds-route-controlled');
       root.classList.add('ds-route-incoming');
       root.classList.remove('ds-route-swapping');
-      await waitNavigationTime(820);
+      if(controlled){
+        const animations=targets.map(el=>el.animate(routeEntryFrames,{
+          duration:1040,easing:'linear',fill:'both'
+        }));
+        activeRouteAnimations=animations;
+        await Promise.all(animations.map(animation=>animation.finished.catch(()=>{})));
+      }else{
+        // Legacy fallback keeps the existing CSS keyframes.
+        await waitNavigationTime(1080);
+      }
     }else root.classList.remove('ds-route-swapping');
   }catch(error){
     if(error.name==='AbortError')return;
@@ -577,7 +611,10 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     location.assign(url.href);
   }finally{
     stagedStyles?.discard();
-    if(serial===navigationSerial)clearMotion();
+    if(serial===navigationSerial){
+      cancelRouteEntrance();
+      clearMotion();
+    }
     if(navigationController===controller)navigationController=null;
   }
 }
