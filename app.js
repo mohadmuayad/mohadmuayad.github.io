@@ -535,7 +535,7 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
     if(!reduce){
       root.classList.add('ds-route-incoming');
       root.classList.remove('ds-route-swapping');
-      await waitNavigationTime(540);
+      await waitNavigationTime(820);
     }else root.classList.remove('ds-route-swapping');
   }catch(error){
     if(error.name==='AbortError')return;

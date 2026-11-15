@@ -2011,3 +2011,37 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
   .factory-page-body .ds-editorial-metric span{font-size:10.5px}
   .factory-page-body .ds-editorial-metric small{font-size:9px}
 }
+/* 2026-11-16 — Factory section eyebrow typography aligned to the homepage. */
+.factory-page-body :is(
+  #report > div > p.eyebrow,
+  #dataset > p.eyebrow,
+  #quality > p.eyebrow,
+  #cleaning > p.eyebrow,
+  #findings > .findings-heading > p.eyebrow,
+  .lessons > div:first-child > p.eyebrow,
+  #files > p.eyebrow,
+  .case-end > p.eyebrow
+) {
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  font-size:clamp(16px,1.22vw,17px);
+  font-weight:600;
+  line-height:1.45;
+  letter-spacing:.105em;
+  color:#e7eff3;
+  text-shadow:0 0 13px rgba(229,242,248,.20);
+}
+@media(max-width:760px) {
+  .factory-page-body :is(
+    #report > div > p.eyebrow,
+    #dataset > p.eyebrow,
+    #quality > p.eyebrow,
+    #cleaning > p.eyebrow,
+    #findings > .findings-heading > p.eyebrow,
+    .lessons > div:first-child > p.eyebrow,
+    #files > p.eyebrow,
+    .case-end > p.eyebrow
+  ) {
+    font-size:16px;
+    letter-spacing:.09em;
+  }
+}

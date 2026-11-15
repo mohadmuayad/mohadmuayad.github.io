@@ -670,7 +670,7 @@ html.ds-route-swapping main {
   transform:translate3d(0,12px,0);
 }
 html.ds-route-incoming main {
-  animation:ds-quiet-reveal 520ms cubic-bezier(.22,.61,.36,1) both;
+  animation:ds-quiet-reveal 780ms cubic-bezier(.33,0,.2,1) both;
 }
 @keyframes ds-quiet-reveal {
   from {opacity:0;transform:translate3d(0,12px,0);}
@@ -688,7 +688,7 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body {
 html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-hero,
 html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-index,
 html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cell:nth-of-type(-n+5) {
-  animation:ds-notebook01-light-entrance 520ms cubic-bezier(.22,.61,.36,1) both;
+  animation:ds-notebook01-light-entrance 780ms cubic-bezier(.33,0,.2,1) both;
 }
 @keyframes ds-notebook01-light-entrance {
   from {opacity:0;transform:translate3d(0,12px,0);}
