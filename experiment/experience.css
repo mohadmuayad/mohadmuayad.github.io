@@ -1319,10 +1319,12 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cel
 /* 2026-11-16 — Deliberate chart lightbox exit for X, Escape and backdrop clicks. */
 .factory-page-body #chart-dialog[open].is-closing {
   animation:ds-chart-dialog-exit 520ms cubic-bezier(.32,0,.64,1) both!important;
+  transition:none!important;
   pointer-events:none;
 }
 .factory-page-body #chart-dialog[open].is-closing::backdrop {
   animation:ds-chart-backdrop-exit 520ms ease-in-out both!important;
+  transition:none!important;
 }
 @keyframes ds-chart-dialog-exit {
   from {opacity:1;transform:translateY(0) scale(1);}
