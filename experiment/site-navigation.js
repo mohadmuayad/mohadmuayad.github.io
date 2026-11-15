@@ -174,101 +174,6 @@
     };
   }
 
-  // Desktop mechanical-wheel motion: short, bounded inertial easing.
-  // Touchpads, nested panes, keyboard navigation and mobile remain native.
-  function installDesktopWheelPolish(){
-    var desktop=window.matchMedia('(min-width:761px) and (pointer:fine)');
-    var reduce=window.matchMedia('(prefers-reduced-motion:reduce)');
-    var root=document.documentElement;
-    var frame=0,goal=0,lastTime=0,active=false,previousInline='';
-    var lastDirection=0,expected=0;
-    function clamp(value,low,high){return Math.max(low,Math.min(high,value));}
-    function actualY(){return Math.max(0,window.pageYOffset||root.scrollTop||0);}
-    function finish(){
-      if(frame)window.cancelAnimationFrame(frame);
-      frame=0;lastDirection=0;
-      if(active){
-        root.style.scrollBehavior=previousInline;
-        active=false;
-      }
-    }
-    function nestedScrollable(target){
-      var node=target&&target.nodeType===1?target:target?.parentElement;
-      while(node&&node!==document.body&&node!==root){
-        var style=window.getComputedStyle(node);
-        if(/auto|scroll/.test(style.overflowY)&&node.scrollHeight>node.clientHeight+2)return true;
-        node=node.parentElement;
-      }
-      return false;
-    }
-    function step(now){
-      frame=0;
-      if(!active)return;
-      var current=actualY();
-      // Abort if another controller (anchor links, manual scrollbar) has
-      // moved the page independently since our last animation frame.
-      if(Math.abs(current-expected)>7){finish();return;}
-      var elapsed=clamp((now-lastTime)||16,4,48);
-      lastTime=now;
-      var difference=goal-current;
-      if(Math.abs(difference)<.7){
-        window.scrollTo(0,goal);
-        finish();
-        return;
-      }
-      // Time-correct smoothing: ~150 ms settling constant on 60/120 Hz.
-      var ratio=1-Math.exp(-elapsed/150);
-      var next=current+difference*ratio;
-      expected=next;
-      window.scrollTo(0,next);
-      frame=window.requestAnimationFrame(step);
-    }
-    function wheel(event){
-      if(!desktop.matches||reduce.matches||!event.cancelable||event.defaultPrevented||
-        event.ctrlKey||event.metaKey||event.shiftKey||event.altKey||
-        Math.abs(event.deltaX)>Math.abs(event.deltaY)*.6||
-        document.querySelector('.ds-shell-nav[data-open="true"]')||
-        nestedScrollable(event.target))return;
-      var delta=event.deltaY;
-      if(!delta)return;
-      // Intercept only identifiable, discrete mouse-wheel ticks.
-      // Fine pixel movement and fractional events belong to the trackpad.
-      var discrete=event.deltaMode===1||
-        (event.deltaMode===0&&Math.abs(delta)>=90&&
-          Math.abs(delta-Math.round(delta/20)*20)<.7);
-      if(!discrete)return;
-      var limit=Math.max(0,root.scrollHeight-window.innerHeight);
-      if(!limit)return;
-      var current=actualY();
-      var sign=delta>0?1:-1;
-      var amount=event.deltaMode===1?delta*26:delta;
-      amount=clamp(amount,-240,240);
-      // Crucial: reset pending momentum on direction reversal.
-      // Without this, the page continues in the old direction after a turn.
-      if(active&&sign!==lastDirection)goal=current;
-      else if(!active)goal=current;
-      var nextGoal=clamp(goal+amount,0,limit);
-      if(Math.abs(nextGoal-current)<.5)return;
-      event.preventDefault();
-      goal=nextGoal;
-      lastDirection=sign;
-      if(!active){
-        previousInline=root.style.scrollBehavior;
-        root.style.scrollBehavior='auto';
-        active=true;
-        expected=current;
-        lastTime=window.performance.now();
-      }
-      if(!frame)frame=window.requestAnimationFrame(step);
-    }
-    window.addEventListener('wheel',wheel,{passive:false});
-    ['pointerdown','touchstart','keydown'].forEach(function(type){
-      window.addEventListener(type,finish,{passive:true});
-    });
-    document.addEventListener('visibilitychange',function(){
-      if(document.hidden)finish();
-    });
-  }
   function mount(){
     var target=document.querySelector('.ds-shell-nav');
     if(target===current)return;
@@ -278,7 +183,6 @@
   }
   function start(){
     mount();
-    installDesktopWheelPolish();
     observer=new MutationObserver(function(){mount();});
     observer.observe(document.documentElement,{childList:true,subtree:false});
   }
