@@ -289,7 +289,40 @@ onDoc('click',event=>{
   glideBackToTop();
 });
 
-const dlg=$('#chart-dialog');document.querySelectorAll('.chart-open').forEach(b=>b.addEventListener('click',()=>{$('#chart-image').src=b.dataset.chart;$('#chart-image').alt=b.dataset.title;$('#chart-title').textContent=b.dataset.title;dlg.showModal()}));$('.dialog-close')?.addEventListener('click',()=>dlg.close());dlg?.addEventListener('click',e=>{if(e.target===dlg){let r=dlg.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dlg.close()}});
+const dlg=$('#chart-dialog');
+  let chartCloseTimer=0;
+  function closeChartGently(){
+    if(!dlg?.open||dlg.classList.contains('is-closing'))return;
+    if(reduce){
+      dlg.close();
+      return;
+    }
+    dlg.classList.add('is-closing');
+    chartCloseTimer=setTimeout(()=>{
+      chartCloseTimer=0;
+      if(dlg.open)dlg.close();
+    },560);
+  }
+  document.querySelectorAll('.chart-open').forEach(b=>b.addEventListener('click',()=>{
+    if(!dlg||dlg.open)return;
+    $('#chart-image').src=b.dataset.chart;
+    $('#chart-image').alt=b.dataset.title;
+    $('#chart-title').textContent=b.dataset.title;
+    dlg.classList.remove('is-closing');
+    dlg.showModal();
+  }));
+  $('.dialog-close')?.addEventListener('click',closeChartGently);
+  dlg?.addEventListener('click',e=>{
+    if(e.target!==dlg)return;
+    const r=dlg.getBoundingClientRect();
+    if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeChartGently();
+  });
+  dlg?.addEventListener('cancel',e=>{e.preventDefault();closeChartGently()});
+  dlg?.addEventListener('close',()=>{
+    clearTimeout(chartCloseTimer);
+    chartCloseTimer=0;
+    dlg.classList.remove('is-closing');
+  });
 onDoc('visibilitychange',()=>document.body.classList.toggle('page-hidden',document.hidden));
 
 const caseLinks=[...document.querySelectorAll('.case-nav a')];
@@ -307,6 +340,7 @@ async function copyAddress(){const address='mohadmuayadai@gmail.com';try{if(navi
     window.removeEventListener('scroll',onHeaderScroll);
     for(const observer of observers)observer.disconnect();
     for(const [name,callback] of documentListeners)document.removeEventListener(name,callback);
+    clearTimeout(chartCloseTimer);
     clearTimeout(toastTimer);
     clearTimeout(copyResetTimer);
     if(stopTopGlide)stopTopGlide();
