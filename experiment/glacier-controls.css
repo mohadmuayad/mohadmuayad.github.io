@@ -192,3 +192,93 @@
   outline:0;
   box-shadow:none!important;
 }
+
+/* 2026-11-15 — Quiet pearl frames for button icons across all site pages.
+   Decorative only: original SVG/masked glyphs, padding, hover and motion stay intact. */
+:is(.home-page,.factory-page-body,.notebook-page-body)
+  :is(a.button,.ds-shell-nav__links > a.ds-shell-nav__cta,.contact-email-primary,
+      a.project-link,#files .file-list article > div:last-child > a,
+      .factory-page > a.ds-page-back,.notebook-hero > a.back-link,
+      .ds-page-back-row > a.back-link) {
+  position:relative;
+  --ds-frame-edge:13px;
+}
+.home-page #projects a.project-link {--ds-frame-edge:10px;}
+.factory-page-body #files .file-list article > div:last-child > a {--ds-frame-edge:9px;}
+:is(.home-page,.factory-page-body,.notebook-page-body) .hero .actions > a.button {--ds-frame-edge:14px;}
+:is(.home-page,.factory-page-body,.notebook-page-body)
+  :is(a.button,.ds-shell-nav__links > a.ds-shell-nav__cta,.contact-email-primary,
+      a.project-link,#files .file-list article > div:last-child > a,
+      .factory-page > a.ds-page-back,.notebook-hero > a.back-link,
+      .ds-page-back-row > a.back-link)::before {
+  content:"" !important;
+  display:block !important;
+  position:absolute !important;
+  inset:auto var(--ds-frame-edge) auto auto !important;
+  top:50% !important;
+  width:29px;
+  height:29px;
+  border:1px solid currentColor;
+  border-radius:9px;
+  box-sizing:border-box;
+  background:transparent;
+  opacity:.29;
+  box-shadow:0 0 10px rgba(216,227,234,.055);
+  transform:translateY(-50%);
+  pointer-events:none;
+}
+:is(.home-page,.factory-page-body,.notebook-page-body)
+  :is(a.button[data-history-back],.factory-page > a.ds-page-back,
+      .notebook-hero > a.back-link,.ds-page-back-row > a.back-link)::before {
+  left:var(--ds-frame-edge) !important;
+  right:auto !important;
+}
+:is(.factory-page-body,.notebook-page-body)
+  > .ds-page-back-row > a.back-link {position:relative !important;--ds-frame-edge:10px;}
+.factory-page-body .factory-page > a.ds-page-back,
+.notebook-page-body .notebook-hero > a.back-link {--ds-frame-edge:10px;}
+/* Gallery action glyphs use the same treatment without changing their chips. */
+.factory-page-body :is(.report-cover,.chart-open) > span {position:relative;}
+.factory-page-body :is(.report-cover,.chart-open) > span::before {
+  content:"";
+  position:absolute;
+  top:50%;
+  right:8px;
+  width:26px;
+  height:26px;
+  border:1px solid currentColor;
+  border-radius:8px;
+  box-sizing:border-box;
+  opacity:.28;
+  transform:translateY(-50%);
+  pointer-events:none;
+}
+/* Social and mail icons are real SVGs rather than masked pseudo-elements. */
+:is(.home-page,.factory-page-body,.notebook-page-body) a.social > svg {
+  outline:1px solid rgba(223,232,238,.28);
+  outline-offset:4px;
+  border-radius:5px;
+}
+.home-page #contact .contact-email-primary > .contact-mail-icon {
+  outline:1px solid rgba(18,32,26,.26);
+  outline-offset:4px;
+  border-radius:5px;
+}
+/* Icon-only controls already supply the frame's outer dimensions. */
+.home-page #contact .contact-copy-icon,
+.factory-page-body #chart-dialog .dialog-close,
+:is(.home-page,.factory-page-body,.notebook-page-body) #backtop {
+  box-shadow:0 5px 18px rgba(0,0,0,.16), inset 0 0 0 1px rgba(221,231,237,.26) !important;
+}
+
+/* Mobile menu is an icon-only button, so its existing 42px hit area stays unchanged. */
+:is(.home-page,.factory-page-body,.notebook-page-body) .ds-shell-nav__toggle {
+  box-shadow:inset 0 0 0 1px rgba(223,232,238,.26);
+}
+/* Other direct SVG link arrows (such as the scroll cue) keep their geometry. */
+:is(.home-page,.factory-page-body,.notebook-page-body)
+  a:not(.button):not(.social):not(.contact-email-primary):not(.project-link):not(#backtop):not(.ds-shell-nav__cta) > svg.link-arrow {
+  outline:1px solid rgba(223,232,238,.28);
+  outline-offset:4px;
+  border-radius:5px;
+}
