@@ -1938,18 +1938,18 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
 }
 .factory-page-body .ds-editorial-metric{
   min-width:0;display:flex;flex-direction:column;align-items:center;
-  justify-content:flex-start;text-align:center;gap:clamp(12px,1.35vw,18px);
-  padding:3px clamp(12px,2.2vw,30px);
+  justify-content:flex-start;text-align:center;gap:clamp(20px,2vw,27px);
+  padding:5px clamp(12px,2.2vw,30px) 7px;
   border-right:1px solid rgba(157,174,157,.22);
 }
 .factory-page-body .ds-editorial-metric:last-child{border-right:0}
 .factory-page-body .ds-editorial-metric>strong{
   flex:none;font:500 clamp(47px,4vw,58px)/1 'Nunito Sans','Segoe UI',Arial,sans-serif;
-  color:#b7c5ba;letter-spacing:-.045em;font-variant-numeric:tabular-nums;
+  color:#b7c5ba;letter-spacing:.045em;font-variant-numeric:tabular-nums;
 }
 .factory-page-body .ds-editorial-metric>div{
   display:flex;flex-direction:column;align-items:center;
-  gap:7px;min-width:0;
+  gap:10px;min-width:0;
 }
 .factory-page-body .ds-editorial-metric span{
   font:550 clamp(14px,1.2vw,17px)/1.35 'Nunito Sans','Segoe UI',Arial,sans-serif;
@@ -1995,10 +1995,10 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
   .factory-page-body .ds-editorial-evidence-head p{font-size:9px;letter-spacing:.14em}
   .factory-page-body .ds-editorial-metrics{gap:0}
   .factory-page-body .ds-editorial-metric{
-    gap:11px;padding:1px clamp(7px,2.6vw,15px);
+    gap:14px;padding:1px clamp(7px,2.6vw,15px);
   }
-  .factory-page-body .ds-editorial-metric>strong{font-size:clamp(35px,9vw,44px)}
-  .factory-page-body .ds-editorial-metric>div{gap:7px}
+  .factory-page-body .ds-editorial-metric>strong{font-size:clamp(35px,9vw,44px);letter-spacing:.025em}
+  .factory-page-body .ds-editorial-metric>div{gap:8px}
   .factory-page-body .ds-editorial-metric span{font-size:11.5px;line-height:1.35}
   .factory-page-body .ds-editorial-metric small{font-size:10px;line-height:1.42}
   .factory-page-body main.factory-page>.case-nav{margin-bottom:25px!important}
