@@ -2011,7 +2011,8 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
   .factory-page-body .ds-editorial-metric span{font-size:10.5px}
   .factory-page-body .ds-editorial-metric small{font-size:9px}
 }
-/* 2026-11-16 — Factory section eyebrow typography aligned to the homepage. */
+/* 2026-11-16 — Pearl Editorial: main Factory section labels only.
+   Small static silver hairlines live under the label; content labels untouched. */
 .factory-page-body :is(
   #report > div > p.eyebrow,
   #dataset > p.eyebrow,
@@ -2022,13 +2023,31 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
   #files > p.eyebrow,
   .case-end > p.eyebrow
 ) {
-  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
-  font-size:clamp(16px,1.22vw,17px);
-  font-weight:600;
+  font-family:'Segoe UI Variable Display','Segoe UI',system-ui,sans-serif;
+  font-size:clamp(16px,1.28vw,18px);
+  font-weight:650;
   line-height:1.45;
-  letter-spacing:.105em;
-  color:#e7eff3;
-  text-shadow:0 0 13px rgba(229,242,248,.20);
+  letter-spacing:.115em;
+  color:#eef3f5;
+  text-shadow:0 0 12px rgba(225,236,243,.14);
+}
+.factory-page-body :is(
+  #report > div > p.eyebrow,
+  #dataset > p.eyebrow,
+  #quality > p.eyebrow,
+  #cleaning > p.eyebrow,
+  #findings > .findings-heading > p.eyebrow,
+  .lessons > div:first-child > p.eyebrow,
+  #files > p.eyebrow,
+  .case-end > p.eyebrow
+)::after {
+  content:"";
+  display:block;
+  width:40px;
+  height:1px;
+  margin:10px auto 0;
+  background:linear-gradient(90deg,transparent,rgba(219,233,240,.66),transparent);
+  pointer-events:none;
 }
 @media(max-width:760px) {
   .factory-page-body :is(

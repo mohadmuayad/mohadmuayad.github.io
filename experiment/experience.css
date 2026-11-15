@@ -670,10 +670,10 @@ html.ds-route-swapping main {
   transform:translate3d(0,12px,0);
 }
 html.ds-route-incoming main {
-  animation:ds-quiet-reveal 780ms cubic-bezier(.33,0,.2,1) both;
+  animation:ds-quiet-reveal 780ms cubic-bezier(.42,0,.58,1) both;
 }
 @keyframes ds-quiet-reveal {
-  from {opacity:0;transform:translate3d(0,12px,0);}
+  from {opacity:0;transform:translate3d(0,7px,0);}
   to {opacity:1;transform:translate3d(0,0,0);}
 }
 /* Review 06 — Notebook 01 entering without a giant page compositor layer.
@@ -688,10 +688,10 @@ html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body {
 html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-hero,
 html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .notebook-index,
 html.ds-route-incoming .notebook-page-body.notebook-01 main.notebook-body > .cell:nth-of-type(-n+5) {
-  animation:ds-notebook01-light-entrance 780ms cubic-bezier(.33,0,.2,1) both;
+  animation:ds-notebook01-light-entrance 780ms cubic-bezier(.42,0,.58,1) both;
 }
 @keyframes ds-notebook01-light-entrance {
-  from {opacity:0;transform:translate3d(0,12px,0);}
+  from {opacity:0;transform:translate3d(0,7px,0);}
   to {opacity:1;transform:translate3d(0,0,0);}
 }
 @media(prefers-reduced-motion:reduce) {
