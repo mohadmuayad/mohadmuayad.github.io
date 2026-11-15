@@ -270,3 +270,15 @@
 :is(.home-page,.factory-page-body,.notebook-page-body) #backtop {
   box-shadow:0 5px 18px rgba(0,0,0,.16), inset 0 0 0 1px rgba(221,231,237,.26) !important;
 }
+
+/* Mobile menu is an icon-only button, so its existing 42px hit area stays unchanged. */
+:is(.home-page,.factory-page-body,.notebook-page-body) .ds-shell-nav__toggle {
+  box-shadow:inset 0 0 0 1px rgba(223,232,238,.26);
+}
+/* Other direct SVG link arrows (such as the scroll cue) keep their geometry. */
+:is(.home-page,.factory-page-body,.notebook-page-body)
+  a:not(.button):not(.social):not(.contact-email-primary):not(.project-link):not(#backtop):not(.ds-shell-nav__cta) > svg.link-arrow {
+  outline:1px solid rgba(223,232,238,.28);
+  outline-offset:4px;
+  border-radius:5px;
+}
