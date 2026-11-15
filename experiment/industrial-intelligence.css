@@ -2031,24 +2031,6 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
   color:#eef3f5;
   text-shadow:0 0 12px rgba(225,236,243,.14);
 }
-.factory-page-body :is(
-  #report > div > p.eyebrow,
-  #dataset > p.eyebrow,
-  #quality > p.eyebrow,
-  #cleaning > p.eyebrow,
-  #findings > .findings-heading > p.eyebrow,
-  .lessons > div:first-child > p.eyebrow,
-  #files > p.eyebrow,
-  .case-end > p.eyebrow
-)::after {
-  content:"";
-  display:block;
-  width:40px;
-  height:1px;
-  margin:10px auto 0;
-  background:linear-gradient(90deg,transparent,rgba(219,233,240,.66),transparent);
-  pointer-events:none;
-}
 @media(max-width:760px) {
   .factory-page-body :is(
     #report > div > p.eyebrow,
@@ -2064,3 +2046,60 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
     letter-spacing:.09em;
   }
 }
+/* 2026-11-16 — Proportional editorial rules for section labels.
+   Decorative hairline only, no flow, position, alignment or heading sizing changes. */
+:is(.home-page #about .section-heading > p.eyebrow,
+.home-page #projects .ds-project-section-heading > p.eyebrow,
+.home-page #skills .section-heading > div > p.eyebrow,
+.home-page #journey > div:first-child > p.eyebrow,
+.home-page #education > p.eyebrow,
+.home-page #contact > p.eyebrow,
+.factory-page-body #report > div > p.eyebrow,
+.factory-page-body #dataset > p.eyebrow,
+.factory-page-body #quality > p.eyebrow,
+.factory-page-body #cleaning > p.eyebrow,
+.factory-page-body #findings > .findings-heading > p.eyebrow,
+.factory-page-body .lessons > div:first-child > p.eyebrow,
+.factory-page-body #files > p.eyebrow,
+.factory-page-body .case-end > p.eyebrow) {
+  position:relative;
+}
+:is(.home-page #about .section-heading > p.eyebrow,
+.home-page #projects .ds-project-section-heading > p.eyebrow,
+.home-page #skills .section-heading > div > p.eyebrow,
+.home-page #journey > div:first-child > p.eyebrow,
+.home-page #education > p.eyebrow,
+.home-page #contact > p.eyebrow,
+.factory-page-body #report > div > p.eyebrow,
+.factory-page-body #dataset > p.eyebrow,
+.factory-page-body #quality > p.eyebrow,
+.factory-page-body #cleaning > p.eyebrow,
+.factory-page-body #findings > .findings-heading > p.eyebrow,
+.factory-page-body .lessons > div:first-child > p.eyebrow,
+.factory-page-body #files > p.eyebrow,
+.factory-page-body .case-end > p.eyebrow)::after {
+  content:"";
+  display:block;
+  position:absolute;
+  bottom:-10px;
+  left:50%;
+  transform:translateX(-50%);
+  height:1px;
+  width:min(var(--ds-section-rule,132px),calc(100% - 16px));
+  background:linear-gradient(90deg,transparent 0%,rgba(206,220,228,.52) 13%,rgba(237,244,248,.82) 50%,rgba(206,220,228,.52) 87%,transparent 100%);
+  pointer-events:none;
+}
+.home-page #about .section-heading > p.eyebrow {--ds-section-rule:104px;}
+.home-page #projects .ds-project-section-heading > p.eyebrow {--ds-section-rule:106px;}
+.home-page #skills .section-heading > div > p.eyebrow {--ds-section-rule:148px;}
+.home-page #journey > div:first-child > p.eyebrow {--ds-section-rule:139px;}
+.home-page #education > p.eyebrow {--ds-section-rule:128px;}
+.home-page #contact > p.eyebrow {--ds-section-rule:153px;}
+.factory-page-body #report > div > p.eyebrow {--ds-section-rule:155px;}
+.factory-page-body #dataset > p.eyebrow {--ds-section-rule:185px;}
+.factory-page-body #quality > p.eyebrow {--ds-section-rule:190px;}
+.factory-page-body #cleaning > p.eyebrow {--ds-section-rule:145px;}
+.factory-page-body #findings > .findings-heading > p.eyebrow {--ds-section-rule:212px;}
+.factory-page-body .lessons > div:first-child > p.eyebrow {--ds-section-rule:132px;}
+.factory-page-body #files > p.eyebrow {--ds-section-rule:177px;}
+.factory-page-body .case-end > p.eyebrow {--ds-section-rule:225px;}
