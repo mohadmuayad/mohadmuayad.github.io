@@ -499,6 +499,14 @@ const routeEntryFrames=[
   {offset:.78,opacity:.74,transform:'translate3d(0,1px,0)'},
   {offset:1,opacity:1,transform:'translate3d(0,0,0)'}
 ];
+// The Factory case study uses a deliberately slower staged reveal.
+const factoryEntryFrames=[
+  {offset:0,opacity:0,transform:'translate3d(0,10px,0)'},
+  {offset:.2,opacity:.025,transform:'translate3d(0,9px,0)'},
+  {offset:.52,opacity:.22,transform:'translate3d(0,6px,0)'},
+  {offset:.78,opacity:.64,transform:'translate3d(0,2px,0)'},
+  {offset:1,opacity:1,transform:'translate3d(0,0,0)'}
+];
 function projectOriginFromCurrentClick(anchor){
   if(!document.body.classList.contains('home-page')||!anchor.closest('#projects .project-card'))return null;
   return {href:location.href,scrollY:window.scrollY,
@@ -593,16 +601,19 @@ async function navigateInternally(url,{pop=false,restored=null,projectOrigin=nul
       const controlled=targets.length>0&&targets.every(el=>typeof el.animate==='function');
       if(controlled)root.classList.add('ds-route-controlled');
       root.classList.add('ds-route-incoming');
-      root.classList.remove('ds-route-swapping');
       if(controlled){
-        const animations=targets.map(el=>el.animate(routeEntryFrames,{
-          duration:1040,easing:'linear',fill:'both'
+        // Start from zero opacity while the DOM is still visually held.
+        const factory=activeDocument==='factory';
+        const animations=targets.map(el=>el.animate(factory?factoryEntryFrames:routeEntryFrames,{
+          duration:factory?1450:1040,easing:'linear',fill:'both'
         }));
         activeRouteAnimations=animations;
+        root.classList.remove('ds-route-swapping');
         await Promise.all(animations.map(animation=>animation.finished.catch(()=>{})));
       }else{
-        // Legacy fallback keeps the existing CSS keyframes.
-        await waitNavigationTime(1080);
+        root.classList.remove('ds-route-swapping');
+        // Legacy fallback keeps the equivalent CSS keyframes.
+        await waitNavigationTime(activeDocument==='factory'?1490:1080);
       }
     }else root.classList.remove('ds-route-swapping');
   }catch(error){

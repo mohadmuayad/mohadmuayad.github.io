@@ -1347,3 +1347,17 @@ html.ds-route-incoming:not(.ds-route-controlled) .notebook-page-body.notebook-01
     animation:none!important;
   }
 }
+/* Factory-only slow entrance fallback for browsers without Web Animations. */
+html.ds-route-incoming:not(.ds-route-controlled) .factory-page-body main {
+  animation:ds-factory-slow-reveal 1450ms linear both;
+}
+@keyframes ds-factory-slow-reveal {
+  0% {opacity:0;transform:translate3d(0,10px,0);}
+  20% {opacity:.025;transform:translate3d(0,9px,0);}
+  52% {opacity:.22;transform:translate3d(0,6px,0);}
+  78% {opacity:.64;transform:translate3d(0,2px,0);}
+  100% {opacity:1;transform:translate3d(0,0,0);}
+}
+@media(prefers-reduced-motion:reduce){
+  html.ds-route-incoming:not(.ds-route-controlled) .factory-page-body main {animation:none!important;}
+}
