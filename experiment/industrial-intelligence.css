@@ -2066,7 +2066,7 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
    with the main WHAT THE DATA SHOWS section heading. */
 .factory-page-body #findings > .finding > div > h3,
 .factory-page-body #findings > .note-panel > h3 {
-  font-family:'Nunito Sans','Segoe UI',Arial,sans-serif;
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
   font-weight:550;
   line-height:1.2;
   letter-spacing:-.03em;
