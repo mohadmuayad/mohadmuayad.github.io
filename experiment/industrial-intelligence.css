@@ -2011,8 +2011,7 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
   .factory-page-body .ds-editorial-metric span{font-size:10.5px}
   .factory-page-body .ds-editorial-metric small{font-size:9px}
 }
-/* 2026-11-16 — Pearl Editorial: main Factory section labels only.
-   Small static silver hairlines live under the label; content labels untouched. */
+/* 2026-11-16 — Main Factory section labels aligned with homepage typography. */
 .factory-page-body :is(
   #report > div > p.eyebrow,
   #dataset > p.eyebrow,
@@ -2043,6 +2042,47 @@ body.factory-page-body>.ds-page-back-row::after{content:none!important;display:n
     .case-end > p.eyebrow
   ) {
     font-size:16px;
+    letter-spacing:.09em;
+  }
+}
+/* 2026-11-16 — Findings captions: consistent second-level editorial hierarchy. */
+/* Top-level section labels remain 16–17px. Use their family, weight and
+   pearly tone at a modest smaller scale for chart finding and time-gap labels.
+   No decorative lines or changes to graphs, text, cards or layout geometry. */
+.factory-page-body #findings > .finding > div > span.eyebrow,
+.factory-page-body #findings > .note-panel > span.eyebrow {
+  display:block;
+  width:auto;
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  font-size:clamp(13px,1.05vw,14px);
+  font-weight:600;
+  line-height:1.45;
+  letter-spacing:.105em;
+  color:#dfe8ec;
+  text-shadow:0 0 11px rgba(229,242,248,.12);
+  margin:0 0 13px;
+}
+/* Secondary headlines share the editorial typeface without competing
+   with the main WHAT THE DATA SHOWS section heading. */
+.factory-page-body #findings > .finding > div > h3,
+.factory-page-body #findings > .note-panel > h3 {
+  font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  font-weight:550;
+  line-height:1.2;
+  letter-spacing:-.03em;
+  color:#e8edf0;
+  margin-top:0;
+}
+.factory-page-body #findings > .finding > div > h3 {
+  font-size:clamp(25px,2.3vw,30px);
+}
+.factory-page-body #findings > .note-panel > h3 {
+  font-size:clamp(23px,2.05vw,27px);
+}
+@media(max-width:760px) {
+  .factory-page-body #findings > .finding > div > span.eyebrow,
+  .factory-page-body #findings > .note-panel > span.eyebrow {
+    font-size:13px;
     letter-spacing:.09em;
   }
 }
